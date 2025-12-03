@@ -79,6 +79,8 @@
             <div class="status" id="lockStatus"></div>
           </div>
           <div class="hr"></div>
+
+          <div class="row"><div class="badge">INTAKE SHEET</div></div>
           <div class="kvs">
             <div class="muted">Title</div><div id="vTitle"></div>
             <div class="muted">Client Profile</div><div id="vClient"></div>
@@ -93,6 +95,10 @@
             <div class="muted">Risks & Ethics</div><div id="vRisks"></div>
             <div class="muted">Equity Signal</div><div id="vEquity"></div>
           </div>
+
+          <div class="hr"></div>
+          <div class="row"><div class="badge">NARRATIVE</div></div>
+          <div id="vNarrative" style="white-space:pre-wrap"></div>
         </div>
       </section>
 
@@ -119,7 +125,7 @@
               <div class="field" style="flex:1;min-width:160px"><label for="pOut">Outcome</label><input id="pOut" placeholder="e.g., reduction in PHQ-9"/></div>
               <div class="field" style="width:160px"><label for="pTime">Timeframe</label><input id="pTime" placeholder="e.g., 12 weeks"/></div>
             </div>
-            <div class="badge monospace" id="picoPreview">PICO preview…</div>
+            <div class="badge monospace" id="picoPreview">PICO preview...</div>
           </div>
 
           <div class="field">
@@ -131,8 +137,8 @@
 
           <div class="field">
             <label>Study Summaries</label>
-            <div class="hint">Goal is usually <strong>3–5</strong> relevant peer-reviewed studies. Summarize what they did and found in your own words.</div>
-            <div class="row"><span class="counter" id="cntStudies">Studies added: 0 / 3–5</span></div>
+            <div class="hint">Goal is usually <strong>3-5</strong> relevant peer-reviewed studies. Summarize what they did and found in your own words.</div>
+            <div class="row"><span class="counter" id="cntStudies">Studies added: 0 / 3-5</span></div>
             <div id="studyList" class="list"></div>
             <details>
               <summary class="badge">➕ Add a study</summary>
@@ -152,7 +158,7 @@
                   <div class="field" style="flex:1"><label for="sEquity">Equity/representation</label><input id="sEquity" placeholder="representation, cultural fit"/></div>
                 </div>
                 <div class="row">
-                  <div class="field" style="flex:1"><label for="sUrl">DOI/URL</label><input id="sUrl" placeholder="https://… or doi:…"/></div>
+                  <div class="field" style="flex:1"><label for="sUrl">DOI/URL</label><input id="sUrl" placeholder="https://... or doi:..."/></div>
                   <button id="btnAddStudy" class="right">Add Study</button>
                 </div>
               </div>
@@ -168,14 +174,14 @@
 
           <div class="field">
             <label for="fApply">Application & Delivery Plan</label>
-            <div class="hint">What the evidence suggests for <em>this</em> client, adaptations, shared decision-making language, monitoring, consent, and ethics.</div>
+            <div class="hint">What the evidence suggests for this client, adaptations, shared decision-making language, monitoring, consent, and ethics.</div>
             <textarea id="fApply"></textarea>
             <div class="row"><span class="counter" id="cntApply">0 words</span></div>
           </div>
 
           <div class="field">
-            <label for="fAssumptions">Assumptions I’m Making (optional)</label>
-            <div class="hint">Note any reasonable assumptions due to missing/ambiguous details.</div>
+            <label for="fAssumptions">Assumptions I am Making (optional)</label>
+            <div class="hint">Note any reasonable assumptions due to missing or ambiguous details.</div>
             <textarea id="fAssumptions"></textarea>
           </div>
 
@@ -185,12 +191,12 @@
             <div id="progress" class="status">0/6 sections with 100+ words</div>
           </div>
           <ul id="rubric" class="list" style="margin:8px 0 0 18px">
-            <li>Client & context clearly described with equity/ethics lens</li>
+            <li>Client and context clearly described with equity/ethics lens</li>
             <li>Focused, researchable PICO(T) reflects client goals</li>
-            <li>Transparent search & selection, includes equity considerations</li>
+            <li>Transparent search and selection, includes equity considerations</li>
             <li>Accurate study summaries in your own words</li>
             <li>Critical appraisal of strength, bias, and representation</li>
-            <li>Practice application & shared decision-making plan</li>
+            <li>Practice application and shared decision-making plan</li>
           </ul>
         </div>
       </section>
@@ -203,186 +209,21 @@
   </div>
 
   <script>
-    // ---------- Data: Spec-aligned vignettes ----------
-    // Each vignette adheres to the required schema. Narrative length ~300–450 words across fields.
-    const VIGNETTES = [
-      {
-        id: "case_01_school_anxiety",
-        title: "Marisol: Balancing School, Work, and Panic on Transit",
-        client_profile: {
-          age: "17-year-old",
-          pronouns: "she/her",
-          race_ethnicity: "Mexican American, first-gen",
-          gender_sexuality: "Cisgender, straight",
-          primary_language: "Bilingual Spanish/English; prefers English with occasional Spanish",
-          disability_health: "No formal diagnoses; reports episodic chest tightness and dizziness"
-        },
-        setting: "Urban public high school—school social work office; 20-minute drop-in times and limited private space.",
-        presenting_problem: "Over the past month, Marisol has left two morning classes after experiencing sudden panic on a crowded bus. She was referred by a teacher after missing quizzes and crying in the hallway. She says she is embarrassed and worries staff think she is ‘being dramatic.’",
-        relevant_history: "Lives with her mother and two younger siblings; works evenings at a grocery store to help with bills. No child welfare or legal system involvement. Tried a lunchtime mindfulness club last year and liked it but stopped when her work schedule changed. Father recently moved out after parental conflict, which Marisol describes as ‘loud and exhausting.’",
-        goals_and_preferences: "Wants to graduate on time and keep her part-time job. Prefers brief, concrete strategies over long talk therapy. Wants a woman provider who understands Latinx family dynamics. Unsure if breathing exercises ‘really work’ and open to learning other options.",
-        strengths_and_resources: "Honor-roll student in two subjects; helps siblings with homework; close relationship with her aunt; listens to music and journals; bilingual; strong work ethic; supportive teacher who offers a quiet space when needed.",
-        contextual_factors_and_barriers: "Shared two-bedroom apartment; mother has irregular hours; Marisol pays part of rent. Long bus commute; often stands due to crowding. Experiences subtle stereotyping at school (e.g., ‘You people are late’ jokes). Limited time for appointments; cannot miss shifts.",
-        ebp_decision_point: "You are deciding whether to focus first on exposure-based strategies for panic during transit versus a school-based skills group with between-session practice. The choice may affect feasibility and speed of relief.",
-        target_outcomes: ["panic symptom frequency/severity (self-report)", "class attendance on first period days", "use of coping skills during transit"],
-        risks_and_ethics: "No current self-harm or violence reported. Safety plan not indicated. Discussed privacy limits and the extent of school record sharing.",
-        equity_signal: "Consider immigration-related stress, bilingual preferences, and how school discipline norms shape both the evidence and feasible options."
-      },
-      {
-        id: "case_02_reentry_employment",
-        title: "Devon: Reentering After Juvenile Detention",
-        client_profile: {
-          age: "19-year-old",
-          pronouns: "he/him",
-          race_ethnicity: "Black",
-          gender_sexuality: "Cisgender, straight",
-          primary_language: "English",
-          disability_health: "Possible ADHD (never evaluated); no current meds"
-        },
-        setting: "Community re-entry program partnering with a workforce agency; rolling weekly workshops and 1:1 coaching.",
-        presenting_problem: "Devon was mandated to the program after a 6-month juvenile detention stay related to a property offense. He is punctual but guarded, saying he needs a job but ‘doesn’t do school stuff.’ He reports conflicts with a supervisor at a short-lived warehouse placement.",
-        relevant_history: "Lives with his grandmother; sporadic contact with father. School suspensions began in middle school for ‘defiance.’ No gang affiliation per client. Brief probation counseling previously felt judgmental. Enjoys music production and basketball.",
-        goals_and_preferences: "Wants steady work to contribute at home and buy studio equipment. Prefers hands-on coaching over group classes. Ambivalent about disclosing record to employers; wants help deciding what to say.",
-        strengths_and_resources: "On time to sessions; protects and helps grandmother with errands; learns quickly when shown; coaches younger cousins in basketball; music production hobby demonstrates persistence and problem solving.",
-        contextual_factors_and_barriers: "Limited bus lines to industrial job sites; prior record triggers background checks; peers experiencing similar re-entry stressors; occasional neighborhood police stops that feel harassing.",
-        ebp_decision_point: "Decide whether to prioritize a supported employment model with job development versus a time-limited job-readiness group plus peer mentor check-ins.",
-        target_outcomes: ["employment acquisition and retention", "days worked per month", "self-efficacy about handling workplace conflict"],
-        risks_and_ethics: "No current safety risks disclosed. Program has data-sharing agreements with probation; informed consent and boundaries should be clarified.",
-        equity_signal: "Pay attention to how racialized policing and prior system involvement affect both evidence relevance and fairness in access to employment supports."
-      },
-      {
-        id: "case_03_primarycare_chronic",
-        title: "Asha: Managing Pain in Primary Care With Caregiving Duties",
-        client_profile: {
-          age: "46-year-old",
-          pronouns: "she/her",
-          race_ethnicity: "South Asian (Bangladeshi American)",
-          gender_sexuality: "Cisgender, straight",
-          primary_language: "Bilingual Bengali/English; prefers English in clinic, Bengali at home",
-          disability_health: "Chronic low-back pain; prediabetes; no current opioids"
-        },
-        setting: "Integrated primary care clinic co-located with behavioral health; 20–30 minute consults.",
-        presenting_problem: "Asha reports worsening back pain after increasing hours at a sewing job and lifting her father during transfers. Sleep is fragmented. She is skeptical of ‘pain classes’ and worries about medication side effects.",
-        relevant_history: "Married; two school-aged children; cares for her father with limited outside help. No psychiatric hospitalizations; one brief CBT course 5 years ago helpful for worry. Financial strain after husband’s reduced hours.",
-        goals_and_preferences: "Wants to reduce pain enough to work and sleep 6 hours. Prefers practical strategies that fit cultural routines; open to group only if women-only and time-limited. Values faith practices and modesty.",
-        strengths_and_resources: "Strong family ties; active in mosque; skilled with routines; motivated to learn; supportive neighbor available occasionally.",
-        contextual_factors_and_barriers: "Irregular shifts; limited transportation; caregiving burden; insurance requires prior authorization; cultural norms around modesty may affect PT options.",
-        ebp_decision_point: "Choose between an individually delivered brief behavioral pain management protocol versus referral to a culturally tailored group program that includes pacing and movement.",
-        target_outcomes: ["pain interference", "hours slept per night", "functional activity engagement"],
-        risks_and_ethics: "No acute risk reported. Discussed confidentiality and the option to include spouse with consent.",
-        equity_signal: "Consider language access, gendered group norms, and whether studies represent South Asian women in caregiving roles."
-      },
-      {
-        id: "case_04_child_kinship_grief",
-        title: "Kaya: Kinship Care After Parental Overdose",
-        client_profile: {
-          age: "9-year-old",
-          pronouns: "she/they",
-          race_ethnicity: "Native/White (tribal affiliation through maternal line)",
-          gender_sexuality: "Child—N/A",
-          primary_language: "English",
-          disability_health: "No formal diagnoses; nightmares and school concerns"
-        },
-        setting: "Outpatient child behavioral health; caregiver (maternal aunt) attends; coordination with school counselor.",
-        presenting_problem: "Kaya has nightmares and clings to their aunt after a recent parental overdose. School has sent home behavior notes for fidgeting and tearfulness. Kaya asks simple questions about death and shows worry about being ‘taken away.’",
-        relevant_history: "Now in kinship care; no current CPS case per caregiver. Previously attended a culture-based after-school program and loved drum practice. Brief play therapy at age 7 ended due to transportation.",
-        goals_and_preferences: "Kaya wants fewer nightmares and to keep attending drum practice. Aunt wants school to understand context and avoid punitive responses. Family prefers approaches that can include cultural elements and do not require weekly travel.",
-        strengths_and_resources: "Strong bond with aunt and older cousin; pride in tribal traditions; enjoys drawing and drumming; curious and talkative in comfortable settings.",
-        contextual_factors_and_barriers: "Caregiver works nights; limited transportation; long clinic waitlists; rural distance to specialized services; historical trauma context.",
-        ebp_decision_point: "Decide whether to begin with caregiver-child sessions emphasizing grief routines and coping, versus starting a structured skills group for children with recent losses (with optional cultural adaptations).",
-        target_outcomes: ["nightmare frequency", "school behavior incidents", "caregiver-rated coping"],
-        risks_and_ethics: "No current safety concerns. Mandated reporting not indicated. Clarify how information will be shared with school with consent.",
-        equity_signal: "Attend to Indigenous cultural anchors and risks of pathologizing grief in the context of overdose and historical trauma."
-      },
-      {
-        id: "case_05_ED_moud_choice",
-        title: "Leon: ED Visit After Nonfatal Overdose",
-        client_profile: {
-          age: "45-year-old",
-          pronouns: "he/him",
-          race_ethnicity: "Black",
-          gender_sexuality: "Cisgender, coparent",
-          primary_language: "English",
-          disability_health: "Chronic pain from old injury; OUD; housing instability"
-        },
-        setting: "Hospital emergency department with warm handoff to MOUD clinic and peer recovery coach.",
-        presenting_problem: "Arrived after nonfatal overdose; now medically cleared and ambivalent about medications for OUD. Reports pain flares at work and variable construction shifts.",
-        relevant_history: "Formerly incarcerated; prior short trial of buprenorphine was ‘OK’ but stopped due to schedule conflicts. Co-parents a 6-year-old; on probation with check-ins.",
-        goals_and_preferences: "Wants to keep working and maintain custody time; reduce cravings and avoid heavy sedation. Open to peer support; skeptical about ‘lots of appointments.’",
-        strengths_and_resources: "Union carpenter; strong motivation to parent; connected to peer who survived overdose; problem-solver at work.",
-        contextual_factors_and_barriers: "Clinic hours conflict with shifts; transportation unpredictable; stigma from some providers; probation constraints.",
-        ebp_decision_point: "Choose between initiating buprenorphine in the ED with telehealth follow-up versus referral to in-person clinic induction linked to a peer-led group component.",
-        target_outcomes: ["MOUD engagement/retention", "opioid use frequency/overdose recurrence", "work attendance"],
-        risks_and_ethics: "Elevated overdose risk; safety plan and naloxone provided; consent for coordination with probation clarified.",
-        equity_signal: "Consider racism in pain and addiction treatment and the accessibility of follow-up modalities for shift workers."
-      },
-      {
-        id: "case_06_rural_trans_genderaffirm",
-        title: "Renee: Navigating Rural Health Care as a Trans Woman",
-        client_profile: {
-          age: "72-year-old",
-          pronouns: "she/her",
-          race_ethnicity: "White",
-          gender_sexuality: "Transgender woman",
-          primary_language: "English",
-          disability_health: "Chronic pain after fall; anxiety related to healthcare mistreatment"
-        },
-        setting: "Rural primary care clinic with connection to hospital; limited local LGBTQ+ supports.",
-        presenting_problem: "Renee reports anxiety about upcoming procedures after being misgendered in prior visits. Pain limits mobility and sleep. She wants respectful care without heavy sedation.",
-        relevant_history: "Retired teacher; estranged from one sibling but close to a neighbor. No substance use concerns. Prior therapy in her 50s was supportive but ended when the provider relocated.",
-        goals_and_preferences: "Wants pain relief compatible with independence; prefers providers trained in trans-affirming practice; open to brief behavioral strategies if respectful and discreet.",
-        strengths_and_resources: "Resilient; organized; history of advocating for students; neighbor checks in; stable housing.",
-        contextual_factors_and_barriers: "Limited public transit; few gender-affirming providers; gossip concerns in small town settings.",
-        ebp_decision_point: "Decide whether to offer a brief integrated behavioral pain protocol individually versus a telehealth group program that also includes trans-affirming peer support.",
-        target_outcomes: ["pain interference", "anxiety symptoms", "treatment engagement"],
-        risks_and_ethics: "No acute safety risk. Discuss boundaries and privacy for group formats in small communities.",
-        equity_signal: "Consider trans safety, misgendering harms, and rural access when appraising evidence and feasibility."
-      },
-      {
-        id: "case_07_refugee_ptsd_access",
-        title: "Ifrah: Building Safety After Displacement",
-        client_profile: {
-          age: "31-year-old",
-          pronouns: "she/her",
-          race_ethnicity: "Somali",
-          gender_sexuality: "Widowed",
-          primary_language: "Somali; interpreter routinely needed",
-          disability_health: "Night terrors, hypervigilance; no psych hospitalizations"
-        },
-        setting: "Resettlement agency with attached ESL program and childcare room.",
-        presenting_problem: "Ifrah reports night terrors, avoidance, and limited trust of institutions. She wants to attend ESL regularly and feel safer on the bus.",
-        relevant_history: "Arrived 8 months ago with two children. Community leader introduced her to the agency. No criminal legal involvement. Faith practices are important.",
-        goals_and_preferences: "Sleep through the night; attend ESL; avoid providers who dismiss her beliefs. Prefers women-only spaces; appreciates clear, practical steps.",
-        strengths_and_resources: "Parenting strengths; strong faith; community connections; resilient problem-solver; children motivate engagement.",
-        contextual_factors_and_barriers: "Interpreter scheduling; childcare needs; Islamophobic harassment in neighborhood; transportation challenges; immigration stress.",
-        ebp_decision_point: "Choose whether to begin with a culturally adapted trauma-focused protocol with interpreter support or a phased, stabilization-first approach paired with a peer group.",
-        target_outcomes: ["sleep quality", "PTSD symptom severity", "ESL attendance"],
-        risks_and_ethics: "No current risk disclosed. Plan for interpreter-mediated confidentiality and discuss pacing to avoid retraumatization.",
-        equity_signal: "Consider immigration status, language access, and cultural fit in both the evidence base and intervention delivery."
-      },
-      {
-        id: "case_08_campus_autistic_supports",
-        title: "Rio: Autistic Student Navigating Group Projects",
-        client_profile: {
-          age: "27-year-old",
-          pronouns: "they/them",
-          race_ethnicity: "Brazilian, international student",
-          gender_sexuality: "Nonbinary, queer",
-          primary_language: "Portuguese; fluent English; sensory sensitivities",
-          disability_health: "Autistic; no intellectual disability"
-        },
-        setting: "Campus counseling center; short-term model; coordination with disability services.",
-        presenting_problem: "During midterms, Rio experiences shutdowns and avoids group work after overwhelming meetings. A professor has threatened grade penalties for missed collaboration.",
-        relevant_history: "No psychiatric hospitalizations. Prior short-term counseling was helpful for planning but not for sensory overload. Lives with two roommates in a noisy apartment.",
-        goals_and_preferences: "Wants practical strategies to complete coursework and communicate needs to peers; prefers predictable, concrete tools over open-ended processing.",
-        strengths_and_resources: "Detail-oriented; strong coder; supportive friend in another program; uses noise-cancelling headphones; engaged with a queer student group.",
-        contextual_factors_and_barriers: "Insurance visit caps; inflexible course policies; international student visa adds stress; housing noise triggers sensory overload.",
-        ebp_decision_point: "Prioritize training in structured communication + task chunking versus exposure to graded group participation with coaching.",
-        target_outcomes: ["assignment completion rate", "distress during group tasks", "use of planned accommodations"],
-        risks_and_ethics: "No safety risk. Coordinate information sharing with explicit, time-limited consent.",
-        equity_signal: "Consider ableism in group grading and how studies represent autistic adults without intellectual disability."
-      }
+    // ---------- Data (raw) ----------
+    const RAW_VIGNETTES = [
+      { id: "case_01_school_anxiety", title: "Marisol: Balancing School, Work, and Panic on Transit", client_profile: { age: "17-year-old", pronouns: "she/her", race_ethnicity: "Mexican American, first-gen", gender_sexuality: "Cisgender, straight", primary_language: "Bilingual Spanish/English; prefers English with occasional Spanish", disability_health: "No formal diagnoses; reports episodic chest tightness and dizziness" }, setting: "Urban public high school—school social work office; 20–30 minute consults.", presenting_problem: "Over the past month, Marisol has left two morning classes after experiencing sudden panic on a crowded bus. She was referred by a teacher after missing quizzes and crying in the hallway. She says she is embarrassed and worries staff think she is 'being dramatic.'", relevant_history: "Lives with her mother and two younger siblings; works evenings at a grocery store to help with bills. No child welfare or legal system involvement. Tried a lunchtime mindfulness club last year and liked it but stopped when her work schedule changed. Father recently moved out after parental conflict, which Marisol describes as 'loud and exhausting.'", goals_and_preferences: "Wants to graduate on time and keep her part-time job. Prefers brief, concrete strategies over long talk therapy. Wants a woman provider who understands Latinx family dynamics. Unsure if breathing exercises 'really work' and open to learning other options.", strengths_and_resources: "Honor-roll student in two subjects; helps siblings with homework; close relationship with her aunt; listens to music and journals; bilingual; strong work ethic; supportive teacher who offers a quiet space when needed.", contextual_factors_and_barriers: "Shared two-bedroom apartment; mother has irregular hours; Marisol pays part of rent. Long bus commute; often stands due to crowding. Experiences subtle stereotyping at school (e.g., 'You people are late' jokes). Limited time for appointments; cannot miss shifts.", ebp_decision_point: "You are deciding whether to focus first on exposure-based strategies for panic during transit versus a school-based skills group with between-session practice. The choice may affect feasibility and speed of relief.", target_outcomes: ["panic symptom frequency/severity (self-report)", "class attendance on first period days", "use of coping skills during transit"], risks_and_ethics: "No current self-harm or violence reported. Safety plan not indicated. Discussed privacy limits and the extent of school record sharing.", equity_signal: "Consider immigration-related stress, bilingual preferences, and how school discipline norms shape both the evidence and feasible options." },
+      { id: "case_02_reentry_employment", title: "Devon: Reentering After Juvenile Detention", client_profile: { age: "19-year-old", pronouns: "he/him", race_ethnicity: "Black", gender_sexuality: "Cisgender, straight", primary_language: "English", disability_health: "Possible ADHD (never evaluated); no current meds" }, setting: "Community re-entry program partnering with a workforce agency; rolling weekly workshops and 1:1 coaching.", presenting_problem: "Devon was mandated to the program after a 6-month juvenile detention stay related to a property offense. He is punctual but guarded, saying he needs a job but 'doesn't do school stuff.' He reports conflicts with a supervisor at a short-lived warehouse placement.", relevant_history: "Lives with his grandmother; sporadic contact with father. School suspensions began in middle school for 'defiance.' No gang affiliation per client. Brief probation counseling previously felt judgmental. Enjoys music production and basketball.", goals_and_preferences: "Wants steady work to contribute at home and buy studio equipment. Prefers hands-on coaching over group classes. Ambivalent about disclosing record to employers; wants help deciding what to say.", strengths_and_resources: "On time to sessions; protects and helps grandmother with errands; learns quickly when shown; coaches younger cousins in basketball; music production hobby demonstrates persistence and problem solving.", contextual_factors_and_barriers: "Limited bus lines to industrial job sites; prior record triggers background checks; peers experiencing similar re-entry stressors; occasional neighborhood police stops that feel harassing.", ebp_decision_point: "Decide whether to prioritize a supported employment model with job development versus a time-limited job-readiness group plus peer mentor check-ins.", target_outcomes: ["employment acquisition and retention", "days worked per month", "self-efficacy about handling workplace conflict"], risks_and_ethics: "No current safety risks disclosed. Program has data-sharing agreements with probation; informed consent and boundaries should be clarified.", equity_signal: "Pay attention to how racialized policing and prior system involvement affect both evidence relevance and fairness in access to employment supports." },
+      { id: "case_03_primarycare_chronic", title: "Asha: Managing Pain in Primary Care With Caregiving Duties", client_profile: { age: "46-year-old", pronouns: "she/her", race_ethnicity: "South Asian (Bangladeshi American)", gender_sexuality: "Cisgender, straight", primary_language: "Bilingual Bengali/English; prefers English in clinic, Bengali at home", disability_health: "Chronic low-back pain; prediabetes; no current opioids" }, setting: "Integrated primary care clinic co-located with behavioral health; 20–30 minute consults.", presenting_problem: "Asha reports worsening back pain after increasing hours at a sewing job and lifting her father during transfers. Sleep is fragmented. She is skeptical of 'pain classes' and worries about medication side effects.", relevant_history: "Married; two school-aged children; cares for her father with limited outside help. No psychiatric hospitalizations; one brief CBT course 5 years ago helpful for worry. Financial strain after husband's reduced hours.", goals_and_preferences: "Wants to reduce pain enough to work and sleep 6 hours. Prefers practical strategies that fit cultural routines; open to group only if women-only and time-limited. Values faith practices and modesty.", strengths_and_resources: "Strong family ties; active in mosque; skilled with routines; motivated to learn; supportive neighbor available occasionally.", contextual_factors_and_barriers: "Irregular shifts; limited transportation; caregiving burden; insurance requires prior authorization; cultural norms around modesty may affect PT options.", ebp_decision_point: "Choose between an individually delivered brief behavioral pain management protocol versus referral to a culturally tailored group program that includes pacing and movement.", target_outcomes: ["pain interference", "hours slept per night", "functional activity engagement"], risks_and_ethics: "No acute risk reported. Discussed confidentiality and the option to include spouse with consent.", equity_signal: "Consider language access, gendered group norms, and whether studies represent South Asian women in caregiving roles." }
     ];
+
+    // ---------- Clean em dashes globally ----------
+    function stripEmDashesDeep(v){
+      if(Array.isArray(v)) return v.map(stripEmDashesDeep);
+      if(v && typeof v === 'object'){ const o={}; for(const k in v) o[k]=stripEmDashesDeep(v[k]); return o; }
+      if(typeof v === 'string') return v.replace(/—/g,'-');
+      return v;
+    }
+    const VIGNETTES = RAW_VIGNETTES.map(stripEmDashesDeep);
 
     // ---------- State ----------
     const $ = (sel)=>document.querySelector(sel);
@@ -393,7 +234,7 @@
 
     const els = {
       caseEmpty: $('#caseEmpty'), caseWrap: $('#caseWrap'), caseId: $('#caseId'), caseTitleChip: $('#caseTitleChip'), lockStatus: $('#lockStatus'),
-      vTitle: $('#vTitle'), vClient: $('#vClient'), vSetting: $('#vSetting'), vProblem: $('#vProblem'), vHistory: $('#vHistory'), vGoals: $('#vGoals'), vStrengths: $('#vStrengths'), vContextual: $('#vContextual'), vDecision: $('#vDecision'), vOutcomes: $('#vOutcomes'), vRisks: $('#vRisks'), vEquity: $('#vEquity'),
+      vTitle: $('#vTitle'), vClient: $('#vClient'), vSetting: $('#vSetting'), vProblem: $('#vProblem'), vHistory: $('#vHistory'), vGoals: $('#vGoals'), vStrengths: $('#vStrengths'), vContextual: $('#vContextual'), vDecision: $('#vDecision'), vOutcomes: $('#vOutcomes'), vRisks: $('#vRisks'), vEquity: $('#vEquity'), vNarrative: $('#vNarrative'),
       lockGate: $('#lockGate'), builder: $('#builder'),
       studyList: $('#studyList'), saveStatus: $('#saveStatus'), progress: $('#progress'), cntStudies: $('#cntStudies')
     };
@@ -406,13 +247,27 @@
     const debounce = (fn, ms=800)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(null,a), ms); }; };
     const autoKey = ()=> current ? `EBP_NOTE_${current.id}` : 'EBP_NOTE_UNSET';
 
+    const noEm = (s)=> (s||'').toString().replace(/—/g,'-');
+
     function renderClientProfile(cp){
       const bits = [];
-      if(cp.age) bits.push(cp.age);
-      if(cp.pronouns) bits.push(`(${cp.pronouns})`);
-      if(cp.race_ethnicity) bits.push(cp.race_ethnicity);
-      if(cp.gender_sexuality) bits.push(cp.gender_sexuality);
-      return `${bits.join(' • ')}${cp.primary_language?` • Language: ${cp.primary_language}`:''}${cp.disability_health?` • Health: ${cp.disability_health}`:''}`;
+      if(cp.age) bits.push(noEm(cp.age));
+      if(cp.pronouns) bits.push(`(${noEm(cp.pronouns)})`);
+      if(cp.race_ethnicity) bits.push(noEm(cp.race_ethnicity));
+      if(cp.gender_sexuality) bits.push(noEm(cp.gender_sexuality));
+      const lang = cp.primary_language?` • Language: ${noEm(cp.primary_language)}`:'';
+      const health = cp.disability_health?` • Health: ${noEm(cp.disability_health)}`:'';
+      return `${bits.join(' • ')}${lang}${health}`;
+    }
+
+    function buildNarrative(c){
+      const who = renderClientProfile(c.client_profile);
+      const p1 = `You are the clinician and your client. They meet with you in ${noEm(c.setting)}. ${noEm(c.presenting_problem)}`;
+      const p2 = `They describe goals and preferences: ${noEm(c.goals_and_preferences)}. Strengths include ${noEm(c.strengths_and_resources)}.`;
+      const p3 = `Context and barriers: ${noEm(c.contextual_factors_and_barriers)}.`;
+      const p4 = `An explicit decision point is on the table: ${noEm(c.ebp_decision_point)}. Target outcomes include ${Array.isArray(c.target_outcomes)? noEm(c.target_outcomes.join('; ')) : noEm(c.target_outcomes)}.`;
+      const p5 = `Risks and ethics noted: ${noEm(c.risks_and_ethics)}. Equity signal: ${noEm(c.equity_signal)}.`;
+      return [who, p1, p2, p3, p4, p5].join('\n\n');
     }
 
     function picoPreview(){
@@ -427,7 +282,7 @@
       $('#cntSearch').textContent = `${wordCount(F.search.value)} words`;
       $('#cntAppraise').textContent = `${wordCount(F.appraise.value)} words`;
       $('#cntApply').textContent = `${wordCount(F.apply.value)} words`;
-      els.cntStudies.textContent = `Studies added: ${studies.length} / 3–5`;
+      els.cntStudies.textContent = `Studies added: ${studies.length} / 3-5`;
       const hits = [F.context,F.search,F.appraise,F.apply].filter(x=>wordCount(x.value)>=100).length;
       els.progress.textContent = `${hits}/6 sections with 100+ words`;
     }
@@ -436,19 +291,20 @@
       if(!current){ els.caseWrap.hidden=true; els.caseEmpty.hidden=false; return; }
       els.caseEmpty.hidden=true; els.caseWrap.hidden=false;
       els.caseId.textContent = current.id;
-      els.caseTitleChip.textContent = current.title;
-      els.vTitle.textContent = current.title;
+      els.caseTitleChip.textContent = noEm(current.title);
+      els.vTitle.textContent = noEm(current.title);
       els.vClient.textContent = renderClientProfile(current.client_profile);
-      els.vSetting.textContent = current.setting;
-      els.vProblem.textContent = current.presenting_problem;
-      els.vHistory.textContent = current.relevant_history;
-      els.vGoals.textContent = current.goals_and_preferences;
-      els.vStrengths.textContent = current.strengths_and_resources;
-      els.vContextual.textContent = current.contextual_factors_and_barriers;
-      els.vDecision.textContent = current.ebp_decision_point;
-      els.vOutcomes.textContent = Array.isArray(current.target_outcomes)? current.target_outcomes.join('; ') : current.target_outcomes;
-      els.vRisks.textContent = current.risks_and_ethics;
-      els.vEquity.textContent = current.equity_signal;
+      els.vSetting.textContent = noEm(current.setting);
+      els.vProblem.textContent = noEm(current.presenting_problem);
+      els.vHistory.textContent = noEm(current.relevant_history);
+      els.vGoals.textContent = noEm(current.goals_and_preferences);
+      els.vStrengths.textContent = noEm(current.strengths_and_resources);
+      els.vContextual.textContent = noEm(current.contextual_factors_and_barriers);
+      els.vDecision.textContent = noEm(current.ebp_decision_point);
+      els.vOutcomes.textContent = Array.isArray(current.target_outcomes)? noEm(current.target_outcomes.join('; ')) : noEm(current.target_outcomes);
+      els.vRisks.textContent = noEm(current.risks_and_ethics);
+      els.vEquity.textContent = noEm(current.equity_signal);
+      els.vNarrative.textContent = buildNarrative(current);
       updateLockUi();
     }
 
@@ -461,7 +317,7 @@
 
     function randomize(){
       const b = $('#btnRandom');
-      b.disabled = true; b.innerHTML = '<span class="spin">🎲</span> Rolling…';
+      b.disabled = true; b.innerHTML = '<span class="spin">🎲</span> Rolling...';
       setTimeout(()=>{
         current = VIGNETTES[Math.floor(Math.random()*VIGNETTES.length)];
         locked = false; studies = [];
@@ -481,12 +337,7 @@
     function toggleLock(){ if(!current){ toast('Draw a case first.'); return; } locked = !locked; updateLockUi(); if(locked){ loadDraft(); } }
 
     function addStudy(){
-      const s = {
-        id: uid(),
-        title: sanitize($('#sTitle').value), year: sanitize($('#sYear').value), design: sanitize($('#sDesign').value),
-        sample: sanitize($('#sSample').value), methods: sanitize($('#sMethods').value), findings: sanitize($('#sFindings').value),
-        limits: sanitize($('#sLimits').value), equity: sanitize($('#sEquity').value), url: sanitize($('#sUrl').value)
-      };
+      const s = { id: uid(), title: sanitize($('#sTitle').value), year: sanitize($('#sYear').value), design: sanitize($('#sDesign').value), sample: sanitize($('#sSample').value), methods: sanitize($('#sMethods').value), findings: sanitize($('#sFindings').value), limits: sanitize($('#sLimits').value), equity: sanitize($('#sEquity').value), url: sanitize($('#sUrl').value) };
       if(!s.title || !s.findings){ toast('Title and findings are required.'); return; }
       if(s.year && !/^\d{4}$/.test(s.year)){ toast('Year must be 4 digits.'); return; }
       studies.push(s); renderStudies(); ['#sTitle','#sYear','#sDesign','#sSample','#sMethods','#sFindings','#sLimits','#sEquity','#sUrl'].forEach(sel=>$(sel).value=''); autosave();
@@ -496,18 +347,18 @@
 
     function renderStudies(){
       const wrap = els.studyList; wrap.innerHTML = '';
-      if(studies.length===0){ const p = document.createElement('div'); p.className='muted'; p.textContent='No studies yet. Aim for 3–5 relevant peer‑reviewed sources.'; wrap.appendChild(p); updateCounters(); return; }
+      if(studies.length===0){ const p = document.createElement('div'); p.className='muted'; p.textContent='No studies yet. Aim for 3-5 relevant peer-reviewed sources.'; wrap.appendChild(p); updateCounters(); return; }
       for(const s of studies){
         const div = document.createElement('div'); div.className='study';
         div.innerHTML = `
           <div class="row"><strong>${escapeHtml(s.title)}</strong> <span class="chip">${s.design||'Design n/a'}</span> <span class="chip">${s.year||'Year n/a'}</span> <button class="ghost right" data-id="${s.id}">Remove</button></div>
           <div class="kvs" style="margin-top:6px">
-            <div class="muted">Population</div><div>${escapeHtml(s.sample||'—')}</div>
-            <div class="muted">Methods</div><div>${escapeHtml(s.methods||'—')}</div>
-            <div class="muted">Findings</div><div>${escapeHtml(s.findings||'—')}</div>
-            <div class="muted">Limitations</div><div>${escapeHtml(s.limits||'—')}</div>
-            <div class="muted">Equity</div><div>${escapeHtml(s.equity||'—')}</div>
-            <div class="muted">DOI/URL</div><div>${linkify(s.url)||'—'}</div>
+            <div class="muted">Population</div><div>${escapeHtml(s.sample||'—').replace(/—/g,'-')}</div>
+            <div class="muted">Methods</div><div>${escapeHtml(s.methods||'—').replace(/—/g,'-')}</div>
+            <div class="muted">Findings</div><div>${escapeHtml(s.findings||'—').replace(/—/g,'-')}</div>
+            <div class="muted">Limitations</div><div>${escapeHtml(s.limits||'—').replace(/—/g,'-')}</div>
+            <div class="muted">Equity</div><div>${escapeHtml(s.equity||'—').replace(/—/g,'-')}</div>
+            <div class="muted">DOI/URL</div><div>${(s.url?`<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.url)}</a>`:'—').replace(/—/g,'-')}</div>
           </div>`;
         div.querySelector('button[data-id]').addEventListener('click',()=>removeStudy(s.id));
         wrap.appendChild(div);
@@ -516,17 +367,11 @@
     }
 
     function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
-    function linkify(u){ if(!u) return ''; const safe = escapeHtml(u); return `<a href="${safe}" target="_blank" rel="noopener">${safe}</a>`; }
 
     // ---------- Autosave ----------
     const autosave = debounce(()=>{
       if(!current || !locked) return;
-      const data = {
-        case: current, locked, studies,
-        fields: { context:F.context.value, search:F.search.value, appraise:F.appraise.value, apply:F.apply.value, assumptions:F.assumptions.value },
-        pico: { pop:PICO.pop.value, int:PICO.int.value, comp:PICO.comp.value, out:PICO.out.value, time:PICO.time.value },
-        ts: nowISO()
-      };
+      const data = { case: current, locked, studies, fields: { context:F.context.value, search:F.search.value, appraise:F.appraise.value, apply:F.apply.value, assumptions:F.assumptions.value }, pico: { pop:PICO.pop.value, int:PICO.int.value, comp:PICO.comp.value, out:PICO.out.value, time:PICO.time.value }, ts: nowISO() };
       try{ localStorage.setItem(autoKey(), JSON.stringify(data)); els.saveStatus.textContent = `saved ${new Date().toLocaleTimeString()}`; }
       catch(e){ els.saveStatus.textContent = 'save failed'; }
     }, 1200);
@@ -552,15 +397,15 @@
       }catch(e){ els.saveStatus.textContent='load failed'; }
     }
 
-    // ---------- Export / Copy / Print (no Markdown) ----------
+    // ---------- Export / Copy / Print ----------
     function buildDocHtml(){
       if(!current) return '<!doctype html><html><head><meta charset="utf-8"><title>EBP Note</title></head><body><p>No case selected.</p></body></html>';
-      const esc = (s)=>escapeHtml((s||'').toString());
+      const esc = (s)=>escapeHtml(noEm((s||'').toString()));
       const p = PICO.preview.textContent;
       const h = [];
-      h.push('<!doctype html><html><head><meta charset="utf-8"><title>EBP Note — '+esc(current.title)+'</title>');
+      h.push('<!doctype html><html><head><meta charset="utf-8"><title>EBP Note - '+esc(current.title)+'</title>');
       h.push('<style>body{font-family:Calibri,Arial,Helvetica,sans-serif;line-height:1.4;color:#111} h1,h2,h3{margin:0 0 6px} h1{font-size:22px} h2{font-size:18px;margin-top:16px} h3{font-size:15px;margin-top:12px} ul{margin:4px 0 8px 18px} .meta li{margin:2px 0} .k{color:#374151} .small{color:#555;font-size:12px} @page{margin:1in} </style></head><body>');
-      h.push('<h1>EBP Process Note — '+esc(current.title)+' ('+esc(current.id)+')</h1>');
+      h.push('<h1>EBP Process Note - '+esc(current.title)+' ('+esc(current.id)+')</h1>');
       h.push('<h2>Case Vignette</h2>');
       h.push('<ul class="meta">');
       h.push('<li><span class="k">Client Profile:</span> '+esc(renderClientProfile(current.client_profile))+'</li>');
@@ -575,6 +420,7 @@
       h.push('<li><span class="k">Risks & Ethics:</span> '+esc(current.risks_and_ethics)+'</li>');
       h.push('<li><span class="k">Equity Signal:</span> '+esc(current.equity_signal)+'</li>');
       h.push('</ul>');
+      h.push('<h2>Narrative</h2><p>'+esc(buildNarrative(current)).replace(/\n/g,'<br>')+'</p>');
       h.push('<h2>Client & Practice Context</h2><p>'+esc(F.context.value).replace(/\n/g,'<br>')+'</p>');
       h.push('<h2>PICO-style EBP Question</h2><p><strong>Question:</strong> '+esc(p)+'</p>');
       h.push('<h2>Search Strategy & Study Selection</h2><p>'+esc(F.search.value).replace(/\n/g,'<br>')+'</p>');
@@ -593,21 +439,23 @@
       if(!current) return 'No case selected.';
       const p = PICO.preview.textContent;
       const lines = [];
-      lines.push(`EBP Process Note — ${current.title} (${current.id})`);
+      lines.push(`EBP Process Note - ${noEm(current.title)} (${current.id})`);
       lines.push('');
       lines.push('Case Vignette');
       lines.push(`- Client Profile: ${renderClientProfile(current.client_profile)}`);
-      lines.push(`- Setting: ${current.setting}`);
-      lines.push(`- Presenting Problem: ${current.presenting_problem}`);
-      lines.push(`- Relevant History: ${current.relevant_history}`);
-      lines.push(`- Goals & Preferences: ${current.goals_and_preferences}`);
-      lines.push(`- Strengths & Resources: ${current.strengths_and_resources}`);
-      lines.push(`- Contextual Factors & Barriers: ${current.contextual_factors_and_barriers}`);
-      lines.push(`- EBP Decision Point: ${current.ebp_decision_point}`);
-      lines.push(`- Target Outcomes: ${(Array.isArray(current.target_outcomes)? current.target_outcomes.join('; '): current.target_outcomes)}`);
-      lines.push(`- Risks & Ethics: ${current.risks_and_ethics}`);
-      lines.push(`- Equity Signal: ${current.equity_signal}`);
+      lines.push(`- Setting: ${noEm(current.setting)}`);
+      lines.push(`- Presenting Problem: ${noEm(current.presenting_problem)}`);
+      lines.push(`- Relevant History: ${noEm(current.relevant_history)}`);
+      lines.push(`- Goals & Preferences: ${noEm(current.goals_and_preferences)}`);
+      lines.push(`- Strengths & Resources: ${noEm(current.strengths_and_resources)}`);
+      lines.push(`- Contextual Factors & Barriers: ${noEm(current.contextual_factors_and_barriers)}`);
+      lines.push(`- EBP Decision Point: ${noEm(current.ebp_decision_point)}`);
+      lines.push(`- Target Outcomes: ${Array.isArray(current.target_outcomes)? noEm(current.target_outcomes.join('; ')): noEm(current.target_outcomes)}`);
+      lines.push(`- Risks & Ethics: ${noEm(current.risks_and_ethics)}`);
+      lines.push(`- Equity Signal: ${noEm(current.equity_signal)}`);
       lines.push('');
+      lines.push('Narrative');
+      lines.push(noEm(buildNarrative(current))); lines.push('');
       lines.push('Client & Practice Context');
       lines.push(F.context.value); lines.push('');
       lines.push('PICO-style EBP Question');
@@ -616,7 +464,7 @@
       lines.push(F.search.value); lines.push('');
       lines.push('Study Summaries');
       if(studies.length===0){ lines.push('No studies added yet.'); }
-      else{ studies.forEach((s,i)=>{ lines.push(`Study ${i+1}: ${s.title}${s.year?` (${s.year})`:''}`); if(s.design) lines.push(`  - Design: ${s.design}`); if(s.sample) lines.push(`  - Population/Sample: ${s.sample}`); if(s.methods) lines.push(`  - Methods: ${s.methods}`); if(s.findings) lines.push(`  - Key Findings: ${s.findings}`); if(s.limits) lines.push(`  - Limitations: ${s.limits}`); if(s.equity) lines.push(`  - Equity/Representation: ${s.equity}`); if(s.url) lines.push(`  - DOI/URL: ${s.url}`); }); }
+      else{ studies.forEach((s,i)=>{ lines.push(`Study ${i+1}: ${noEm(s.title)}${s.year?` (${noEm(s.year)})`:''}`); if(s.design) lines.push(`  - Design: ${noEm(s.design)}`); if(s.sample) lines.push(`  - Population/Sample: ${noEm(s.sample)}`); if(s.methods) lines.push(`  - Methods: ${noEm(s.methods)}`); if(s.findings) lines.push(`  - Key Findings: ${noEm(s.findings)}`); if(s.limits) lines.push(`  - Limitations: ${noEm(s.limits)}`); if(s.equity) lines.push(`  - Equity/Representation: ${noEm(s.equity)}`); if(s.url) lines.push(`  - DOI/URL: ${noEm(s.url)}`); }); }
       lines.push('');
       lines.push('Critical Appraisal (incl. equity/representation)');
       lines.push(F.appraise.value); lines.push('');
