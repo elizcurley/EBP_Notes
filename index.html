@@ -41,6 +41,8 @@
     .focus-ring:focus{outline:3px solid var(--ring);outline-offset:2px}
     .spin{animation:spin 1s linear infinite;display:inline-block} @keyframes spin{to{transform:rotate(360deg)}}
     .hidden{display:none}
+    /* Narrative paragraph spacing */
+    #vNarrative p{margin:0 0 10px 0}
   </style>
 </head>
 <body>
@@ -96,7 +98,7 @@
 
           <div class="hr"></div>
           <div class="row"><div class="badge">NARRATIVE</div></div>
-          <div id="vNarrative" style="white-space:pre-wrap"></div>
+          <div id="vNarrative"></div>
         </div>
       </section>
 
@@ -207,7 +209,7 @@
   </div>
 
   <script>
-    // -------- Utilities (strip em/en dashes globally) --------
+    // -------- Utilities --------
     const noDash=(s)=>(s||'').toString().replace(/[—–]/g,'-');
     const stripDashesDeep = (v)=>{
       if(Array.isArray(v)) return v.map(stripDashesDeep);
@@ -223,6 +225,13 @@
     const debounce=(fn,ms=800)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn.apply(null,a),ms);};};
     const escapeHtml=s=>(s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
     const linkify=u=>!u?'':`<a href="${escapeHtml(u)}" target="_blank" rel="noopener">${escapeHtml(u)}</a>`;
+
+    // Render text as paragraphs (split on blank lines).
+    function paragraphsHTML(text){
+      const safe = noDash(text||'').replace(/\r\n/g,'\n');
+      const blocks = safe.split(/\n\s*\n/).map(t=>t.trim()).filter(Boolean);
+      return blocks.map(b=>`<p>${escapeHtml(b)}</p>`).join('');
+    }
 
     // -------- Case data (INTAKE + Narrative aligned) --------
     const VIGNETTES = stripDashesDeep([
@@ -248,11 +257,17 @@
         equity_signal: "Consider immigration-related stress, bilingual preferences, and how school discipline norms shape evidence and feasible options.",
         narrative: `Marisol: Balancing School, Work, and Panic on Transit
 Marisol is a 17-year-old Mexican American high school junior who shows up to the social worker's office clutching her backpack straps so tightly her knuckles are pale. She uses she/her pronouns and describes herself as "pretty normal, just tired." She's first-gen in her family to be on track for college. She's bilingual in Spanish and English, but when she talks about school and her friends, she switches into English with ease, occasionally dropping in a Spanish phrase when she gets emotional.
+
 Her English teacher referred her after noticing she'd started leaving first period several times a week, asking to go to the bathroom and then not coming back. One morning, the teacher found her in the hallway sitting on the floor, crying, breathing fast, and saying her chest hurt. The school nurse ruled out an immediate medical emergency and suggested she might be having panic attacks.
+
 In the 20-minute drop-in appointment, Marisol explains that the worst episodes happen on the crowded city bus she takes to school. "It's like, as soon as we hit that one stop where everyone piles in, my chest gets tight. I feel dizzy. Then I freak out that I'm gonna pass out in front of everybody." She's mortified at the idea of people thinking she's being dramatic or "crazy." She has started skipping the bus stop when she sees it already crowded, which makes her late to school and first period.
+
 At home, Marisol lives in a small apartment with her mom and two younger siblings. Her mother works irregular shifts in housekeeping, and Marisol works evenings at a grocery store to help with bills. She is proud of contributing, but it means she often doesn't get home until 10 or 11 p.m., then still has homework and childcare duties. There's no child welfare or legal involvement. Until recently, her father lived with them; after a series of loud arguments, he moved out suddenly, leaving the household financially and emotionally shaken. Marisol doesn't go into detail, but her eyes well when she mentions "that week when everything blew up."
+
 She used to attend a mindfulness lunch club at school and liked the calm, but she had to stop when her work schedule changed. She still sometimes journals or listens to music late at night to wind down. She's on the honor roll and a favorite babysitter for her cousins. A supportive teacher lets her sit in an empty classroom before school on really bad mornings.
+
 Marisol wants to graduate on time, keep her job, and "not freak out on the bus." She says she doesn't have the bandwidth for long therapy right now and wants "stuff I can actually do, like, tomorrow." She prefers working with a woman and feels more comfortable with someone who "gets Latinx families" and the pressure she feels as the oldest. She's unsure about breathing exercises, "I tried that from TikTok and felt weird", but is open to practicing skills if they feel concrete and not childish.
+
 The school social worker notes that there's no current self-harm or violence, so a formal safety plan isn't needed. Privacy is a concern; the office is small and not very soundproof, and Marisol is anxious about who might see her coming in. The social worker is considering whether to focus on individual exposure-based work around transit panic (e.g., imaginal and in-vivo practice for the bus) or to connect Marisol to a school-based coping skills group that includes between-session practice, knowing Marisol's limited time, immigration-related family stress, bilingual preferences, and the way school discipline norms might respond to her lateness and class exits.`
       },
       {
@@ -277,12 +292,19 @@ The school social worker notes that there's no current self-harm or violence, so
         equity_signal: "Attend to racialized policing and prior system involvement when judging evidence relevance and fairness.",
         narrative: `Devon: Reentering After Juvenile Detention
 Devon is a 19-year-old Black young man who arrives at the community re-entry program in a hoodie and work boots, sitting in the back row of the orientation session. He uses he/him pronouns and answers questions in short, cautious sentences. He's there because it's a condition of his probation: complete the workforce program or risk a violation.
+
 He lives with his grandmother on the east side and has since middle school. His father has been in and out of the picture, periodic calls, a couple of surprise visits, but no steady presence. Devon's school record includes multiple suspensions for "defiance," "talking back," and walking out of class when he felt disrespected. He eventually dropped out in 11th grade, saying he was "done being the problem."
+
 He spent several months in juvenile detention after a series of charges related to fights and property damage. While locked up, he attended anger management and life-skills groups, but he describes them as "people talking at you about how you should act." Probation counseling felt similar: "They just want you to say what they want and then sign the paper."
+
 Despite that, Devon is almost always on time for appointments. He helps his grandmother with groceries and getting to church. He's good with kids and sometimes coaches his younger cousins in basketball at the park. He talks animatedly about his love for music production, saving YouTube tutorials to his phone and tinkering with free apps to build beats.
+
 He recently started a warehouse job through a temp agency. It lasted three weeks before a major conflict with a supervisor over break times and how he was addressed in front of others. Devon felt humiliated and targeted. When he raised his voice, security was called. He walked off the job before being formally fired. Now he needs another position quickly to satisfy probation and to move toward his goal of buying studio equipment.
+
 Transportation is a challenge: buses to industrial job sites are limited and often late. Devon has been stopped by police multiple times while walking home at night, which has left him wary of being out after dark. Background checks and stigma related to his record are ongoing barriers.
+
 In the intake meeting, he tells the re-entry program's social worker, "Look, I'll show up. I'm not trying to go back. But I don't want another classroom where people just lecture you." He prefers hands-on coaching, someone who will "come see what it's like at the job" and help him navigate conflict in real time. He's ambivalent about disclosure to employers: "If I tell them my whole business, I'm screwed. If I don't, they find out later and I'm still screwed."
+
 Devon has no current safety risk and denies suicidal thoughts or intent. The social worker is careful to explain what information can and cannot be shared with probation and employers. Given his history of racialized policing, school discipline, and system involvement, they're weighing whether to recommend a supported employment model with job development and on-the-job coaching, or to place him in a more traditional job-readiness group plus matching him with a peer mentor who has successfully re-entered after a record. The key outcomes they're thinking about include employment gain and retention, number of days worked, and Devon's self-efficacy in handling workplace conflict without escalation.`
       },
       {
@@ -307,12 +329,19 @@ Devon has no current safety risk and denies suicidal thoughts or intent. The soc
         equity_signal: "Consider language access, gendered group norms, and representation of South Asian women in caregiving roles within studies.",
         narrative: `Asha: Managing Pain in Primary Care With Caregiving Duties
 Asha is a 46-year-old Bangladeshi American woman who sits upright in the exam room chair, hands folded neatly in her lap. She uses she/her pronouns. Her primary language at home is Bengali, but she's comfortable using English in the clinic and switches between the two with ease. She's dressed modestly, in a long tunic and headscarf, and apologizes for "taking too much of the doctor's time" even as she describes how bad things have gotten.
+
 She has chronic low-back pain that flares severely after long shifts at the grocery store where she works on her feet. Recently, the pain has started waking her up at night. She gets only a few hours of broken sleep before the next day's responsibilities begin. Her chart also notes prediabetes, and the medical assistant has flagged rising blood pressure readings.
+
 At home, Asha is a central pillar in an extended household. She is married, with two school-age children, and is also the primary caregiver for her aging father, who lives with them and has increasing mobility and health needs. Her husband's hours at work were cut last year, so Asha picked up more shifts to cover the gap. Money is tight and she sometimes skips her own appointments to avoid co-pays.
+
 A year ago, she briefly tried a course of cognitive-behavioral therapy for pain through the clinic. She found parts of it helpful, especially pacing activities and scheduling small pleasant events, but stopped attending after three visits when childcare and caregiving demands made it difficult to leave the house. She has been prescribed pain medication in the past but worries about side effects and "getting addicted." She is skeptical of generic "pain classes" and says, "I can't sit in a room for eight weeks listening to someone talk." She wonders aloud if people in those groups would understand her culture or responsibilities.
+
 Her goals are straightforward: she wants to be able to get through her shifts without crying in the stockroom and to sleep more than three hours at a time. She's interested in practical strategies she can use at home, in short bursts, between tasks. She's open to a women-only, time-limited group if it feels relevant, but she is cautious about any intervention that might feel immodest or require mixed-gender physical demonstrations.
+
 Asha talks fondly about her children, her father, and the routines of prayer at the mosque that anchor her week. A neighbor sometimes helps with rides or watching the kids. She sees herself as disciplined and responsible, "I do what I'm supposed to do", which makes her feel like she's failing when pain forces her to stop.
+
 Barriers pile up quickly: rotating work shifts, caregiving demands, transportation challenges, and insurance prior authorization hurdles make it hard to attend regular appointments. Physical therapy has been suggested, but she worries about modesty and being touched, and scheduling has been a recurring problem.
+
 In the integrated primary care visit, the behavioral health provider is considering whether to offer brief individual behavioral pain management sessions tailored to her schedule or to recommend a culturally tailored pacing/movement group that could incorporate modesty considerations and faith-infused coping. Outcomes of interest include pain interference with daily activities, hours of sleep, and functional activity levels. There is no acute safety risk. The provider also wonders whether to invite her husband to one session to support home-based changes, while being mindful of confidentiality, gendered norms, language access, and how South Asian women caregivers are often underrepresented in the pain literature guiding their options.`
       },
       {
@@ -337,11 +366,17 @@ In the integrated primary care visit, the behavioral health provider is consider
         equity_signal: "Consider racialized surveillance in child welfare and whether evidence represents Black families in reunification contexts.",
         narrative: `Tanya: Preparing for Youth Reunification After Residential Placement
 Tanya is a 38-year-old Black mother who meets with the reunification social worker at a community center after her shift at the nursing home. She looks tired but composed, in scrubs and sneakers, her hair pulled back. She has a history of hypertension that she jokes is "from all this stress," but her humor doesn't quite reach her eyes.
+
 Her 15-year-old daughter, Kiara, has been in a residential youth program for the past eight months after a series of runaway episodes, school suspensions, and escalating conflicts at home. The county child welfare system became involved during a period of housing instability, when Tanya and her daughter were living between relatives' homes and motel rooms. Multiple hotline calls about truancy, loud arguments, and suspected neglect triggered investigations. There is no current substantiated abuse case, but child welfare remains involved around safety planning and reunification.
+
 Tanya now has a stable two-bedroom apartment across town from Kiara's school. She has held the same full-time job for over a year, despite juggling shift changes and transportation issues. She keeps every appointment with the social worker, even if it means staying up late to cook or do laundry afterward. She speaks warmly about Kiara's aunt, who has been a consistent support, and about their church community, which has helped with food and bills at times.
+
 As reunification approaches, Tanya feels both hopeful and terrified. "I want her home," she says, "but I don't want us to go right back to screaming at each other." She worries about how to handle curfews, phone and social media use, and Kiara's long bus ride back and forth to school. She's unsure how to respond when Kiara shuts down or storms out of the room. She doesn't want to call the police again; previous encounters left her feeling judged and her daughter labeled as a problem.
+
 The extended family is a mixed bag. Some relatives have been supportive; others have been critical, framing Tanya as "not strict enough" or, conversely, "too hard." She feels under a microscope from systems and kin alike. "It's like everybody's watching, waiting for me to slip," she says.
+
 At the community center, the county reunification team offers multiple supports. The social worker is weighing whether to recommend a structured, manualized parent-teen session model that focuses on communication and problem-solving in the office, or a home-based coaching approach where a worker visits during typical conflict times to coach Tanya and Kiara in-the-moment. Both options require regular attendance and coordination with Tanya's work schedule and the bus routes.
+
 There is no current active violence in the home, but previous police involvement and safety concerns mean that safety planning and clear mandated reporting boundaries must be revisited. Outcomes of interest include the frequency and intensity of family conflict, Kiara's school attendance and run-away incidents, and Tanya's sense of confidence in her parenting. Underneath it all is the reality of racialized surveillance of Black families: Tanya knows that one loud argument neighbors overhear might be interpreted very differently than in a white family next door, and the social worker is trying to hold that reality explicitly as they plan supports.`
       },
       {
@@ -366,12 +401,19 @@ There is no current active violence in the home, but previous police involvement
         equity_signal: "Consider immigration status, language access, and technology-facilitated abuse when interpreting evidence.",
         narrative: `Maya: Short-Stay DV Shelter Resident Planning Next Steps
 Maya is a 29-year-old Latina who has recently begun using she/they pronouns with friends but still lists she/her on official forms. She identifies as bisexual. Spanish is her dominant language, though she understands conversational English; she requests a Spanish-speaking advocate when possible. She has a history of migraines that intensify under stress.
+
 She arrived at the urban domestic violence shelter late one night with a small duffel bag and a phone with a cracked screen, having left a coercive partner after a particularly frightening confrontation. There were no visible injuries that night, but she describes a pattern of escalating control over her finances, social contacts, and digital life, demands to share passwords, constant location checks, threats to post private photos if she ever tried to leave.
+
 This is her first time in shelter. She had previously stayed with a cousin for a weekend after a fight, but always returned home, partly because of financial dependence and partly out of fear of making things "worse." She has worked intermittently in service jobs, cleaning, restaurant shifts, but her partner often sabotaged her work schedule by showing up, picking fights, or accusing her of flirting.
+
 In shelter, Maya's anxiety spikes at night. She describes lying awake listening for footsteps in the hallway, heart pounding, every door slam making her flinch. She worries that her partner might find the shelter or track her phone somehow. She has trouble sleeping and often wakes with headaches. She is nervous about using her devices and asks whether it's safe to log into her email or social media. She is wary of anything that might involve court; previous brief contact with police left her feeling dismissed and blamed.
+
 Her priorities are clear: she wants a realistic safety plan, more stable housing, and to regain control over her devices and accounts. She wants to understand how to protect herself digitally without feeling like she has to disappear completely. She prefers working with women providers and would rather not have to tell her story repeatedly to different staff. She is open to learning but overwhelmed by the 30-day time limit for shelter stays.
+
 Maya has strengths that show up even through her exhaustion. She managed to identify the shelter, coordinate childcare with a cousin for a younger relative she sometimes helps with, grab essential documents, and leave quickly when a window of safety opened. Her cousin remains a supportive contact by phone. She is motivated to learn safety strategies and asks thoughtful questions about how abusers can misuse technology.
+
 The shelter context is both a resource and a barrier: there is case management and legal advocacy on-site, but the short stay means decisions have to be made quickly. Housing discrimination, especially related to her immigration status, looms large. Digital harassment and tech-facilitated abuse remain active risks. Language access is variable across partner agencies.
+
 The social worker is considering whether to focus their limited time on brief, trauma-informed work that integrates digital safety coaching one-on-one, or to connect Maya with an empowerment-focused peer group where survivors share strategies and support each other, supplemented by brief individual check-ins. Key outcomes include whether she can enact a safety plan, her anxiety symptoms, and concrete housing steps completed. Ethical considerations include ensuring her address and tech footprints remain confidential, exploring protective order options without pressure, and centering the intersection of immigration status, language access, and tech-facilitated abuse in any intervention choice.`
       },
       {
@@ -396,12 +438,19 @@ The social worker is considering whether to focus their limited time on brief, t
         equity_signal: "Consider intersectional stigma in HIV care and the representation of Black gay men in adherence trials.",
         narrative: `Jamal: Re-Engaging in HIV Primary Care
 Jamal is a 33-year-old Black gay man who walks into the Federally Qualified Health Center (FQHC) waiting room wearing a baseball cap and headphones, scrolling through his phone. He uses he/him pronouns. He tests in as mildly depressed on a PHQ-9 completed on a tablet in the lobby. His chart shows an HIV diagnosis five years ago and a history of excellent adherence to antiretroviral therapy (ART) until about four months ago.
+
 At his last visit before dropping off, his viral load was undetectable. Since moving across town and going through a breakup with a long-term partner, he has missed several appointments and stopped picking up refills. He tells the nurse, half-joking, "I ghosted my pills like I ghost people on dating apps." Underneath the joke is worry: he knows what's at stake.
+
 He explains to the embedded behavioral health provider that the move disrupted his routine. The bus route to the clinic is longer now, his work schedule at the call center changed, and he lost the peer support group that met on his old side of town. The breakup left him feeling ashamed and unmotivated; he avoided former friends who also receive care at the clinic because he didn't want to answer questions.
+
 Jamal is clear that he wants to restart ART. "I've done it before; I know it works," he says. But he has lingering concerns about side effects, long-term impacts, and being judged for the lapse. He also recounts several experiences of stigma: a nurse at an urgent care who treated him coldly after seeing his HIV status, a family member who made a comment about "lifestyle choices," an employer rumor mill that once led him to worry his status had been disclosed.
+
 His goals for care are specific. He wants a discreet, affirming environment where he doesn't feel like "the HIV guy" when he walks in. He wants a simple regimen that fits his shift-work schedule. He's tech savvy and open to digital support but is cautious about SMS reminders if they might show up on his lock screen and be seen by others. He has a stable apartment now and one close friend who knows his status and checks on him regularly.
+
 Barriers include the distance to the clinic, inflexible shifts that make scheduling hard, and pending changes to his insurance that make him nervous about cost. He notes that he's lost weight and has less energy, but denies acute safety concerns or suicidal thinking.
+
 The care team is considering two main support options as he restarts ART: brief adherence counseling with tailored SMS support (e.g., appointment and pill reminders, with consent and privacy settings carefully discussed) or a peer navigation model where a trained peer accompanies him to early appointments, helps problem-solve barriers, and reconnects him with community. Outcomes of interest include medication adherence, return to viral suppression, and consistent appointment attendance.
+
 The team is acutely aware of the intersectional stigma Jamal faces as a Black gay man living with HIV, and of how representation in research and in the clinic staff itself may affect his engagement. Ethical considerations include confidentiality around messaging, chart notes, and coordination between primary care, behavioral health, and case management.`
       },
       {
@@ -426,12 +475,19 @@ The team is acutely aware of the intersectional stigma Jamal faces as a Black ga
         equity_signal: "Consider rural access barriers and how studies represent rural adolescents.",
         narrative: `Cole: Rural Teen Navigating Cannabis and Alcohol Use
 Cole is a 16-year-old white teenager who shows up at the school-based health center in a faded team jersey and muddy boots. He uses he/him pronouns and shrugs a lot when adults ask questions. He doesn't have any formal diagnoses, but he's been reporting trouble falling asleep and staying asleep, especially on nights after heavy substance use.
+
 The school social worker first met Cole after he was suspended for showing up hungover to first period and falling asleep in class. His mother, exasperated but worried, agreed to a referral. Cole admits that he drinks on most weekends, "not every day, I'm not like that", and smokes cannabis nearly every day, often in the evenings with friends "to chill out" after chores and homework.
+
 Cole lives on a small property with his mom and stepdad. His biological father lives two hours away and their relationship is strained; visits are inconsistent and often tense. At home, Cole has responsibilities: feeding animals, helping with repairs, doing farm chores before and after school. He sometimes complains that his stepdad is "on him all the time," but he also acknowledges that they get work done together.
+
 There are few structured activities in town for teens. The local culture is permissive about alcohol and, increasingly, about cannabis. Cole plays on a sports team and doesn't want to lose his spot; he is proud of being a reliable player. Several trusted teachers say he's helpful in class when he's rested. He plays guitar and sometimes escapes to the barn to practice.
+
 Cole says he doesn't want "a big deal" made out of his substance use. He worries more about school consequences than health impacts. He is wary of groups, "I'm not talking about my business in a circle", and prefers brief, private check-ins. He says, "If you can help me not get kicked off the team and not have my mom freak out all the time, that would be nice."
+
 Transportation is a barrier; there's no reliable public transit, and getting to any off-site treatment would require rides from caregivers with limited time and gas money. Confidentiality is tricky in a small town; gossip travels fast, and Cole fears being labeled. There are no adolescent-specific programs nearby.
+
 The school health center is considering two approaches. One is brief motivational interviewing (MI) with personalized feedback, delivered in a series of short, private sessions at school that focus on his own goals, ambivalence, and patterns of use. The other is a parent-involved behavioral contract that includes regular check-ins, agreed-upon limits, and rewards, which would require bringing his caregivers into the process.
+
 Outcomes to track might include days of alcohol and cannabis use, school attendance and tardiness, and Cole's readiness to change his behavior. There is no current active safety risk, but providers must navigate confidentiality laws around minors, discuss safe transportation when using substances, and be mindful of the norms and access issues that come with rural life.`
       },
       {
@@ -456,11 +512,17 @@ Outcomes to track might include days of alcohol and cannabis use, school attenda
         equity_signal: "Consider language access and risks of pathologizing parenting under homelessness stress.",
         narrative: `Rosa: Parenting Stress in Family Shelter
 Rosa is a 31-year-old Puerto Rican mother who recently moved into a family shelter with her six-year-old son, Mateo. She uses she/her pronouns and is bilingual in Spanish and English; she tends to speak English in mixed settings but slips into Spanish when comforting her son. She has asthma that flares in cold weather and when she's around strong cleaning chemicals.
+
 The shelter room is small: two twin beds, a dresser, and a few bags stacked in the corner. Rosa and Mateo share the space, while other families live in adjacent rooms. Quiet hours and curfew are strictly enforced. Rosa worries constantly about noise complaints and "write-ups." The shelter has an on-site case manager and offers evening groups for parents, but the environment is far from relaxing.
+
 Rosa's path here involved months of couch-surfing and motels after she lost her job in retail. A series of late notices, then an eviction, left her scrambling to keep Mateo housed. There is no open CPS case, but she is acutely aware that any incident at the shelter could change that. She once attended a parent education class at a previous community center, but left feeling judged and shamed. "They made it sound like everything bad is the mom's fault," she recalls.
+
 Lately, bedtime has become a battleground. Mateo resists getting ready for bed, runs around the shared room, and protests loudly when it's time to turn off screens. Rosa, exhausted and on edge, finds herself raising her voice. Mateo sometimes throws things or slams the bathroom door. When other residents bang on the wall or staff knock with reminders about noise, Rosa feels a mix of humiliation and panic. She fears being labeled a "problem family" and worries constantly about being asked to leave.
+
 Despite all this, Rosa maintains a warm relationship with Mateo. They read together most nights when things go well, and he often curls up next to her asking for "one more story." She has a cousin in town who checks in, but transportation and childcare make it hard to visit. Rosa is highly motivated to create calmer routines and to avoid shelter incident reports, but her energy is depleted by the constant demands of shelter life.
+
 The shelter offers options: the case manager can provide brief in-room parent coaching focused on creating simple bedtime routines, visual schedules, and de-escalation strategies tailored to the small space. There is also a structured parenting group with childcare downstairs that meets twice a week; previous participants report feeling supported, but it requires leaving the room at a time when Rosa is trying to juggle dinner, showers, and homework.
+
 Key outcomes might include the frequency of bedtime conflicts and staff incident reports, Rosa's self-reported parenting stress, and her sense of confidence in managing Mateo's behavior. There is no active safety risk, but the social worker is attuned to how quickly normal stress responses can be pathologized in families experiencing homelessness, and to the role of language access and institutional rules in shaping Rosa's options.`
       },
       {
@@ -485,12 +547,19 @@ Key outcomes might include the frequency of bedtime conflicts and staff incident
         equity_signal: "Consider language access, shift-work constraints, and representation of East African women in studies.",
         narrative: `Selam: Diabetes Distress and Shift Work
 Selam is a 41-year-old Ethiopian immigrant who receives care at an FQHC. She uses she/her pronouns. Her primary language is Amharic, and she often works with an interpreter in medical visits, though she understands some English. She was diagnosed with type 2 diabetes several years ago and is currently managing without insulin. Lately, she reports feeling constantly tired and overwhelmed.
+
 She works rotating shifts at a local manufacturing plant, sometimes overnight, sometimes early mornings. The schedule changes weekly, making it difficult to maintain consistent meals or appointment times. She rents a room in a shared apartment with other immigrants; fridge space is limited, and cooking at odd hours can cause tension with roommates.
+
 In the exam room, with the interpreter helping, Selam explains that she knows she is supposed to track her blood sugar, plan meals carefully, and exercise, but "my brain feels too full." She has missed several diabetes education classes and follow-up appointments because of work conflicts. When she does come, she is apologetic and insists she is trying. She sends money home regularly as remittances and feels intense responsibility toward family overseas.
+
 Her faith is important to her; she attends religious services when her schedule allows and follows fasting practices when she can. She says that when she has a predictable routine, she can be very disciplined about her health behaviors, but shift changes keep disrupting any system she tries to create. She is afraid of being put on insulin, associating it with "bad diabetes," but she also knows her numbers have been creeping up.
+
 Her goals are to have more steady energy so she can work reliably and participate fully in prayer and community. She wants brief, practical support that respects her time and doesn't require long, frequent classes. She expresses some discomfort about interpreter-mediated groups where she might be the only woman of her background, and wonders aloud whether anyone really understands what it's like to work rotating shifts and send money home.
+
 Strengths include her strong faith, her history of disciplined routines when feasible, and support from a roommate who sometimes reminds her about appointments and medications. Barriers include interpreter scheduling, formulary restrictions that limit which medications are covered, and the logistics of managing food and storage in a shared space.
+
 The clinic is considering two main approaches: brief, individual counseling focused on diabetes distress and problem-solving, paired with tailored text reminders about appointments and self-management tasks, or a culturally tailored group for East African women that includes working on shift-related problem-solving, if enough participants can be recruited. Outcomes of interest include measures of diabetes distress, self-management behaviors (such as medication-taking and blood sugar checks), and HbA1c levels over time.
+
 There is no acute safety risk, but consent around interpreter involvement and privacy is discussed carefully. The provider is mindful of language access, the constraints of shift work, and the limited representation of East African women in the research that underpins standard diabetes interventions, factors that will shape which evidence-based approach feels most appropriate and feasible for Selam.`
       }
     ]);
@@ -548,7 +617,7 @@ There is no acute safety risk, but consent around interpreter involvement and pr
       els.vOutcomes.textContent = Array.isArray(current.target_outcomes)? noDash(current.target_outcomes.join('; ')) : noDash(current.target_outcomes);
       els.vRisks.textContent = noDash(current.risks_and_ethics);
       els.vEquity.textContent = noDash(current.equity_signal);
-      els.vNarrative.textContent = noDash(current.narrative || '');
+      els.vNarrative.innerHTML = paragraphsHTML(current.narrative || '');
       applyShowIds(); updateLockUi();
     }
 
@@ -674,7 +743,7 @@ There is no acute safety risk, but consent around interpreter involvement and pr
       const pico = PICO.preview.textContent;
       const h=[];
       h.push('<!doctype html><html><head><meta charset="utf-8"><title>EBP Note</title>');
-      h.push('<style>body{font-family:Calibri,Arial,Helvetica,sans-serif;line-height:1.45;color:#111} h1,h2,h3{margin:0 0 6px} h1{font-size:22px} h2{font-size:18px;margin-top:16px} h3{font-size:15px;margin-top:12px} ul{margin:4px 0 8px 18px} .meta li{margin:2px 0} .k{color:#374151} .small{color:#555;font-size:12px} @page{margin:1in}</style></head><body>');
+      h.push('<style>body{font-family:Calibri,Arial,Helvetica,sans-serif;line-height:1.45;color:#111} h1,h2,h3{margin:0 0 6px} h1{font-size:22px} h2{font-size:18px;margin-top:16px} h3{font-size:15px;margin-top:12px} ul{margin:4px 0 8px 18px} .meta li{margin:2px 0} .k{color:#374151} .small{color:#555;font-size:12px} @page{margin:1in} p{margin:0 0 10px 0}</style></head><body>');
       h.push('<h1>EBP Process Note</h1>');
       h.push('<h2>Case Vignette</h2><ul class="meta">');
       h.push('<li><span class="k">Client Profile:</span> '+esc(renderClientProfile(current.client_profile))+'</li>');
@@ -688,7 +757,8 @@ There is no acute safety risk, but consent around interpreter involvement and pr
       h.push('<li><span class="k">Target Outcomes:</span> '+esc(Array.isArray(current.target_outcomes)? current.target_outcomes.join('; ') : current.target_outcomes)+'</li>');
       h.push('<li><span class="k">Risks & Ethics:</span> '+esc(current.risks_and_ethics)+'</li>');
       h.push('<li><span class="k">Equity Signal:</span> '+esc(current.equity_signal)+'</li></ul>');
-      h.push('<h2>Narrative</h2><p>'+esc(current.narrative||'').replace(/\n/g,'<br>')+'</p>');
+      h.push('<h2>Narrative</h2>');
+      h.push(paragraphsHTML(current.narrative||'')); // use paragraph blocks
       h.push('<h2>Client & Practice Context</h2><p>'+esc(F.context.value).replace(/\n/g,'<br>')+'</p>');
       h.push('<h2>PICO-style EBP Question</h2><p><strong>Question:</strong> '+esc(pico)+'</p>');
       h.push('<h2>Search Strategy & Study Selection</h2><p>'+esc(F.search.value).replace(/\n/g,'<br>')+'</p>');
@@ -731,7 +801,9 @@ There is no acute safety risk, but consent around interpreter involvement and pr
       lines.push(`- Target Outcomes: ${Array.isArray(current.target_outcomes)? noDash(current.target_outcomes.join('; ')) : noDash(current.target_outcomes)}`);
       lines.push(`- Risks & Ethics: ${noDash(current.risks_and_ethics)}`);
       lines.push(`- Equity Signal: ${noDash(current.equity_signal)}`,'');
-      lines.push('Narrative'); lines.push(noDash(current.narrative||'')); lines.push('');
+      lines.push('Narrative');
+      // keep paragraph breaks in plain text too
+      lines.push(noDash((current.narrative||'').replace(/\r\n/g,'\n'))); lines.push('');
       lines.push('Client & Practice Context'); lines.push(F.context.value,'');
       lines.push('PICO-style EBP Question'); lines.push(`Question: ${pico}`,'');
       lines.push('Search Strategy & Study Selection'); lines.push(F.search.value,'');
@@ -819,40 +891,11 @@ There is no acute safety risk, but consent around interpreter involvement and pr
     });
 
     // -------- Init --------
-    function renderStudies(){ /* start empty */ const wrap=els.studyList; wrap.innerHTML=''; const p=document.createElement('div'); p.className='muted'; p.textContent='No studies yet. Aim for 3–5 relevant peer-reviewed sources.'; wrap.appendChild(p); updateCounters(); }
-    function picoPreview(){ const p=[PICO.pop.value,PICO.int.value,PICO.comp.value,PICO.out.value,PICO.time.value].map(sanitize); const [pop,intv,comp,out,time]=p; PICO.preview.textContent = `In ${pop||'__'}, does ${intv||'__'}${comp?(' compared to '+comp):''} improve ${out||'__'}${time?(' over '+time):''}?`; }
-    function updateCounters(){ $('#cntContext').textContent = `${wordCount(F.context.value)} words`; $('#cntSearch').textContent = `${wordCount(F.search.value)} words`; $('#cntAppraise').textContent = `${wordCount(F.appraise.value)} words`; $('#cntApply').textContent = `${wordCount(F.apply.value)} words`; els.cntStudies.textContent = `Studies added: ${studies.length} / 3–5`; const hits=[F.context,F.search,F.appraise,F.apply].filter(x=>wordCount(x.value)>=100).length; els.progress.textContent = `${hits}/6 sections with 100+ words`; }
-    function renderStudies(){} // overwritten above accidentally by redef; keeping single definition:
-    // fix: proper studies render
     function renderStudies(){
       const wrap=els.studyList; wrap.innerHTML='';
-      if(studies.length===0){
-        const p=document.createElement('div'); p.className='muted'; p.textContent='No studies yet. Aim for 3–5 relevant peer-reviewed sources.'; wrap.appendChild(p); updateCounters(); return;
-      }
-      for(const s of studies){
-        const div=document.createElement('div'); div.className='study';
-        div.innerHTML = `
-          <div class="row">
-            <strong>${escapeHtml(noDash(s.title))}</strong>
-            <span class="chip">${noDash(s.design||'Design n/a')}</span>
-            <span class="chip">${noDash(s.year||'Year n/a')}</span>
-            <button class="ghost right" data-id="${s.id}">Remove</button>
-          </div>
-          <div class="kvs" style="margin-top:6px">
-            <div class="muted">Population</div><div>${escapeHtml(noDash(s.sample||'-'))}</div>
-            <div class="muted">Methods</div><div>${escapeHtml(noDash(s.methods||'-'))}</div>
-            <div class="muted">Findings</div><div>${escapeHtml(noDash(s.findings||'-'))}</div>
-            <div class="muted">Limitations</div><div>${escapeHtml(noDash(s.limits||'-'))}</div>
-            <div class="muted">Equity</div><div>${escapeHtml(noDash(s.equity||'-'))}</div>
-            <div class="muted">DOI/URL</div><div>${linkify(noDash(s.url))||'-'}</div>
-          </div>`;
-        div.querySelector('button[data-id]').addEventListener('click',()=>removeStudy(s.id));
-        wrap.appendChild(div);
-      }
-      updateCounters();
+      const p=document.createElement('div'); p.className='muted'; p.textContent='No studies yet. Aim for 3–5 relevant peer-reviewed sources.';
+      wrap.appendChild(p); updateCounters();
     }
-
-    // initial draw
     applyShowIds(); picoPreview(); updateLockUi(); renderStudies(); renderCase();
   </script>
 </body>
