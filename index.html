@@ -887,7 +887,6 @@ There is no acute safety risk, but consent around interpreter involvement and pr
     const tag = el.tagName;
     return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
   }
-
   window.addEventListener('keydown', (e) => {
     // 1) Never trigger shortcuts while the user is typing anywhere editable.
     if (isTypingTarget(document.activeElement) || isTypingTarget(e.target)) return;
