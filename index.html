@@ -882,21 +882,38 @@ There is no acute safety risk, but consent around interpreter involvement and pr
     [PICO.pop,PICO.int,PICO.comp,PICO.out,PICO.time].forEach(el=>el.addEventListener('input', ()=>{ picoPreview(); autosave(); }));
 
     // Keyboard shortcuts
-    window.addEventListener('keydown',(e)=>{
-      if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName) && (e.ctrlKey||e.metaKey)) return;
-      if(e.key==='r'||e.key==='R'){ e.preventDefault(); randomize(); }
-      if(e.key==='l'||e.key==='L'){ e.preventDefault(); toggleLock(); }
-      if(e.key==='p'||e.key==='P'){ e.preventDefault(); printPage(); }
-      if((e.key==='e'||e.key==='E') && locked){ e.preventDefault(); downloadWord(); }
-    });
+<script>
+  // --- Replace your existing "Keyboard shortcuts" block with this one ---
+  function isTypingTarget(el) {
+    if (!el) return false;
+    const tag = el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
+  }
 
-    // -------- Init --------
-    function renderStudies(){
-      const wrap=els.studyList; wrap.innerHTML='';
-      const p=document.createElement('div'); p.className='muted'; p.textContent='No studies yet. Aim for 3–5 relevant peer-reviewed sources.';
-      wrap.appendChild(p); updateCounters();
+  window.addEventListener('keydown', (e) => {
+    // 1) Never trigger shortcuts while the user is typing anywhere editable.
+    if (isTypingTarget(document.activeElement) || isTypingTarget(e.target)) return;
+
+    // 2) Require Alt/Option to avoid accidental triggers during normal typing.
+    if (!e.altKey) return;
+
+    const k = e.key.toLowerCase();
+    if (k === 'r') { e.preventDefault(); typeof randomize === 'function' && randomize(); }
+    if (k === 'l') { e.preventDefault(); typeof toggleLock === 'function' && toggleLock(); }
+    if (k === 'p') { e.preventDefault(); typeof printPage === 'function' && printPage(); }
+    if (k === 'e') { 
+      e.preventDefault(); 
+      // For the EBP builder, this is downloadWord(); for Program Evaluation, same name in our build.
+      if (typeof downloadWord === 'function') downloadWord(); 
     }
-    applyShowIds(); picoPreview(); updateLockUi(); renderStudies(); renderCase();
-  </script>
+  });
+
+  // --- Update the on-page tip text to reflect Alt+ keys (optional but recommended) ---
+  const tipEl = document.getElementById('tip');
+  if (tipEl) tipEl.textContent = tipEl.textContent
+    .replace(/R\s*=\s*Randomize.*$/i, 'Alt+R = Randomize, Alt+L = Lock, Alt+E = Export Word.')
+    .replace(/R\s=\sRandomize.*$/i, 'Alt+R = Randomize, Alt+L = Lock, Alt+E = Export Word.')
+    .replace(/R = Randomize.*$/i, 'Alt+R = Randomize, Alt+L = Lock, Alt+E = Export Word.');
+</script>
 </body>
 </html>
