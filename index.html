@@ -882,8 +882,6 @@ There is no acute safety risk, but consent around interpreter involvement and pr
     [PICO.pop,PICO.int,PICO.comp,PICO.out,PICO.time].forEach(el=>el.addEventListener('input', ()=>{ picoPreview(); autosave(); }));
 
     // Keyboard shortcuts
-<script>
-  // --- Replace your existing "Keyboard shortcuts" block with this one ---
   function isTypingTarget(el) {
     if (!el) return false;
     const tag = el.tagName;
