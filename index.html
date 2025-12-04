@@ -27,11 +27,9 @@
     .focus-ring:focus{outline:3px solid var(--ring);outline-offset:2px}
     .spin{animation:spin 1s linear infinite;display:inline-block} @keyframes spin{to{transform:rotate(360deg)}}
     .hidden{display:none}
-    /* Intake (KVS) */
     .kvs{display:grid;grid-template-columns:200px 1fr;gap:8px}
     .kvs .muted{align-self:start}
     .scenario p{margin:0 0 10px 0}
-    /* Inputs */
     .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
     label{font-size:12px;color:#374151;font-weight:700}
     .hint{font-size:11px;color:#6b7280}
@@ -40,9 +38,12 @@
     .status{font-size:12px;color:#374151}
     .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #e5e7eb;background:#f3f4f6;border-radius:999px;padding:6px 10px;font-size:12px}
     .footer{margin-top:14px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    /* error banner */
+    #errBanner{position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;padding:8px 12px;display:none;z-index:10000;font-size:12px}
   </style>
 </head>
 <body>
+<div id="errBanner"></div>
 <div class="container">
   <header>
     <div class="row">
@@ -133,7 +134,6 @@
           <div class="row"><span id="cntSearch" class="status">0 words</span><span class="muted">•</span><span id="studyCounter" class="status">Studies added: 0 / 3–5</span></div>
         </div>
 
-        <!-- Studies (repeatable) -->
         <div class="field">
           <label>Study Summaries (3–5)</label>
           <div class="hint">For each, briefly state what the study did and found in your own words.</div>
@@ -180,18 +180,27 @@
 </div>
 
 <script>
-  // ---------- Config ----------
+document.addEventListener('DOMContentLoaded', () => {
+  // ------- Error banner helper -------
+  const err = (m, e) => {
+    console.error(m, e||'');
+    const b = document.getElementById('errBanner');
+    if (!b) return;
+    b.textContent = m;
+    b.style.display = 'block';
+    setTimeout(()=>{ b.style.display='none'; }, 6000);
+  };
+
+  // ------- Config & utils -------
   const CONFIG = {
     siteTitle: "EBP Case Randomizer & Note Builder",
     exportFileName: "SOW5404_Spring_2026_EBP_Note.doc",
     courseHeader: "SOW5404 • Spring 2026"
   };
-
-  // ---------- Utils ----------
   const $ = (s)=>document.querySelector(s);
   const noDash = (s)=>(s||'').toString().replace(/[—–]/g,'-');
   const stripDashesDeep = (v)=>Array.isArray(v)?v.map(stripDashesDeep):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,val])=>[k,stripDashesDeep(val)])):typeof v==='string'?noDash(v):v;
-  const escapeHtml = (s)=>(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  const escapeHtml = (s)=>(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"," >":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   const wordCount = (s)=>(s||'').trim().split(/\s+/).filter(Boolean).length;
   const debounce=(fn,ms=800)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn.apply(null,a),ms);};};
   function paragraphsHTML(text){
@@ -212,10 +221,9 @@
     window.__toastTimer=setTimeout(()=>window.__toastEl.style.display='none',1900);
   }
 
-  // ---------- Dataset (intake + narrative). Em dashes removed ----------
-  const CASES = stripDashesDeep([
-    {
-      title:"Marisol: Balancing School, Work, and Panic on Transit",
+  // ------- Dataset (sample 9; add more as needed) -------
+  let CASES = stripDashesDeep([
+    { title:"Marisol: Balancing School, Work, and Panic on Transit",
       client_profile:"17-year-old Mexican American high school junior; she/her; bilingual Spanish-English; first-gen college track; works evenings; recent family separation.",
       setting:"School social work office in a large urban public high school.",
       presenting_problem:"Panic episodes on crowded city bus leading to lateness and leaving first period. Embarrassment and fear of being seen as dramatic. Wants concrete skills that fit her schedule.",
@@ -227,14 +235,12 @@
       target_outcomes:"Panic frequency and severity; school attendance and on time arrival; skill use between sessions.",
       risks_and_ethics:"No current self harm or violence; confidentiality and visibility concerns in school context.",
       equity_signal:"Consider immigration related family stress, bilingual preferences, and how school discipline may respond to lateness.",
-      narrative: `You meet Marisol just before first period. Her backpack sits in her lap and she twists the strap as she talks. She explains that the panic usually starts when the bus fills at one particular stop. Her chest tightens, hands go cold, and she worries she will faint in front of everyone. She has started skipping that stop when it looks crowded which makes her late.
+      narrative:`You meet Marisol just before first period. Her backpack sits in her lap and she twists the strap as she talks. She explains that the panic usually starts when the bus fills at one particular stop. Her chest tightens, hands go cold, and she worries she will faint in front of everyone. She has started skipping that stop when it looks crowded which makes her late.
 
 At home she works evening shifts at a grocery store to help with bills, then watches siblings and finishes homework. Sleep is short. She liked the calm she felt at a lunch mindfulness club last year but stopped when her schedule changed. She asks for skills she can try right away and says she would rather practice something concrete than talk about feelings for a long time.
 
-She wants to graduate on time and not be the student who leaves class after ten minutes. She prefers a woman clinician who understands the pressure she feels as the oldest in a Latinx family. She is unsure about breathing exercises that feel awkward, but is open to trying things that are quick and practical.`
-    },
-    {
-      title:"Devon: Reentering After Juvenile Detention",
+She wants to graduate on time and not be the student who leaves class after ten minutes. She prefers a woman clinician who understands the pressure she feels as the oldest in a Latinx family. She is unsure about breathing exercises that feel awkward, but is open to trying things that are quick and practical.` },
+    { title:"Devon: Reentering After Juvenile Detention",
       client_profile:"19-year-old Black young man; he/him; on probation; lives with grandmother.",
       setting:"Community re entry program orientation and intake.",
       presenting_problem:"Needs rapid employment to satisfy probation after leaving a temp warehouse job due to a conflict. History of school suspensions for perceived defiance.",
@@ -250,131 +256,120 @@ She wants to graduate on time and not be the student who leaves class after ten 
 
 He says he will show up if the program is real. He would rather practice how to handle a tense moment at work than sit through another lecture about attitude. He wants help finding a job that is not a trap, with someone to check in on site the first weeks.
 
-Transportation is thin to the industrial parks, and he tries not to walk after dark due to police stops. He asks what you tell probation and what you keep private.`
-    },
-    {
-      title:"Asha: Managing Pain in Primary Care With Caregiving Duties",
+Transportation is thin to the industrial parks, and he tries not to walk after dark due to police stops. He asks what you tell probation and what you keep private.` },
+    { title:"Asha: Managing Pain in Primary Care With Caregiving Duties",
       client_profile:"46-year-old Bangladeshi American woman; she/her; bilingual; caregiver for father; prediabetes and rising BP.",
       setting:"Integrated primary care visit in an FQHC.",
       presenting_problem:"Chronic low back pain that disrupts sleep and work. Limited time for long appointments. Skeptical of generic classes.",
       relevant_history:"Tried brief CBT for pain but stopped after three visits due to caregiving and childcare demands. Worries about medication side effects.",
-      goals_and_preferences:"Get through shifts without crying in the stockroom and sleep more than three hours. Interested in practical strategies at home. Open to women only, time limited group if relevant to culture and modesty needs.",
-      strengths_and_resources:"Strong family ties; routines of prayer at the mosque; neighbor sometimes helps with rides; sees herself as disciplined.",
-      contextual_factors_and_barriers:"Rotating shifts; caregiving duties; transportation; insurance authorizations; concerns about modesty and being touched.",
-      ebp_decision_point:"Brief individual behavioral pain management tailored to schedule versus a culturally tailored pacing and movement group.",
-      target_outcomes:"Pain interference with daily activities; hours of sleep; functional activity levels.",
-      risks_and_ethics:"No acute safety risk; consider privacy, language access, and representation of South Asian women in pain literature.",
-      equity_signal:"Consider modesty, caregiving roles, and language access in interpreting evidence.",
-      narrative:`In the exam room Asha apologizes for talking too much even as she describes how the pain now wakes her at night. She rubs her lower back and sits very straight. She says she remembers a few pacing ideas from therapy and that those helped when life was more predictable.
+      goals_and_preferences:"Get through shifts without crying in the stockroom and sleep more than three hours. Interested in practical strategies at home. Open to women only, time limited group if relevant.",
+      strengths_and_resources:"Strong family ties; routines of prayer; neighbor helps with rides; sees herself as disciplined.",
+      contextual_factors_and_barriers:"Rotating shifts; caregiving duties; transportation; insurance authorizations; modesty concerns.",
+      ebp_decision_point:"Brief individual behavioral pain management versus culturally tailored pacing and movement group.",
+      target_outcomes:"Pain interference; hours of sleep; functional activity levels.",
+      risks_and_ethics:"No acute safety risk; consider privacy, language access, and representation.",
+      equity_signal:"Consider modesty, caregiving roles, and language access.",
+      narrative:`In the exam room Asha apologizes even as she describes pain waking her at night. She remembers pacing ideas that helped when life was predictable.
 
-She worries about being in a class where demonstrations feel immodest or where she will be the only person like her. She would like something she can do between tasks at home, short and consistent, without many extra trips. Her face softens when she talks about her father and children and the quiet moments at the mosque that steady her.`
-    },
-    {
-      title:"Tanya: Preparing for Youth Reunification After Residential Placement",
-      client_profile:"38-year-old Black mother; she/her; stable apartment; full time job in nursing home; history of hypertension.",
-      setting:"Community center reunification meetings coordinated with county child welfare.",
-      presenting_problem:"Daughter Kiara, 15, returning home after residential stay. Past runaway episodes, school suspensions, and conflicts. Tanya is hopeful and worried about conflict patterns.",
-      relevant_history:"Housing instability triggered system involvement; no current substantiated abuse case; extended family has mixed involvement.",
-      goals_and_preferences:"Wants calmer routines and fewer escalations; wants support that fits work schedule and bus routes.",
-      strengths_and_resources:"Keeps appointments; supportive aunt and church community; steady employment.",
-      contextual_factors_and_barriers:"Work shifts; long school commute; scrutiny from systems and neighbors.",
-      ebp_decision_point:"Structured manualized parent teen sessions in office versus home based coaching during typical conflict times.",
-      target_outcomes:"Frequency and intensity of conflict; school attendance and runaway incidents; parenting confidence.",
-      risks_and_ethics:"No active violence; safety planning reviewed; be mindful of racialized surveillance of Black families.",
-      equity_signal:"Consider how racialized scrutiny affects both intervention and outcome interpretation.",
-      narrative:`You meet Tanya after her shift. She is composed but tired and asks for something that will make a difference before old patterns take over. She worries about curfews, phone rules, and what to do when Kiara shuts down.
+She worries about group demonstrations that feel immodest. She wants short practices she can do between tasks without extra trips. Moments at the mosque steady her.` },
+    { title:"Tanya: Preparing for Youth Reunification After Residential Placement",
+      client_profile:"38-year-old Black mother; she/her; stable apartment; works in nursing home; hypertension.",
+      setting:"Community center reunification meetings with county child welfare.",
+      presenting_problem:"Kiara, 15, returning home after residential stay; fears return of conflict patterns.",
+      relevant_history:"Housing instability led to involvement; no current substantiated abuse; mixed extended family input.",
+      goals_and_preferences:"Calmer routines; support that fits work schedule and bus routes.",
+      strengths_and_resources:"Keeps appointments; supportive aunt and church; steady job.",
+      contextual_factors_and_barriers:"Shift work; long school commute; system and neighbor scrutiny.",
+      ebp_decision_point:"Office based parent teen sessions versus home based coaching during conflict times.",
+      target_outcomes:"Conflict frequency/intensity; attendance and runaway incidents; parenting confidence.",
+      risks_and_ethics:"No active violence; revisit safety planning; racialized surveillance matters.",
+      equity_signal:"Hold racialized scrutiny in how success is judged.",
+      narrative:`You meet Tanya after her shift. She asks for something that makes a difference before old patterns return. She worries about curfews, phone rules, and what to do when Kiara shuts down.
 
-She says she does not want to call the police again and does not want meetings that make her feel like she is on trial. She asks whether someone can help exactly when conflict spikes at night, not only in an office at noon.`
-    },
-    {
-      title:"Maya: Short Stay DV Shelter Resident Planning Next Steps",
-      client_profile:"29-year-old Latina; she/they with friends, she/her on forms; bisexual; Spanish dominant; history of migraines.",
-      setting:"Urban domestic violence shelter with 30 day limit.",
-      presenting_problem:"Left coercive partner; digital surveillance and threats; anxiety and poor sleep; fears being found.",
-      relevant_history:"First time in shelter; partner sabotaged work schedules; wary of courts and prior police responses.",
-      goals_and_preferences:"Realistic safety plan, more stable housing, regain control over devices and accounts. Prefers women providers and not retelling story repeatedly.",
-      strengths_and_resources:"Coordinated quick exit; kept documents; supportive cousin; motivated to learn digital safety.",
-      contextual_factors_and_barriers:"Short stay; language access varies across agencies; tech facilitated abuse risk; immigration related barriers in housing.",
-      ebp_decision_point:"Brief one on one trauma informed work with integrated digital safety coaching versus empowerment focused peer group plus brief check ins.",
-      target_outcomes:"Ability to enact safety plan; anxiety symptoms; housing steps completed.",
-      risks_and_ethics:"Address tech confidentiality, protective order options without pressure, and immigration intersection.",
-      equity_signal:"Consider language access and tech facilitated abuse when appraising evidence.",
-      narrative:`Maya arrives with a small duffel and a cracked phone. She asks if it is safe to log in anywhere and whether someone could post her private photos. Nights are the hardest; doors closing in the hallway make her heart race.
+She does not want meetings that feel like trial. Help during the actual hot times at home sounds most useful.` },
+    { title:"Maya: Short Stay DV Shelter Resident Planning Next Steps",
+      client_profile:"29-year-old Latina; she/they with friends, she/her on forms; bisexual; Spanish dominant; migraines.",
+      setting:"Urban DV shelter with 30 day limit.",
+      presenting_problem:"Left coercive partner; digital control and threats; anxiety and poor sleep; fears being found.",
+      relevant_history:"First shelter stay; partner sabotaged work; wary of courts and prior police response.",
+      goals_and_preferences:"Realistic safety plan, stable housing, control over devices. Prefers women providers and minimal retelling.",
+      strengths_and_resources:"Coordinated exit; kept documents; supportive cousin; motivated to learn digital safety.",
+      contextual_factors_and_barriers:"Short stay; variable language access; tech abuse risk; immigration barriers for housing.",
+      ebp_decision_point:"Brief 1:1 with digital safety coaching versus empowerment peer group plus brief check ins.",
+      target_outcomes:"Ability to enact safety plan; anxiety; housing steps completed.",
+      risks_and_ethics:"Tech confidentiality; protective order options without pressure; immigration intersection.",
+      equity_signal:"Language access and tech facilitated abuse shape options.",
+      narrative:`Maya asks if it is safe to log in anywhere and whether someone could post her photos. Night hallway sounds spike her anxiety.
 
-She wants to learn how to change settings, protect accounts, and plan moves without feeling invisible. She is overwhelmed by the 30 day clock and asks for a plan that does not require telling her story over and over.`
-    },
-    {
-      title:"Jamal: Re Engaging in HIV Primary Care",
+She wants to learn settings and steps that protect her without disappearing. The 30 day clock feels fast; a plan that does not require retelling would help.` },
+    { title:"Jamal: Re Engaging in HIV Primary Care",
       client_profile:"33-year-old Black gay man; he/him; previously excellent ART adherence; mild depression on screen.",
       setting:"FQHC integrated primary care with behavioral health.",
-      presenting_problem:"Dropped off ART after moving and breakup; missed appointments and refills; wants to restart.",
-      relevant_history:"Experienced stigma in urgent care and family comments; lost peer group after moving.",
-      goals_and_preferences:"Discreet, affirming care; simple regimen fitting shift work; careful with SMS reminders for privacy.",
+      presenting_problem:"Dropped off ART after move and breakup; missed appointments; wants to restart.",
+      relevant_history:"Stigma in urgent care and family; lost peer group after moving.",
+      goals_and_preferences:"Discreet, affirming care; simple regimen for shift work; careful with SMS privacy.",
       strengths_and_resources:"Stable apartment; tech savvy; close friend who checks in.",
-      contextual_factors_and_barriers:"Distance to clinic; inflexible shifts; insurance changes; concern about cost.",
-      ebp_decision_point:"Brief adherence counseling with tailored SMS support versus peer navigation to accompany early visits and reconnect community.",
-      target_outcomes:"Medication adherence; return to viral suppression; appointment attendance.",
-      risks_and_ethics:"Confidentiality in messaging and chart coordination is central.",
-      equity_signal:"Consider intersectional stigma and representation in research and staff.",
-      narrative:`Jamal jokes that he ghosted his pills like dating apps, then looks down and says he knows what that means for his health. The bus ride is longer from his new place and his shift changed.
+      contextual_factors_and_barriers:"Distance; inflexible shifts; insurance changes; cost concerns.",
+      ebp_decision_point:"Brief adherence counseling + tailored SMS versus peer navigation for early visits.",
+      target_outcomes:"Adherence; viral suppression; appointment attendance.",
+      risks_and_ethics:"Confidentiality in messaging and chart coordination.",
+      equity_signal:"Intersectional stigma and representation matter.",
+      narrative:`Jamal jokes he ghosted his pills, then says he knows the stakes. The new bus route is longer and shifts changed.
 
-He wants to restart with a plan that fits his phone habits without outing him. A peer who could walk with him the first weeks sounds appealing if it stays discreet.`
-    },
-    {
-      title:"Cole: Rural Teen Navigating Cannabis and Alcohol Use",
-      client_profile:"16-year-old white teen; he/him; athlete; no formal diagnoses; sleep trouble on heavy use nights.",
-      setting:"School based health center in a rural district.",
-      presenting_problem:"Suspended for arriving hungover and sleeping in class; near daily cannabis; weekend alcohol.",
-      relevant_history:"Strained relationship with father; chores before and after school; permissive local norms.",
-      goals_and_preferences:"Keep sports eligibility and reduce conflict at home; private brief check ins; does not want groups.",
+He wants a privacy safe plan. A discreet peer who walks with him early on sounds helpful if it stays low key.` },
+    { title:"Cole: Rural Teen Navigating Cannabis and Alcohol Use",
+      client_profile:"16-year-old white teen; he/him; athlete; sleep trouble on heavy use nights.",
+      setting:"School based health center in rural district.",
+      presenting_problem:"Suspended for arriving hungover; near daily cannabis; weekend alcohol.",
+      relevant_history:"Strained relationship with father; chores before/after school; permissive local norms.",
+      goals_and_preferences:"Keep sports eligibility; reduce family conflict; private brief check ins; not groups.",
       strengths_and_resources:"Reliable teammate; trusted by teachers when rested; plays guitar.",
-      contextual_factors_and_barriers:"No public transit; few adolescent programs; confidentiality concerns in small town.",
-      ebp_decision_point:"Brief MI with personalized feedback at school versus parent involved behavioral contract with regular check ins and rewards.",
-      target_outcomes:"Days of alcohol and cannabis use; attendance and tardiness; readiness to change.",
-      risks_and_ethics:"Discuss safe transportation when using substances; minor confidentiality laws.",
-      equity_signal:"Rural access and norms shape feasibility and measures.",
-      narrative:`Cole shrugs when you ask questions but answers plainly. He says weekends got rowdy and that weed most nights helps him chill. He does not want a circle where he talks about feelings.
+      contextual_factors_and_barriers:"No public transit; few adolescent programs; small town confidentiality concerns.",
+      ebp_decision_point:"Brief MI with feedback at school versus parent involved behavioral contract.",
+      target_outcomes:"Days of use; attendance/tardiness; readiness to change.",
+      risks_and_ethics:"Discuss safe transportation; minor confidentiality laws.",
+      equity_signal:"Rural norms and access shape feasibility and measures.",
+      narrative:`Cole answers plainly. Weekends got rowdy and weed helps him chill most nights. He does not want a circle to talk about feelings.
 
-He asks if you can help him not lose his team spot and keep his mom from freaking out. He wants quick, private check ins at school and a plan that does not require long drives.`
-    },
-    {
-      title:"Rosa: Parenting Stress in Family Shelter",
+He asks for quick, private school check ins and a plan that does not require drives.` },
+    { title:"Rosa: Parenting Stress in Family Shelter",
       client_profile:"31-year-old Puerto Rican mother; she/her; bilingual; asthma; son Mateo age six.",
       setting:"Family shelter with curfew and quiet hours; small shared room.",
-      presenting_problem:"Escalating bedtime conflicts with noise complaints and staff reminders; fear of write ups.",
-      relevant_history:"Job loss, eviction, months of couch surfing; prior parent class felt shaming.",
-      goals_and_preferences:"Calmer routines and fewer incident reports; avoid being asked to leave; wants practical coaching.",
-      strengths_and_resources:"Warm relationship with Mateo; reads together; cousin checks in; highly motivated.",
+      presenting_problem:"Escalating bedtime conflicts with noise complaints; fear of write ups.",
+      relevant_history:"Job loss, eviction, couch surfing; prior parent class felt shaming.",
+      goals_and_preferences:"Calmer routines; fewer incident reports; practical coaching.",
+      strengths_and_resources:"Warm relationship with Mateo; reads together; cousin checks in; motivated.",
       contextual_factors_and_barriers:"Tight space; evening demands; childcare and transport barriers.",
-      ebp_decision_point:"In room coaching for simple routines versus structured parenting group with downstairs childcare.",
-      target_outcomes:"Frequency of bedtime conflicts and incident reports; parenting stress; confidence managing behavior.",
-      risks_and_ethics:"No active safety risk; be careful not to pathologize stress responses in homelessness.",
-      equity_signal:"Language access and institutional rules shape options and outcomes.",
-      narrative:`Rosa points to the two beds and says this is where everything goes sideways at night. Mateo runs circles and slams the bathroom door. When neighbors bang the wall she flushes with shame.
+      ebp_decision_point:"In room coaching for routines versus structured parenting group with childcare.",
+      target_outcomes:"Bedtime conflict frequency; incident reports; parenting stress; confidence.",
+      risks_and_ethics:"Avoid pathologizing stress in homelessness.",
+      equity_signal:"Language access and shelter rules shape outcomes.",
+      narrative:`Rosa points to the two beds and says nights fall apart there. Mateo runs and slams doors. Neighbor knocks bring shame.
 
-She wants ideas that work in one room and do not involve leaving during dinner and homework. She asks if someone could help her set up a routine that Mateo can follow.`
-    },
-    {
-      title:"Selam: Diabetes Distress and Shift Work",
+She wants ideas that work in one room and do not require leaving during dinner and homework.` },
+    { title:"Selam: Diabetes Distress and Shift Work",
       client_profile:"41-year-old Ethiopian immigrant; she/her; Amharic primary language; type 2 diabetes without insulin.",
-      setting:"FQHC with interpreter support; rotating shifts complicate scheduling.",
-      presenting_problem:"Tired and overwhelmed; missed diabetes classes and follow ups due to shifts; worries about insulin.",
-      relevant_history:"Disciplined when routine is predictable; sends remittances; faith and fasting practices matter.",
-      goals_and_preferences:"Steadier energy; participate in prayer and community; brief, practical support that respects time.",
-      strengths_and_resources:"Faith community; supportive roommate reminders; prior success with routines.",
-      contextual_factors_and_barriers:"Interpreter scheduling; formulary limitations; shared kitchen constraints; rotating shifts.",
-      ebp_decision_point:"Brief individual counseling plus tailored text reminders versus culturally tailored group for East African women focused on shift problem solving.",
-      target_outcomes:"Diabetes distress; self management behaviors; HbA1c over time.",
+      setting:"FQHC with interpreter; rotating shifts complicate scheduling.",
+      presenting_problem:"Tired and overwhelmed; missed classes and follow ups due to shifts; worries about insulin.",
+      relevant_history:"Disciplined when routine is predictable; remittances; faith/fasting matter.",
+      goals_and_preferences:"Steadier energy; participate in prayer and community; brief, practical support.",
+      strengths_and_resources:"Faith community; supportive roommate; past success with routines.",
+      contextual_factors_and_barriers:"Interpreter scheduling; formulary limits; shared kitchen; rotating shifts.",
+      ebp_decision_point:"Brief individual counseling + tailored texts versus culturally tailored group for East African women.",
+      target_outcomes:"Diabetes distress; self management behaviors; HbA1c.",
       risks_and_ethics:"Careful consent around interpreter involvement and privacy.",
-      equity_signal:"Limited representation of East African women in diabetes research affects fit of evidence.",
-      narrative:`With the interpreter, Selam says her brain feels too full. She knows the steps but cannot keep them going when the shift flips. She would like help that fits short windows between work and sleep.
+      equity_signal:"Limited representation of East African women affects fit of evidence.",
+      narrative:`With the interpreter, Selam says her brain feels too full. Steps slip when the shift flips.
 
-She asks about reminders that will not flood her phone and about ways to manage food when there is little fridge space.`
-    }
+She wants help that fits short windows and reminders that do not flood her phone.` }
   ]);
 
-  // ---------- State & elements ----------
-  let current=null, locked=false;
+  if (!Array.isArray(CASES) || CASES.length === 0) {
+    err('No cases loaded. Please verify the CASES array.');
+  }
+
+  // ------- State & element refs -------
+  let current=null, locked=false, studyCount=0;
   const F = {
     context:$('#fContext'), search:$('#fSearch'), appraise:$('#fAppraise'), apply:$('#fApply'),
     assumptions:$('#fAssumptions')
@@ -392,13 +387,28 @@ She asks about reminders that will not flood her phone and about ways to manage 
     progress:$('#progress'), studyCounter:$('#studyCounter'),
     saveStatus:$('#saveStatus'), picoPreview:$('#picoPreview')
   };
+  const BTN = {
+    random:$('#btnRandom'), lock:$('#btnLock'), fresh:$('#btnNew'),
+    save:$('#btnSave'), load:$('#btnLoad'), export:$('#btnExport'),
+    copy:$('#btnCopyAll'), print:$('#btnPrint'),
+    addStudy:$('#btnAddStudy'), removeStudy:$('#btnRemoveStudy')
+  };
+  for (const [k,v] of Object.entries(BTN)) {
+    if (!v) return err(`Missing button: ${k}`);
+  }
 
-  // ---------- Render ----------
+  // ------- Render & UI -------
+  function updateLockUi(){
+    CELS.lock.textContent = locked ? 'Locked for writing' : 'Unlocked';
+    BTN.lock.textContent = locked ? '🔓 Unlock' : '🔒 Lock';
+    CELS.lockGate.hidden = locked;
+    CELS.builder.hidden = !locked;
+  }
   function renderCase(){
     if(!current){ CELS.wrap.hidden=true; CELS.empty.hidden=false; return; }
     CELS.empty.hidden=true; CELS.wrap.hidden=false;
-    CELS.id.textContent=current.id||''; // hidden by default
-    CELS.chip.textContent=noDash(current.title); // hidden
+    CELS.id.textContent=current.id||''; // stays hidden
+    CELS.chip.textContent=noDash(current.title); // stays hidden
     CELS.vTitle.textContent=noDash(current.title);
     CELS.vClient.textContent=noDash(current.client_profile);
     CELS.vSetting.textContent=noDash(current.setting);
@@ -414,33 +424,33 @@ She asks about reminders that will not flood her phone and about ways to manage 
     CELS.vNarrative.innerHTML=paragraphsHTML(current.narrative);
     updateLockUi();
   }
-  function updateLockUi(){
-    CELS.lock.innerHTML = locked ? 'Locked for writing' : 'Unlocked';
-    $('#btnLock').textContent = locked ? '🔓 Unlock' : '🔒 Lock';
-    CELS.lockGate.hidden = locked;
-    CELS.builder.hidden = !locked;
-  }
 
-  // ---------- Randomize / Lock ----------
+  // ------- Actions -------
   function randomize(){
-    const b=$('#btnRandom'); b.disabled=true; b.innerHTML='<span class="spin">🎲</span> Rolling...';
+    if (!Array.isArray(CASES) || CASES.length === 0) { err('No cases to randomize.'); return; }
+    BTN.random.disabled=true; BTN.random.innerHTML='<span class="spin">🎲</span> Rolling...';
     setTimeout(()=>{
-      current = CASES[Math.floor(Math.random()*CASES.length)];
-      locked=false; clearForm(); renderCase();
-      b.disabled=false; b.textContent='🎲 Randomize';
-      toast('New case drawn. Review and lock to start.');
-    },600);
+      try{
+        const idx=Math.floor(Math.random()*CASES.length);
+        current = CASES[idx];
+        locked=false; clearForm(); renderCase(); toast('New case drawn. Review and lock to start.');
+      }catch(e){ err('Randomize failed.', e); }
+      finally{ BTN.random.disabled=false; BTN.random.textContent='🎲 Randomize'; }
+    },450);
   }
-  function toggleLock(){ if(!current){ toast('Draw a case first.'); return; } locked=!locked; updateLockUi(); if(locked){ loadDraft(); } }
+  function toggleLock(){
+    if(!current){ toast('Draw a case first.'); return; }
+    locked=!locked; updateLockUi(); if(locked){ loadDraft(); }
+  }
   function clearForm(){
     ['fContext','fSearch','fAppraise','fApply','fAssumptions'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-    // reset PICO and studies
     PICO.P.value=''; PICO.I.value=''; PICO.C.value=''; PICO.O.value='';
-    $('#studies').innerHTML=''; studyCount=0; addStudy(); // start with one
+    const box = document.getElementById('studies'); if (box) box.innerHTML='';
+    studyCount=0; addStudy();
     updateAllCounts(); updatePicoPreview();
   }
 
-  // ---------- Counters / Progress ----------
+  // ------- Counters / Progress -------
   function updateAllCounts(){
     CELS.cntContext.textContent = `${wordCount(F.context.value)} words`;
     CELS.cntSearch.textContent  = `${wordCount(F.search.value)} words`;
@@ -450,21 +460,17 @@ She asks about reminders that will not flood her phone and about ways to manage 
     CELS.progress.textContent = `${hits}/5 core sections with 100+ words`;
   }
 
-  // ---------- PICO ----------
+  // ------- PICO -------
   function updatePicoPreview(){
-    const p=[PICO.P.value,PICO.I.value,PICO.C.value,PICO.O.value].map(s=>s&&s.trim()).filter(Boolean);
-    CELS.picoPreview.textContent = p.length
-      ? `Among ${PICO.P.value || '...'}, does ${PICO.I.value || '...'} compared to ${PICO.C.value || '...'} improve ${PICO.O.value || '...'}?`
-      : '';
+    const text = `Among ${PICO.P.value||'...'}, does ${PICO.I.value||'...'} compared to ${PICO.C.value||'...'} improve ${PICO.O.value||'...'}?`;
+    CELS.picoPreview.textContent = (PICO.P.value||PICO.I.value||PICO.C.value||PICO.O.value) ? text : '';
   }
 
-  // ---------- Studies controls ----------
-  let studyCount=0;
+  // ------- Studies -------
   function addStudy(){
     studyCount++;
     const wrap=document.createElement('div');
     wrap.className='field';
-    wrap.dataset.studyId = String(studyCount);
     const ta=document.createElement('textarea');
     ta.placeholder=`Study ${studyCount}: What it did and what it found (your words).`;
     ta.addEventListener('input', ()=>{ updateAllCounts(); autosave(); updateStudyCounter(); });
@@ -473,13 +479,13 @@ She asks about reminders that will not flood her phone and about ways to manage 
     updateStudyCounter();
   }
   function removeStudy(){
-    const box=$('#studies'); if(!box.lastElementChild) return;
+    const box=$('#studies'); if(!box || !box.lastElementChild) return;
     box.removeChild(box.lastElementChild); studyCount=Math.max(0,studyCount-1);
     updateStudyCounter(); autosave();
   }
   function updateStudyCounter(){ CELS.studyCounter.textContent = `Studies added: ${studyCount} / 3–5`; }
 
-  // ---------- Autosave ----------
+  // ------- Autosave -------
   const autosave = debounce(()=>{
     if(!current || !locked) return;
     const studyTexts=[...document.querySelectorAll('#studies textarea')].map(t=>t.value);
@@ -493,12 +499,12 @@ She asks about reminders that will not flood her phone and about ways to manage 
       },
       ts:new Date().toISOString()
     };
-    try{ localStorage.setItem(saveKey(), JSON.stringify(data)); $('#saveStatus').textContent=`saved ${new Date().toLocaleTimeString()}`; }
-    catch{ $('#saveStatus').textContent='save failed'; }
+    try{ localStorage.setItem(saveKey(), JSON.stringify(data)); CELS.saveStatus.textContent=`saved ${new Date().toLocaleTimeString()}`; }
+    catch{ CELS.saveStatus.textContent='save failed'; }
   },1200);
   function saveKey(){ return current ? `EBP_NOTE_${noDash(current.title).slice(0,50)}` : 'EBP_NOTE_UNSET'; }
   function loadDraft(){
-    const raw=localStorage.getItem(saveKey()); if(!raw){ $('#saveStatus').textContent='no draft'; return; }
+    const raw=localStorage.getItem(saveKey()); if(!raw){ CELS.saveStatus.textContent='no draft'; return; }
     try{
       const d=JSON.parse(raw);
       F.context.value=d.fields?.context||'';
@@ -507,74 +513,69 @@ She asks about reminders that will not flood her phone and about ways to manage 
       F.apply.value=d.fields?.apply||'';
       F.assumptions.value=d.fields?.assumptions||'';
       PICO.P.value=d.fields?.pico?.P||''; PICO.I.value=d.fields?.pico?.I||''; PICO.C.value=d.fields?.pico?.C||''; PICO.O.value=d.fields?.pico?.O||'';
-      $('#studies').innerHTML=''; studyCount=0;
-      (d.fields?.studies||['']).forEach(()=>addStudy());
-      const nodes=[...document.querySelectorAll('#studies textarea')];
-      (d.fields?.studies||[]).forEach((txt,i)=>{ if(nodes[i]) nodes[i].value=txt; });
+      const box=$('#studies'); box.innerHTML=''; studyCount=0;
+      (d.fields?.studies?.length?d.fields.studies:['']).forEach(()=>addStudy());
+      [...document.querySelectorAll('#studies textarea')].forEach((ta,i)=>{ ta.value = d.fields?.studies?.[i] || ''; });
       updatePicoPreview(); updateAllCounts();
-      $('#saveStatus').textContent=`loaded draft (${new Date(d.ts).toLocaleString()})`;
-    }catch{ $('#saveStatus').textContent='load failed'; }
+      CELS.saveStatus.textContent=`loaded draft (${new Date(d.ts).toLocaleString()})`;
+    }catch(e){ CELS.saveStatus.textContent='load failed'; err('Draft load failed', e); }
   }
 
-  // ---------- Export / Copy / Print ----------
+  // ------- Export / Copy / Print -------
   function buildDocHtml(){
     if(!current) return '<!doctype html><html><head><meta charset="utf-8"><title>EBP Note</title></head><body><p>No case selected.</p></body></html>';
-    const esc=(s)=>escapeHtml(noDash((s||'')+''));
+    const esc=(s)=>(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;"," >":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
     const h=[];
     h.push('<!doctype html><html><head><meta charset="utf-8"><title>EBP Note</title>');
     h.push('<style>body{font-family:Calibri,Arial,Helvetica,sans-serif;line-height:1.45;color:#111} h1,h2,h3{margin:0 0 6px} h1{font-size:22px} h2{font-size:18px;margin-top:16px} p{margin:0 0 10px 0} ul{margin:4px 0 8px 18px} .k{color:#374151} .small{color:#555;font-size:12px} @page{margin:1in}</style></head><body>');
     h.push(`<h1>${esc(CONFIG.siteTitle)}</h1>`);
     h.push(`<p class="small">${esc(CONFIG.courseHeader)}</p>`);
     h.push('<h2>Case</h2><ul>');
-    h.push('<li><span class="k">Title:</span> '+esc(current.title)+'</li>');
+    h.push('<li><span class="k">Title:</span> '+esc(noDash(current.title))+'</li>');
     h.push('</ul>');
     h.push('<h3>Intake Sheet</h3>');
     h.push('<ul>');
-    h.push('<li><span class="k">Client profile:</span> '+esc(current.client_profile)+'</li>');
-    h.push('<li><span class="k">Setting:</span> '+esc(current.setting)+'</li>');
+    h.push('<li><span class="k">Client profile:</span> '+esc(noDash(current.client_profile))+'</li>');
+    h.push('<li><span class="k">Setting:</span> '+esc(noDash(current.setting))+'</li>');
     h.push('</ul>');
     h.push('<h3>Presenting problem</h3>'+paragraphsHTML(current.presenting_problem));
     h.push('<h3>Relevant history</h3>'+paragraphsHTML(current.relevant_history));
     h.push('<h3>Goals & preferences</h3>'+paragraphsHTML(current.goals_and_preferences));
     h.push('<h3>Strengths & resources</h3>'+paragraphsHTML(current.strengths_and_resources));
     h.push('<h3>Contextual barriers</h3>'+paragraphsHTML(current.contextual_factors_and_barriers));
-    h.push('<h3>EBP decision point</h3><p>'+esc(current.ebp_decision_point)+'</p>');
-    h.push('<h3>Target outcomes</h3><p>'+esc(current.target_outcomes)+'</p>');
-    h.push('<h3>Risks & ethics</h3><p>'+esc(current.risks_and_ethics)+'</p>');
-    h.push('<h3>Equity signal</h3><p>'+esc(current.equity_signal)+'</p>');
+    h.push('<h3>EBP decision point</h3><p>'+esc(noDash(current.ebp_decision_point))+'</p>');
+    h.push('<h3>Target outcomes</h3><p>'+esc(noDash(current.target_outcomes))+'</p>');
+    h.push('<h3>Risks & ethics</h3><p>'+esc(noDash(current.risks_and_ethics))+'</p>');
+    h.push('<h3>Equity signal</h3><p>'+esc(noDash(current.equity_signal))+'</p>');
     h.push('<h3>Narrative vignette</h3>'+paragraphsHTML(current.narrative));
-
     h.push('<h2>EBP Note</h2>');
     h.push('<h3>Client & Practice Context</h3><p>'+esc($('#fContext').value).replace(/\n/g,'<br>')+'</p>');
-
     const picoTxt = $('#picoPreview').textContent || '';
     h.push('<h3>PICO-style Question</h3><p>'+esc(picoTxt)+'</p>');
-
     h.push('<h3>Search Strategy & Study Selection</h3><p>'+esc($('#fSearch').value).replace(/\n/g,'<br>')+'</p>');
-
     const studies=[...document.querySelectorAll('#studies textarea')].map(t=>t.value).filter(x=>x.trim().length);
     if(studies.length){
       h.push('<h3>Study Summaries</h3><ul>');
       studies.forEach((s,i)=>h.push('<li><p><b>Study '+(i+1)+':</b> '+esc(s).replace(/\n/g,'<br>')+'</p></li>'));
       h.push('</ul>');
     }
-
     h.push('<h3>Critical Appraisal</h3><p>'+esc($('#fAppraise').value).replace(/\n/g,'<br>')+'</p>');
     h.push('<h3>Application & Delivery Plan</h3><p>'+esc($('#fApply').value).replace(/\n/g,'<br>')+'</p>');
     const ass=$('#fAssumptions').value;
     if(ass.trim()){ h.push('<h3>Assumptions</h3><p>'+esc(ass).replace(/\n/g,'<br>')+'</p>'); }
-
     h.push('<p class="small">Generated '+new Date().toLocaleString()+'</p>');
     h.push('</body></html>');
     return h.join('');
   }
   function downloadWord(){
-    const html=buildDocHtml();
-    const blob=new Blob([html],{type:'application/msword'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download=CONFIG.exportFileName; a.click();
-    URL.revokeObjectURL(url);
-    toast('Word file downloaded.');
+    try{
+      const html=buildDocHtml();
+      const blob=new Blob([html],{type:'application/msword'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download=CONFIG.exportFileName; a.click();
+      URL.revokeObjectURL(url);
+      toast('Word file downloaded.');
+    }catch(e){ err('Export failed.', e); }
   }
   async function copyAll(){
     if(!current){ toast('Draw and lock a case first.'); return; }
@@ -608,28 +609,29 @@ She asks about reminders that will not flood her phone and about ways to manage 
     lines.push('Application & Delivery Plan'); lines.push($('#fApply').value,'');
     const ass=$('#fAssumptions').value; if(ass.trim()){ lines.push('Assumptions'); lines.push(ass,''); }
     lines.push(`Generated ${new Date().toLocaleString()}`);
-    try{ await navigator.clipboard.writeText(lines.join('\n')); toast('Copied as plain text.'); }catch{ toast('Copy failed. Use Export Word instead.'); }
+    try{ await navigator.clipboard.writeText(lines.join('\n')); toast('Copied as plain text.'); }catch(e){ err('Copy failed.', e); }
   }
   function printPage(){ window.print(); }
 
-  // ---------- Events ----------
-  $('#btnRandom').addEventListener('click', randomize);
-  $('#btnLock').addEventListener('click', toggleLock);
-  $('#btnNew').addEventListener('click', ()=>{ if(confirm('Clear current note?')){ clearForm(); autosave(); }});
-  $('#btnSave').addEventListener('click', ()=>autosave());
-  $('#btnLoad').addEventListener('click', ()=>{ if(!current){ toast('Select and lock a case first.'); return;} loadDraft(); });
-  $('#btnExport').addEventListener('click', downloadWord);
-  $('#btnCopyAll').addEventListener('click', copyAll);
-  $('#btnPrint').addEventListener('click', ()=>printPage());
+  // ------- Bind events safely -------
+  try{
+    BTN.random.addEventListener('click', randomize);
+    BTN.lock.addEventListener('click', toggleLock);
+    BTN.fresh.addEventListener('click', ()=>{ if(confirm('Clear current note?')){ clearForm(); autosave(); }});
+    BTN.save.addEventListener('click', ()=>autosave());
+    BTN.load.addEventListener('click', ()=>{ if(!current){ toast('Select and lock a case first.'); return;} loadDraft(); });
+    BTN.export.addEventListener('click', downloadWord);
+    BTN.copy.addEventListener('click', copyAll);
+    BTN.print.addEventListener('click', ()=>printPage());
+    BTN.addStudy.addEventListener('click', (e)=>{ e.preventDefault(); addStudy(); });
+    BTN.removeStudy.addEventListener('click', (e)=>{ e.preventDefault(); removeStudy(); });
+  }catch(e){ err('Event binding failed.', e); }
 
-  [F.context,F.search,F.appraise,F.apply,F.assumptions].forEach(el=>el.addEventListener('input', ()=>{ updateAllCounts(); autosave(); }));
-  [PICO.P,PICO.I,PICO.C,PICO.O].forEach(el=>el.addEventListener('input', ()=>{ updatePicoPreview(); autosave(); }));
+  // ------- Inputs listeners -------
+  [F.context,F.search,F.appraise,F.apply,F.assumptions].forEach(el=>el && el.addEventListener('input', ()=>{ updateAllCounts(); autosave(); }));
+  [PICO.P,PICO.I,PICO.C,PICO.O].forEach(el=>el && el.addEventListener('input', ()=>{ updatePicoPreview(); autosave(); }));
 
-  // Studies controls
-  $('#btnAddStudy').addEventListener('click', (e)=>{ e.preventDefault(); addStudy(); });
-  $('#btnRemoveStudy').addEventListener('click', (e)=>{ e.preventDefault(); removeStudy(); });
-
-  // Keyboard shortcuts (safe)
+  // ------- Keyboard shortcuts (safe) -------
   function isTypingTarget(el){ if(!el) return false; const t=el.tagName; return t==='INPUT'||t==='TEXTAREA'||el.isContentEditable; }
   window.addEventListener('keydown', (e)=>{
     if(isTypingTarget(document.activeElement)||isTypingTarget(e.target)) return;
@@ -641,9 +643,13 @@ She asks about reminders that will not flood her phone and about ways to manage 
     if(k==='p'){ e.preventDefault(); printPage(); }
   });
 
-  // Init
-  function init(){ updateAllCounts(); updatePicoPreview(); }
-  init();
+  // ------- Init -------
+  try{
+    updateAllCounts(); updatePicoPreview(); updateLockUi();
+    // Optional: draw a case immediately so students see content
+    // randomize();
+  }catch(e){ err('Initialization failed.', e); }
+});
 </script>
 </body>
 </html>
