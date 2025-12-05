@@ -22,8 +22,8 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
   .titlebar{display:flex;flex-direction:column;gap:12px;align-items:stretch}
   .course{font-size:14px;color:var(--muted)}
   .toolbar{display:flex;flex-wrap:wrap;gap:8px}
-  .toolbar.floating{position:absolute;top:14px;right:14px;justify-content:flex-end;max-width:520px;align-items:flex-start;background:rgba(255,255,255,.92);padding:8px 10px;border-radius:14px;box-shadow:0 10px 30px rgba(15,23,42,.1)}
-  .hero.has-floating{padding-right:clamp(220px,34vw,520px)}
+  .toolbar.floating{position:absolute;top:14px;right:14px;justify-content:flex-end;max-width:480px}
+  .hero.has-floating{padding-top:92px}
   button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font:inherit;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.02);transition:.15s ease transform,box-shadow,border-color}
   button:hover{border-color:#cbd5e1}
   button:active{transform:translateY(1px)}
@@ -41,9 +41,9 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
     .card.fill{height:calc(100vh - 210px);display:flex;flex-direction:column}
     .card.fill .body{flex:1;overflow:auto;padding:16px}
   }
-  @media(max-width:1080px){
-    .toolbar.floating{position:static;max-width:none;justify-content:flex-start;background:transparent;box-shadow:none;padding:0}
-    .hero.has-floating{padding-right:18px;padding-top:18px;gap:10px}
+  @media(max-width:768px){
+    .toolbar.floating{position:static;max-width:none;justify-content:flex-start}
+    .hero.has-floating{padding-top:18px;gap:10px}
   }
   .banner{margin-top:8px;background:#eef2ff;border:1px dashed #cbd5e1;border-radius:12px;padding:10px 12px;color:#312e81;font-size:13px}
   .banner strong{color:#1e3a8a}
