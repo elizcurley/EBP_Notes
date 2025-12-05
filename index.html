@@ -1,76 +1,85 @@
-<!-- /ebp.html -->
+<!-- /ebp-index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EBP Case Randomizer & Note Builder</title>
+<title>EBP Vignette Index</title>
 <style>
   :root{ --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --line:#e5e7eb; --accent:#2563eb; }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"}
-  header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:3}
-  .wrap{max-width:1200px;margin:0 auto;padding:16px}
-  h1{font-size:18px;margin:0 0 8px}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-  button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 10px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-  button:hover{border-color:#d1d5db}
-  button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-  button:disabled{opacity:.6;cursor:not-allowed}
-  main{max-width:1200px;margin:16px auto;padding:0 16px;display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
-  @media (max-width: 960px){ main{grid-template-columns:1fr} }
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-  .card .hd{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-  .card .hd h2{font-size:16px;margin:0}
-  .card .bd{padding:14px}
-  .grid{display:grid;grid-template-columns:180px 1fr;gap:8px;border-top:1px dashed var(--line);padding-top:8px}
-  .label{color:var(--muted)}
-  .muted{color:var(--muted)}
-  .narrative{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
-  .pill{display:inline-block;background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff;border-radius:999px;padding:2px 8px;font-size:12px}
-  textarea, input[type="text"]{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fafafa}
-  textarea:disabled, input:disabled{background:#f3f4f6}
-  .row{margin-bottom:10px}
-  .row label{display:block;font-weight:600;margin-bottom:6px}
-  .flex{display:flex;gap:8px;align-items:center}
-  .flex-col{display:flex;flex-direction:column;gap:8px}
-  .counts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
-  .count{border:1px dashed var(--line);border-radius:10px;padding:6px 8px;text-align:center}
-  .count strong{display:block;font-size:16px}
-  .progress{margin-top:8px}
-  .studies .item{border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:8px;background:#fafafa}
-  .studies .item .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;background:#111827;color:#e5e7eb;border-radius:6px;padding:0 6px;display:inline-block;font-size:12px}
-  .empty{padding:10px;border:1px dashed var(--line);border-radius:10px;background:#fcfcfd;color:var(--muted)}
+  *{ box-sizing:border-box }
+  html,body{ margin:0; padding:0; background:var(--bg); color:var(--text);
+    font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"; }
+  header{ position:sticky; top:0; z-index:5; background:var(--card); border-bottom:1px solid var(--line); }
+  .wrap{ max-width:1200px; margin:0 auto; padding:12px 16px; }
+  h1{ font-size:18px; margin:0 0 6px; }
+  .toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+  input[type="search"]{ width:320px; max-width:55vw; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:#fafafa }
+  button{ border:1px solid var(--line); background:var(--card); border-radius:8px; padding:8px 10px; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.04) }
+  button:hover{ border-color:#d1d5db }
+  button.primary{ background:var(--accent); color:#fff; border-color:var(--accent) }
+  main{ max-width:1200px; margin:12px auto 20px; padding:0 16px; display:grid; grid-template-columns:1fr 1.2fr; gap:14px }
+  @media (max-width: 960px){ main{ grid-template-columns:1fr } }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.06) }
+  .hd{ padding:10px 12px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between }
+  .bd{ padding:10px 12px }
+  .muted{ color:var(--muted) }
+  .list{ max-height:70vh; overflow:auto }
+  .row{ display:flex; gap:10px; align-items:flex-start; border-bottom:1px dashed var(--line); padding:10px 6px; cursor:pointer }
+  .row:last-child{ border-bottom:0 }
+  .row.active{ background:#f3f4f6 }
+  .title{ font-weight:600; margin-bottom:2px }
+  .snippet{ color:var(--muted); font-size:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
+  .pill{ display:inline-block; background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff; border-radius:999px; padding:2px 8px; font-size:12px }
+  .grid{ display:grid; grid-template-columns:180px 1fr; gap:8px }
+  .label{ color:var(--muted) }
+  .narrative{ border-top:1px solid var(--line); margin-top:10px; padding-top:10px }
+  .kbd{ font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+        background:#111827; color:#e5e7eb; border-radius:6px; padding:0 6px; display:inline-block; font-size:12px }
+  .actions{ display:flex; gap:8px; flex-wrap:wrap }
+  .empty{ color:var(--muted); padding:8px; border:1px dashed var(--line); border-radius:10px; background:#fcfcfd }
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
-    <h1>EBP Case Randomizer & Note Builder</h1>
+    <h1>EBP Vignette Index</h1>
     <div class="toolbar">
-      <button id="btnRandom" class="primary" title="Alt+R — Draw a random case">Randomize</button>
-      <button id="btnLock" title="Alt+L — Lock/Unlock editing">Lock</button>
-      <button id="btnNew" title="Start a new note for this case">New</button>
-      <button id="btnSave" title="Ctrl/Cmd+S — Save draft (only when locked)">Save</button>
-      <button id="btnLoad" title="Load saved draft for this case">Load</button>
-      <button id="btnExport" title="Alt+E — Export Word (.docx)">Export Word (.docx)</button>
-      <button id="btnCopy" title="Copy all note text to clipboard">Copy Text</button>
-      <button id="btnPrint" title="Alt+P — Print the page">Print</button>
-      <span id="status" class="muted" style="margin-left:auto"></span>
+      <input id="q" type="search" placeholder="Search title, client, setting, narrative… (press /)" aria-label="Search">
+      <button id="btnClear">Clear</button>
+      <span id="count" class="muted"></span>
+      <span style="margin-left:auto" class="muted">Shortcuts: <span class="kbd">/</span> focus · <span class="kbd">↑</span>/<span class="kbd">↓</span> move · <span class="kbd">Enter</span> open</span>
     </div>
   </div>
 </header>
 
 <main>
-  <section class="card" id="caseCard" aria-labelledby="caseHeading">
+  <section class="card">
     <div class="hd">
-      <h2 id="caseHeading">Intake Sheet</h2>
-      <span id="casePill" class="pill">No case selected</span>
+      <strong>Vignettes</strong>
+      <div class="muted" id="pageMeta"></div>
     </div>
     <div class="bd">
-      <div id="emptyCase" class="empty">Click <strong>Randomize</strong> (<span class="kbd">Alt+R</span>) to draw a vignette.</div>
-      <div id="intake" style="display:none">
+      <div id="list" class="list" role="listbox" aria-label="Vignette list"></div>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px">
+        <button id="prev">Prev</button>
+        <button id="next">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="detailCard" aria-labelledby="detailHeading">
+    <div class="hd">
+      <h2 id="detailHeading" style="font-size:16px; margin:0">Details</h2>
+      <div class="actions">
+        <button id="btnOpen" class="primary" title="Open in Note Builder (loads ebp.html)">Open in Note Builder</button>
+        <button id="btnCopyLink" title="Copy link to this case">Copy Link</button>
+        <button id="btnPrint" title="Print detail">Print</button>
+      </div>
+    </div>
+    <div class="bd">
+      <div id="empty" class="empty">Select a vignette from the list.</div>
+      <div id="detail" style="display:none">
         <div class="grid">
           <div class="label">Title</div><div id="f_title"></div>
           <div class="label">Client profile</div><div id="f_client_profile"></div>
@@ -92,711 +101,186 @@
       </div>
     </div>
   </section>
-
-  <section class="card" id="noteCard" aria-labelledby="noteHeading">
-    <div class="hd">
-      <h2 id="noteHeading">EBP Note Builder</h2>
-      <span id="lockPill" class="pill">Locked: <span id="lockState">No</span></span>
-    </div>
-    <div class="bd">
-      <div class="row">
-        <div class="muted">Editing requires <strong>Lock</strong>. Autosave occurs only while locked.</div>
-      </div>
-
-      <div class="row">
-        <label for="context">Client &amp; Practice Context <span class="muted" id="wc_context">(0 words)</span></label>
-        <textarea id="context" rows="6" disabled placeholder="Describe the client, stakeholders, setting, constraints, and practice context…"></textarea>
-      </div>
-
-      <div class="row">
-        <label>PICO</label>
-        <div class="flex">
-          <input id="picoP" type="text" disabled placeholder="P – Population / Problem" aria-label="PICO: P">
-          <input id="picoI" type="text" disabled placeholder="I – Intervention" aria-label="PICO: I">
-          <input id="picoC" type="text" disabled placeholder="C – Comparison" aria-label="PICO: C">
-          <input id="picoO" type="text" disabled placeholder="O – Outcome" aria-label="PICO: O">
-        </div>
-        <div class="muted" id="picoPreview" style="margin-top:6px">For [P], is [I] compared to [C] effective for [O]?</div>
-      </div>
-
-      <div class="row">
-        <label for="search">Search Strategy &amp; Study Selection <span class="muted" id="wc_search">(0 words)</span></label>
-        <textarea id="search" rows="6" disabled placeholder="Databases, terms, filters, inclusion/exclusion criteria, and selection process…"></textarea>
-      </div>
-
-      <div class="row studies">
-        <div class="top flex" style="justify-content:space-between">
-          <label style="margin:0">Study Summaries (3–5)</label>
-          <div class="flex">
-            <button id="btnAddStudy" title="Add one study summary">Add</button>
-            <button id="btnRemoveStudy" title="Remove last study summary">Remove</button>
-          </div>
-        </div>
-        <div id="studies"></div>
-      </div>
-
-      <div class="row">
-        <label for="appraise">Critical Appraisal <span class="muted" id="wc_appraise">(0 words)</span></label>
-        <textarea id="appraise" rows="6" disabled placeholder="Assess bias, precision, applicability, equity, and overall certainty…"></textarea>
-      </div>
-
-      <div class="row">
-        <label for="apply">Application &amp; Delivery Plan <span class="muted" id="wc_apply">(0 words)</span></label>
-        <textarea id="apply" rows="6" disabled placeholder="Recommended approach, shared decision-making, steps, monitoring, and adjustments…"></textarea>
-      </div>
-
-      <div class="row">
-        <label for="assumptions">Assumptions (optional)</label>
-        <textarea id="assumptions" rows="3" disabled placeholder="Any assumptions you are making…"></textarea>
-      </div>
-
-      <div class="counts">
-        <div class="count"><strong id="pc_context">0</strong><div class="muted">≥100w Context</div></div>
-        <div class="count"><strong id="pc_search">0</strong><div class="muted">≥100w Search</div></div>
-        <div class="count"><strong id="pc_appraise">0</strong><div class="muted">≥100w Appraisal</div></div>
-        <div class="count"><strong id="pc_apply">0</strong><div class="muted">≥100w Application</div></div>
-      </div>
-      <div class="progress muted">Core sections ≥100 words: <strong id="progressCount">0</strong>/4</div>
-    </div>
-  </section>
 </main>
 
 <script>
-/* ===================== Utilities ===================== */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-const debounce = (fn, ms=600) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
-function wordCount(s){ return (s||'').trim().split(/\s+/).filter(Boolean).length; }
-function escHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function brize(s){ return escHtml(s).replace(/\n/g,'<br>'); }
-function paragraphsFromText(s){ const safe=(s||'').replace(/\r\n/g,'\n'); return safe.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean); }
-/* ===================== DEBUGGABLE RANDOMIZER (SHOW THIS EXACT PATTERN) ===================== */
-// defined above handlers
-const CASES = [ /* at least 6–10 full cases */ 
-  {
-    title: "Aisha — New mother with perinatal anxiety",
-    client_profile: "Aisha, 27, first-time parent, married, lives in a small apartment with partner and infant.",
-    setting: "Community health center integrated behavioral health visit.",
-    presenting_problem: "Aisha reports persistent worry that something terrible will happen to the baby.\n\nShe sleeps 3–4 hours in fragments, checks breathing repeatedly, and avoids letting others hold the child.",
-    relevant_history: "Uncomplicated pregnancy; emergency C-section at 38 weeks.\n\nFamily history of anxiety (mother) but no prior diagnosis for Aisha.",
-    goals_and_preferences: "Wants non-sedating options and brief, actionable strategies she can practice between feeds.\n\nOpen to digital tools if evidence-based.",
-    strengths_and_resources: "Supportive partner; insured; motivated to learn skills; good insight.",
-    contextual_factors_and_barriers: "Limited childcare; cultural expectations around motherhood; hesitancy about medication while breastfeeding.",
-    ebp_decision_point: "Select an initial low-intensity intervention for perinatal anxiety suitable for integrated care.",
-    target_outcomes: "Reduce anxiety and checking; improve consolidated sleep to ≥6 hours across 24h; increase confidence.",
-    risks_and_ethics: "Screen for postpartum depression; assess for intrusive thoughts vs. intent; safety net if sleep deprivation worsens.",
-    equity_signal: "Consider cultural norms about parenting roles and language when recommending resources.",
-    narrative: "Aisha arrives with her partner and infant. She speaks softly, apologizing for being 'a little all over the place.'\n\nShe describes an internal alarm that spikes during feeds and just before trying to sleep. She acknowledges checking the baby monitor repeatedly and feeling guilty for asking her partner for help. When asked about supports, she lists her partner and an aunt who can visit on weekends.\n\nShe is curious about brief strategies and asks whether 'apps that teach breathing' actually work. She prefers to avoid medications right now but is willing to revisit if symptoms persist."
-  },
-  {
-    title: "Miguel — High schooler with cannabis use and motivation issues",
-    client_profile: "Miguel, 16, Latino, lives with grandmother; part-time grocery job; 11th grade.",
-    setting: "School-based health clinic, brief counseling session.",
-    presenting_problem: "Missed classes and declining grades in math and science.\n\nReports near-daily cannabis use 'to chill' and help sleep.",
-    relevant_history: "Death of father two years ago; strained relationship with mother; two prior detentions for tardiness.",
-    goals_and_preferences: "Wants to 'get teachers off my back' and keep his job; not interested in 'boring lectures.'",
-    strengths_and_resources: "Strong bond with grandmother; enjoys mechanics class; friendly peer group.",
-    contextual_factors_and_barriers: "Transportation challenges; neighborhood exposure to substance use; limited quiet space to study.",
-    ebp_decision_point: "Choose a brief, youth-appropriate intervention for cannabis reduction and school engagement.",
-    target_outcomes: "Reduce use days; improve attendance; pass current courses; enhance self-efficacy.",
-    risks_and_ethics: "Confidentiality boundaries with school; discuss safety when using and operating machinery.",
-    equity_signal: "Be mindful of disciplinary disparities; avoid punitive framing; leverage culturally responsive materials.",
-    narrative: "Miguel slumps in the chair but maintains eye contact. He jokes about 'not being a morning person' and says weed helps him sleep.\n\nHe lights up when talking about engines and the auto shop teacher who 'doesn’t treat me like a screw-up.' He’s skeptical about quitting entirely but open to 'trying something for a couple weeks' if it improves mornings.\n\nHe worries about being judged and asks whether sessions will be shared with teachers."
-  },
-  {
-    title: "Ruth — Older adult caregiver stress and low mood",
-    client_profile: "Ruth, 68, retired teacher, primary caregiver to spouse with Parkinson’s.",
-    setting: "Outpatient behavioral health in a primary care practice.",
-    presenting_problem: "Reports sadness, irritability, and 'running on fumes.'\n\nFeels guilty when taking time for herself.",
-    relevant_history: "No prior psychiatric treatment; active in faith community; hypertension well-controlled.",
-    goals_and_preferences: "Wants strategies to manage mood without 'a lot of homework.'\n\nInterested in options that include her spouse when possible.",
-    strengths_and_resources: "Organized, persistent, strong network through church, access to transportation.",
-    contextual_factors_and_barriers: "Nighttime awakenings due to partner’s needs; limited respite; fixed income.",
-    ebp_decision_point: "Select an evidence-based approach for caregiver burden and depressive symptoms.",
-    target_outcomes: "Increase positive affect, schedule respite, reduce guilt-driven avoidance.",
-    risks_and_ethics: "Monitor for suicidality; address boundary setting without undermining values.",
-    equity_signal: "Respect caregiving norms; consider affordability and access.",
-    narrative: "Ruth keeps a tidy binder with her spouse’s medications and appointments.\n\nShe tears up describing a recent fall and the fear of 'what if I’m not enough.' She misses choir practice and says music used to reset her mood.\n\nShe is willing to try brief exercises if they fit around caregiving tasks and do not require long absences from home."
-  },
-  {
-    title: "Jamal — College student with panic in crowded spaces",
-    client_profile: "Jamal, 20, Black, sophomore, lives on campus; part-time dining hall job.",
-    setting: "University counseling center, 30-minute intake.",
-    presenting_problem: "Panic-like episodes in cafeterias and buses; avoids peak hours.\n\nPhysical symptoms: heart racing, dizziness, 'tunnel vision.'",
-    relevant_history: "No ER visits; one panic attack in high school; family values 'toughing it out.'",
-    goals_and_preferences: "Wants practical skills to 'keep it together' and stop avoiding classes.\n\nOkay with brief homework if explained clearly.",
-    strengths_and_resources: "Supportive roommate; enjoys basketball; tech-savvy.",
-    contextual_factors_and_barriers: "Embarrassment about symptoms; limited time between classes.",
-    ebp_decision_point: "Pick a first-line skill-based treatment for panic symptoms with avoidance.",
-    target_outcomes: "Decrease avoidance; increase mastery using in-vivo practice; reduce symptom reactivity.",
-    risks_and_ethics: "Rule out medical causes; informed consent for exposure; safety planning.",
-    equity_signal: "Consider experiences of racialized scrutiny in public spaces.",
-    narrative: "Jamal describes scanning for exits and leaving trays unfinished when crowds swell.\n\nHe practices box breathing from a video but feels it 'only helps a little.' He asks for 'something that actually retrains this.'\n\nHe’s willing to practice between sessions if tasks are short and trackable."
-  },
-  {
-    title: "Keisha — Perinatal depression with financial stress",
-    client_profile: "Keisha, 32, single parent of two (4 years and 2 months), works hourly retail.",
-    setting: "Home-visiting program telehealth check-in.",
-    presenting_problem: "Low mood, low energy, missed WIC appointments.\n\nFeels 'stuck' and overwhelmed by bills.",
-    relevant_history: "Prior episode of depression at 24; discontinued SSRI when pregnant.",
-    goals_and_preferences: "Wants help to 'feel like myself again' and keep work shifts.\n\nOpen to combined approaches if practical.",
-    strengths_and_resources: "Strong bond with older child; neighbor support; eligible for benefits.",
-    contextual_factors_and_barriers: "Unstable schedule; childcare; limited broadband.",
-    ebp_decision_point: "Select an intervention feasible via telehealth for postpartum depression.",
-    target_outcomes: "Increase activation, re-engagement with benefits, improved sleep routine.",
-    risks_and_ethics: "Screen for suicidality and IPV; medication counseling; benefits navigation.",
-    equity_signal: "Coordinate with social supports; avoid stigmatizing language.",
-    narrative: "Keisha joins by phone while soothing her infant.\n\nShe describes dragging herself through the day, skipping meals, and feeling guilty about screen time for the 4-year-old.\n\nShe asks whether short check-ins could help her 'get moving' and whether medication while breastfeeding is safe."
-  },
-  {
-    title: "Omar — Refugee adolescent with sleep problems and nightmares",
-    client_profile: "Omar, 14, recently resettled with family; learning English; attends ESL classes.",
-    setting: "Community mental health, interpreter present.",
-    presenting_problem: "Frequent nightmares, difficulty falling asleep, daytime fatigue.\n\nAvoids soccer practice when exhausted.",
-    relevant_history: "Exposure to armed conflict; long travel; family adjusting to new routines.",
-    goals_and_preferences: "Wants to sleep through the night and keep up in school; prefers non-pharmacologic strategies first.",
-    strengths_and_resources: "Close family ties; supportive ESL teacher; loves soccer.",
-    contextual_factors_and_barriers: "Language barrier; crowded apartment; limited primary care access.",
-    ebp_decision_point: "Choose a culturally sensitive, trauma-informed sleep intervention.",
-    target_outcomes: "Increase sleep efficiency; reduce nightmare frequency; improve daytime alertness.",
-    risks_and_ethics: "Avoid triggering content; coordinate with family; consent with interpreter accuracy.",
-    equity_signal: "Respect cultural sleep practices; consider prayer times.",
-    narrative: "Omar sits near his father, nodding for him to speak first.\n\nHe says nights feel 'too awake,' with flashes of past events when he closes his eyes. He misses soccer and laughs when recalling a winning goal from last year.\n\nHe asks if there are exercises that can quiet his mind without 'too much talking about the old place.'"
-  },
-  {
-    title: "Tanya — Adult with chronic pain and opioid taper interest",
-    client_profile: "Tanya, 45, warehouse worker on modified duty; lives with sister.",
-    setting: "Pain clinic behavioral consult.",
-    presenting_problem: "Chronic low-back pain; on long-term opioids; fears increased pain if dose reduced.\n\nSleep disrupted; reduced activity.",
-    relevant_history: "Disc herniation 5 years ago; PT with partial benefit; no substance use disorder diagnosis.",
-    goals_and_preferences: "Interested in strategies that help function while considering a slow taper.\n\nWants plain-language explanations.",
-    strengths_and_resources: "Resilient; good rapport with PCP; access to PT.",
-    contextual_factors_and_barriers: "Physically demanding job; transportation constraints; mistrust due to prior stigmatizing encounters.",
-    ebp_decision_point: "Select non-pharmacologic adjunct to support function and taper readiness.",
-    target_outcomes: "Improve function (PROMIS or PEG); reduce fear-avoidance; shared taper plan.",
-    risks_and_ethics: "Avoid coercion; monitor withdrawal; discuss alternatives.",
-    equity_signal: "Attend to occupational demands and stigma.",
-    narrative: "Tanya describes mornings as 'rusty gears.'\n\nShe worries that 'people think I’m drug-seeking' and wants a plan that doesn’t yank meds away.\n\nShe is open to skills that build control and to tracking small functional wins."
-  },
-  {
-    title: "Wei — Adult with social anxiety impacting promotion",
-    client_profile: "Wei, 34, software engineer, immigrant; fluent in English but self-conscious in groups.",
-    setting: "Employer EAP short-term counseling.",
-    presenting_problem: "Avoids presenting at standups; passed over for team lead.\n\nPhysical symptoms include blushing and shaking.",
-    relevant_history: "High academic achievement; no prior therapy; supportive partner.",
-    goals_and_preferences: "Wants targeted tools for meetings and presentations with measurable progress.",
-    strengths_and_resources: "Detail-oriented; practices consistently; supportive mentor.",
-    contextual_factors_and_barriers: "Cultural humility concerns; stereotype threat in meetings with senior leaders.",
-    ebp_decision_point: "Pick an efficient intervention for social anxiety in performance settings.",
-    target_outcomes: "Deliver 2 standups and 1 demo with manageable anxiety; self-rated efficacy ↑.",
-    risks_and_ethics: "Clarify confidentiality vs. workplace reporting; normalize physiological arousal.",
-    equity_signal: "Acknowledge linguistic bias and accent discrimination.",
-    narrative: "Wei recounts forgetting words mid-sentence during a demo and avoiding eye contact afterward.\n\nThey want something 'structured' and are willing to practice short exposures like speaking up once per meeting.\n\nThey ask if there’s evidence that practice with recordings helps."
-  }
-];
+/** Data loader:
+ *  - Prefer window.CASES from ebp_cases.js
+ *  - Else fetch ebp_cases.json (same folder)
+ *  - Else fetch absolute fallback (your uploaded bank was parsed for you)
+ */
+const FALLBACK_JSON = 'ebp_cases.json'; // place ebp_cases.json next to this file
 
-function paragraphsHTML(text){
-  const safe = (text||'').replace(/\r\n/g,'\n');
-  return safe.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean)
-             .map(p=>`<p>${p.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</p>`)
-             .join('');
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function brize(s){ return esc(s).replace(/\n/g,'<br>'); }
+function normalizeCases(arr){
+  return (arr||[]).map((c,i)=>({
+    id: i,
+    slug: slugify(c.title||('case-'+(i+1))),
+    ...c
+  }));
+}
+function slugify(s){
+  return String(s||'').toLowerCase().trim()
+    .replace(/['"]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')
+    .slice(0,80);
 }
 
-let current=null, locked=false;
-
-function renderCase(){
-  if(!current){ /* show empty state */ return; }
-  $('#emptyCase').style.display='none';
-  $('#intake').style.display='';
-  $('#casePill').textContent = current.title;
-  $('#f_title').textContent = current.title||'';
-  $('#f_client_profile').textContent = current.client_profile||'';
-  $('#f_setting').textContent = current.setting||'';
-  $('#f_presenting_problem').innerHTML = paragraphsHTML(current.presenting_problem);
-  $('#f_relevant_history').innerHTML = paragraphsHTML(current.relevant_history);
-  $('#f_goals_and_preferences').innerHTML = paragraphsHTML(current.goals_and_preferences);
-  $('#f_strengths_and_resources').innerHTML = paragraphsHTML(current.strengths_and_resources);
-  $('#f_contextual_factors_and_barriers').innerHTML = paragraphsHTML(current.contextual_factors_and_barriers);
-  $('#f_ebp_decision_point').textContent = current.ebp_decision_point||'';
-  $('#f_target_outcomes').textContent = current.target_outcomes||'';
-  $('#f_risks_and_ethics').textContent = current.risks_and_ethics||'';
-  $('#f_equity_signal').textContent = current.equity_signal||'';
-  $('#f_narrative').innerHTML = paragraphsHTML(current.narrative);
-  updateLockUi();
-}
-
-function randomize(){
-  if(!Array.isArray(CASES) || !CASES.length){ console.error('No cases'); return; }
-  const idx = Math.floor(Math.random()*CASES.length);
-  current = CASES[idx];
-  locked = false;
-  clearForm();
-  renderCase();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('btnRandom').addEventListener('click', randomize);
-  document.getElementById('btnLock').addEventListener('click', () => { if(!current) return; locked=!locked; updateLockUi(); if(locked) loadDraft(); });
-  // …other bindings
-});
-/* ===================== end required pattern ===================== */
-
-/* ====== App-specific logic ====== */
-const fields = {
-  context: $('#context'),
-  search: $('#search'),
-  appraise: $('#appraise'),
-  apply: $('#apply'),
-  assumptions: $('#assumptions'),
-  picoP: $('#picoP'), picoI: $('#picoI'), picoC: $('#picoC'), picoO: $('#picoO'),
-  studiesWrap: $('#studies')
-};
-
-function updateLockUi(){
-  const inputs = $$('textarea, input[type="text"]');
-  inputs.forEach(el=>{ el.disabled = !locked; });
-  $('#lockState').textContent = locked ? 'Yes' : 'No';
-  $('#btnLock').textContent = locked ? 'Unlock' : 'Lock';
-  $('#status').textContent = locked ? 'Editing enabled (autosave on)' : 'Editing disabled';
-}
-
-function clearForm(){
-  ['context','search','appraise','apply','assumptions'].forEach(k=>fields[k].value='');
-  ['picoP','picoI','picoC','picoO'].forEach(k=>fields[k].value='');
-  setStudiesCount(3, true);
-  refreshCounts();
-  updatePicoPreview();
-}
-
-function collectFields(){
-  return {
-    context: fields.context.value||'',
-    search: fields.search.value||'',
-    appraise: fields.appraise.value||'',
-    apply: fields.apply.value||'',
-    assumptions: fields.assumptions.value||'',
-    pico: { P: fields.picoP.value||'', I: fields.picoI.value||'', C: fields.picoC.value||'', O: fields.picoO.value||'' },
-    studies: $$('#studies textarea').map(t=>t.value||'')
-  };
-}
-
-function populateFields(data){
-  if(!data) return;
-  fields.context.value = data.context||'';
-  fields.search.value = data.search||'';
-  fields.appraise.value = data.appraise||'';
-  fields.apply.value = data.apply||'';
-  fields.assumptions.value = data.assumptions||'';
-  fields.picoP.value = data.pico?.P||'';
-  fields.picoI.value = data.pico?.I||'';
-  fields.picoC.value = data.pico?.C||'';
-  fields.picoO.value = data.pico?.O||'';
-  setStudiesCount(Math.max(3, Math.min(5, (data.studies||[]).length||3)), true);
-  $$('#studies textarea').forEach((t,i)=>{ t.value = (data.studies||[])[i]||''; });
-  refreshCounts();
-  updatePicoPreview();
-}
-
-function storageKey(){
-  if(!current || !current.title) return null;
-  const base = current.title.slice(0,50);
-  return `EBP_NOTE_${base}`;
-}
-
-function saveDraft(manual=false){
-  if(!locked || !current) return;
-  const key = storageKey(); if(!key) return;
-  const payload = { caseTitle: current.title, fields: collectFields(), ts: new Date().toISOString() };
-  localStorage.setItem(key, JSON.stringify(payload));
-  $('#status').textContent = manual ? 'Draft saved' : 'Autosaved';
-}
-
-function loadDraft(){
-  const key = storageKey(); if(!key) return;
-  const raw = localStorage.getItem(key);
-  if(!raw){ $('#status').textContent = 'No saved draft'; return; }
+async function loadData(){
+  if(Array.isArray(window.CASES) && window.CASES.length){ return normalizeCases(window.CASES); }
   try{
-    const obj = JSON.parse(raw);
-    if(obj && obj.caseTitle === current.title){ populateFields(obj.fields); $('#status').textContent = 'Draft loaded'; }
-  }catch(e){ console.error(e); $('#status').textContent='Load failed'; }
-}
-
-function updatePicoPreview(){
-  const P = fields.picoP.value||'[P]';
-  const I = fields.picoI.value||'[I]';
-  const C = fields.picoC.value||'[C]';
-  const O = fields.picoO.value||'[O]';
-  $('#picoPreview').textContent = `For ${P}, is ${I} compared to ${C} effective for ${O}?`;
-}
-
-function refreshCounts(){
-  const ctxW = wordCount(fields.context.value);
-  const seaW = wordCount(fields.search.value);
-  const appW = wordCount(fields.appraise.value);
-  const aplW = wordCount(fields.apply.value);
-  $('#wc_context').textContent = `(${ctxW} words)`;
-  $('#wc_search').textContent = `(${seaW} words)`;
-  $('#wc_appraise').textContent = `(${appW} words)`;
-  $('#wc_apply').textContent = `(${aplW} words)`;
-  const p1 = ctxW>=100?1:0, p2 = seaW>=100?1:0, p3 = appW>=100?1:0, p4 = aplW>=100?1:0;
-  $('#pc_context').textContent = p1; $('#pc_search').textContent = p2; $('#pc_appraise').textContent = p3; $('#pc_apply').textContent = p4;
-  $('#progressCount').textContent = p1+p2+p3+p4;
-}
-
-function setStudiesCount(n, resetValues=false){
-  const wrap = fields.studiesWrap; wrap.innerHTML='';
-  const count = Math.max(3, Math.min(5, n||3));
-  for(let i=0;i<count;i++){
-    const div = document.createElement('div'); div.className='item';
-    div.innerHTML = `<div class="top"><strong>Study ${i+1}</strong></div>
-      <textarea rows="3" data-ix="${i}" placeholder="Key details: design, sample, main findings, limitations…"></textarea>`;
-    wrap.appendChild(div);
-  }
-  if(resetValues===false){ /* keep existing values */ }
-}
-
-/* ---------- Build export HTML ---------- */
-function buildExportHTML(){
-  const f = collectFields();
-  const caseTitle = current?.title || 'Selected Case';
-  const parts = [];
-  const h = (lvl, txt)=>`<h${lvl}>${escHtml(txt)}</h${lvl}>`;
-  const pp = (txt)=> paragraphsFromText(txt).map(p=>`<p>${brize(p)}</p>`).join('') || '<p></p>';
-
-  parts.push(h(1,'Evidence-Based Practice Note'));
-  parts.push(`<p><strong>Case:</strong> ${escHtml(caseTitle)}</p>`);
-
-  parts.push(h(2,'Client & Practice Context'));
-  parts.push(pp(f.context));
-
-  parts.push(h(2,'PICO'));
-  parts.push(`<p>For ${escHtml(f.pico.P||'[P]')}, is ${escHtml(f.pico.I||'[I]')} compared to ${escHtml(f.pico.C||'[C]')} effective for ${escHtml(f.pico.O||'[O]')}?</p>`);
-
-  parts.push(h(2,'Search Strategy & Study Selection'));
-  parts.push(pp(f.search));
-
-  parts.push(h(2,'Study Summaries'));
-  if(f.studies && f.studies.length){
-    const lis = f.studies.filter(s=>s&&s.trim()).map(s=>`<li>${brize(s)}</li>`).join('');
-    parts.push(lis ? `<ul>${lis}</ul>` : '<p>(none)</p>');
-  } else parts.push('<p>(none)</p>');
-
-  parts.push(h(2,'Critical Appraisal'));
-  parts.push(pp(f.appraise));
-
-  parts.push(h(2,'Application & Delivery Plan'));
-  parts.push(pp(f.apply));
-
-  if(f.assumptions && f.assumptions.trim()){
-    parts.push(h(2,'Assumptions'));
-    parts.push(pp(f.assumptions));
-  }
-
-  if(current){
-    parts.push(h(2,'Intake Snapshot'));
-    const intakeBits = [
-      ['Client profile', current.client_profile],
-      ['Setting', current.setting],
-      ['EBP decision point', current.ebp_decision_point],
-      ['Target outcomes', current.target_outcomes],
-      ['Risks & ethics', current.risks_and_ethics],
-      ['Equity signal', current.equity_signal]
-    ].map(([k,v])=>`<p><strong>${escHtml(k)}:</strong> ${escHtml(v||'')}</p>`).join('');
-    parts.push(intakeBits);
-    parts.push(h(3,'Narrative vignette'));
-    parts.push(paragraphsHTML(current.narrative));
-  }
-
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>EBP Note</title></head><body>${parts.join('\n')}</body></html>`;
-}
-
-/* ---------- Clipboard (plain text) ---------- */
-function composeClipboardText(){
-  const f = collectFields();
-  const caseTitle = current?.title || 'Selected Case';
-  const par = s => paragraphsFromText(s).join('\n\n');
-  const arr = [
-    `Evidence-Based Practice Note`,
-    `Case: ${caseTitle}`,
-    `\nClient & Practice Context\n${par(f.context)}`,
-    `\nPICO\nFor ${f.pico.P||'[P]'}, is ${f.pico.I||'[I]'} compared to ${f.pico.C||'[C]'} effective for ${f.pico.O||'[O]'}?`,
-    `\nSearch Strategy & Study Selection\n${par(f.search)}`,
-    `\nStudy Summaries\n${(f.studies||[]).map((s,i)=>`${i+1}. ${s}`).join('\n')}`,
-    `\nCritical Appraisal\n${par(f.appraise)}`,
-    `\nApplication & Delivery Plan\n${par(f.apply)}`
-  ];
-  if(f.assumptions && f.assumptions.trim()){
-    arr.push(`\nAssumptions\n${par(f.assumptions)}`);
-  }
-  return arr.join('\n');
-}
-
-/* ---------- Events ---------- */
-const autosave = debounce(()=>saveDraft(false), 800);
-
-function bindInputs(){
-  ['context','search','appraise','apply'].forEach(id=>{
-    const el = fields[id];
-    el.addEventListener('input', ()=>{ refreshCounts(); if(locked) autosave(); });
-  });
-  fields.assumptions.addEventListener('input', ()=>{ if(locked) autosave(); });
-
-  ['picoP','picoI','picoC','picoO'].forEach(id=>{
-    const el = fields[id];
-    el.addEventListener('input', ()=>{ updatePicoPreview(); if(locked) autosave(); });
-  });
-
-  $('#studies').addEventListener('input', (e)=>{
-    if(e.target && e.target.tagName==='TEXTAREA'){ if(locked) autosave(); }
-  });
-}
-
-function initStudies(){
-  setStudiesCount(3, true);
-  $('#btnAddStudy').addEventListener('click', ()=>{
-    const n = $$('#studies textarea').length; if(n>=5) return;
-    setStudiesCount(n+1, false);
-  });
-  $('#btnRemoveStudy').addEventListener('click', ()=>{
-    const n = $$('#studies textarea').length; if(n<=3) return;
-    setStudiesCount(n-1, false);
-  });
-}
-
-function initButtons(){
-  $('#btnSave').addEventListener('click', ()=>saveDraft(true));
-  $('#btnLoad').addEventListener('click', ()=>loadDraft());
-  $('#btnNew').addEventListener('click', ()=>{
-    if(!current) return;
-    locked=false; clearForm(); updateLockUi(); $('#status').textContent='New note started (unlock to edit, then lock)';
-  });
-  $('#btnExport').addEventListener('click', ()=>{
-    const html = buildExportHTML();
-    const blob = window.htmlDocx.asBlob(html);
-    const a = document.createElement('a');
-    const name = (current?.title ? `${current.title.replace(/[^\w\s-]/g,'').slice(0,40)}_` : '') + 'EBP_Note.docx';
-    a.href = URL.createObjectURL(blob);
-    a.download = name || 'SOW5404_Spring_2026_EBP_Note.docx';
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
-  });
-  $('#btnCopy').addEventListener('click', async ()=>{
-    const txt = composeClipboardText();
-    try{ await navigator.clipboard.writeText(txt); $('#status').textContent='Copied note to clipboard'; }
-    catch{ $('#status').textContent='Copy failed'; }
-  });
-  $('#btnPrint').addEventListener('click', ()=>window.print());
-}
-
-function notTypingTarget(){
-  const ae = document.activeElement;
-  if(!ae) return true;
-  return !(ae.tagName==='TEXTAREA' || (ae.tagName==='INPUT' && ae.type==='text') || ae.isContentEditable);
-}
-
-function initShortcuts(){
-  document.addEventListener('keydown', (e)=>{
-    const alt = e.altKey, ctrl = e.ctrlKey||e.metaKey, k = e.key.toLowerCase();
-    if(!notTypingTarget()) return;
-    if(alt && k==='r'){ e.preventDefault(); $('#btnRandom').click(); }
-    else if(alt && k==='l'){ e.preventDefault(); $('#btnLock').click(); }
-    else if(alt && k==='e'){ e.preventDefault(); $('#btnExport').click(); }
-    else if(alt && k==='p'){ e.preventDefault(); $('#btnPrint').click(); }
-    else if(ctrl && k==='s'){ e.preventDefault(); $('#btnSave').click(); }
-  });
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  initButtons();
-  initShortcuts();
-  bindInputs();
-  initStudies();
-});
-</script>
-
-<!-- ===================== Fixed offline htmlDocx.asBlob (UTF-8 + valid OOXML) ===================== -->
-<script>
-(function(){
-  const enc = new TextEncoder();
-  const utf8 = (s) => enc.encode(String(s ?? ""));
-  function xmlEscape(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c])); }
-  const textRun = (t, props='') => `<w:r>${props?`<w:rPr>${props}</w:rPr>`:''}<w:t xml:space="preserve">${xmlEscape(t)}</w:t></w:r>`;
-  const br = () => `<w:r><w:br/></w:r>`;
-  const para = (inner, pPr='') => `<w:p>${pPr?`<w:pPr>${pPr}</w:pPr>`:''}${inner||''}</w:p>`;
-
-  function nodeToParas(node){
-    const out=[];
-    const walk = (n, accRuns=[])=>{
-      if(n.nodeType===3){
-        if(n.nodeValue) accRuns.push(textRun(n.nodeValue));
-      } else if(n.nodeType===1){
-        const tag = n.tagName.toLowerCase();
-        if(tag==='br'){ accRuns.push(br()); }
-        else if(['strong','b','em','i','u'].includes(tag)){
-          const innerRuns=[]; n.childNodes.forEach(c=>walk(c, innerRuns));
-          let rPr=''; if(tag==='strong'||tag==='b') rPr+='<w:b/>'; if(tag==='em'||tag==='i') rPr+='<w:i/>'; if(tag==='u') rPr+='<w:u w:val="single"/>';
-          const textOnly = innerRuns.join('').replace(/^<w:r>|<\/w:r>$/g,'');
-          accRuns.push(`<w:r><w:rPr>${rPr}</w:rPr>${textOnly}</w:r>`);
-        }
-        else if(tag==='span'){ n.childNodes.forEach(c=>walk(c, accRuns)); }
-        else if(['h1','h2','h3','p'].includes(tag)){
-          const runs=[]; n.childNodes.forEach(c=>walk(c, runs));
-          if(tag==='p'){
-            out.push(para(runs.join('')));
-          }else{
-            const size = tag==='h1'?36:tag==='h2'?28:24;
-            const first = runs.length ? runs[0].replace('<w:r>','<w:r><w:rPr><w:b/><w:sz w:val="'+size+'"/><w:szCs w:val="'+size+'"/></w:rPr>') : textRun('', `<w:b/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/>`);
-            const rest = runs.length ? runs.slice(1).join('') : '';
-            out.push(para(first+rest, '<w:spacing w:after="160"/>'));
-          }
-        }
-        else if(tag==='ul'){
-          n.childNodes.forEach(li=>{
-            if(li.tagName && li.tagName.toLowerCase()==='li'){
-              const runs=[textRun('• ')];
-              li.childNodes.forEach(c=>walk(c, runs));
-              out.push(para(runs.join('')));
-            }
-          });
-        }
-        else{
-          n.childNodes.forEach(c=>walk(c, accRuns));
-        }
-      }
-      return accRuns;
-    };
-
-    if(node.childNodes && node.childNodes.length){
-      node.childNodes.forEach(ch=>{
-        if(ch.nodeType===3){ out.push(para(textRun(ch.nodeValue))); }
-        else if(ch.nodeType===1 && ['h1','h2','h3','p','ul'].includes(ch.tagName.toLowerCase())){
-          walk(ch);
-        } else if(ch.nodeType===1){
-          const runs=[]; walk(ch, runs); if(runs.length) out.push(para(runs.join('')));
-        }
-      });
+    const r = await fetch(FALLBACK_JSON, {cache:'no-store'});
+    if(r.ok){
+      const j = await r.json();
+      return normalizeCases(j);
     }
-    return out.join('');
-  }
+  }catch(_){}
+  throw new Error('No vignette data found. Make sure ebp_cases.js or ebp_cases.json is deployed.');
+}
 
-  function buildDocumentXML(html){
-    const doc = new DOMParser().parseFromString(html,'text/html');
-    const body = doc.body;
-    const content = nodeToParas(body) || para(textRun(''));
-    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
- xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
- xmlns:o="urn:schemas-microsoft-com:office:office"
- xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
- xmlns:m="http://schemas.microsoft.com/office/2006/math"
- xmlns:v="urn:schemas-microsoft-com:vml"
- xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"
- xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
- xmlns:w10="urn:schemas-microsoft-com:office:word"
- xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
- xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
- xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"
- xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk"
- xmlns:wne="http://schemas.microsoft.com/office/2006/wordml"
- xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
-  <w:body>
-    ${content}
-    <w:sectPr>
-      <w:pgSz w:w="12240" w:h="15840"/>
-      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
-      <w:cols w:space="708"/>
-      <w:docGrid w:linePitch="360"/>
-    </w:sectPr>
-  </w:body>
-</w:document>`;
-  }
+/* State */
+let ALL=[], FILTERED=[], PAGE=1, PER=8, ACTIVE=-1;
 
-  function u8cat(chunks){ let len=0; chunks.forEach(c=>len+=c.length); const out=new Uint8Array(len); let o=0; chunks.forEach(c=>{out.set(c,o);o+=c.length;}); return out; }
-  const CRC_TABLE = (()=>{ let c,t=new Uint32Array(256); for(let n=0;n<256;n++){ c=n; for(let k=0;k<8;k++) c=((c&1)?(0xEDB88320^(c>>>1)):(c>>>1)); t[n]=c>>>0; } return t; })();
-  function crc32(buf){ let c=~0>>>0; for(let i=0;i<buf.length;i++){ c=(c>>>8)^CRC_TABLE[(c^buf[i])&0xFF]; } return (~c)>>>0; }
-  function dateToDos(d=new Date()){
-    const time = (d.getHours()<<11) | (d.getMinutes()<<5) | ((d.getSeconds()/2)|0);
-    const date = ((d.getFullYear()-1980)<<9) | ((d.getMonth()+1)<<5) | d.getDate();
-    return {time, date};
+/* Render list & details */
+function applyFilter(){
+  const q = ($('#q').value||'').toLowerCase().trim();
+  const fields = ['title','client_profile','setting','presenting_problem','relevant_history','narrative','equity_signal'];
+  FILTERED = !q ? [...ALL] : ALL.filter(c=>{
+    return fields.some(f=>String(c[f]||'').toLowerCase().includes(q));
+  });
+  PAGE=1;
+  renderList();
+  if(FILTERED.length){
+    // if hash selected, selection will be applied in boot; else select first
+    if(ACTIVE<0) selectByIndex(0);
+  }else{
+    showEmptyDetail();
   }
-  function zipStore(files){
-    const cd=[]; let offset=0; const chunks=[];
-    const now = dateToDos(new Date());
-    files.forEach(f=>{
-      const nameBytes = utf8(f.name);
-      const data = f.data;
-      const crc = crc32(data);
-      const localHeader = new Uint8Array(30 + nameBytes.length);
-      const dv = new DataView(localHeader.buffer);
-      dv.setUint32(0,0x04034b50,true);
-      dv.setUint16(4,20,true);
-      dv.setUint16(6,0,true);
-      dv.setUint16(8,0,true);
-      dv.setUint16(10, now.time, true);
-      dv.setUint16(12, now.date, true);
-      dv.setUint32(14, crc, true);
-      dv.setUint32(18, data.length, true);
-      dv.setUint32(22, data.length, true);
-      dv.setUint16(26, nameBytes.length, true);
-      dv.setUint16(28, 0, true);
-      localHeader.set(nameBytes,30);
-      chunks.push(localHeader, data);
+  $('#count').textContent = `${FILTERED.length} result${FILTERED.length===1?'':'s'}`;
+}
+function renderList(){
+  const start = (PAGE-1)*PER;
+  const slice = FILTERED.slice(start, start+PER);
+  const list = $('#list'); list.innerHTML = '';
+  slice.forEach((c,ix)=>{
+    const div = document.createElement('div');
+    div.className = 'row' + (c.id===ACTIVE ? ' active' : '');
+    div.setAttribute('role','option');
+    div.setAttribute('aria-selected', c.id===ACTIVE ? 'true':'false');
+    div.tabIndex = 0;
+    div.innerHTML = `
+      <div style="flex:1">
+        <div class="title">${esc(c.title)}</div>
+        <div class="snippet">${esc((c.client_profile||'').replace(/\n/g,' '))}</div>
+      </div>
+      <div><span class="pill">${esc(shortSetting(c.setting))}</span></div>
+    `;
+    div.addEventListener('click', ()=> select(c.id));
+    div.addEventListener('keydown', (e)=>{ if(e.key==='Enter') select(c.id); });
+    list.appendChild(div);
+  });
+  const totalPages = Math.max(1, Math.ceil(FILTERED.length / PER));
+  $('#pageMeta').textContent = `Page ${PAGE}/${totalPages}`;
+  $('#prev').disabled = PAGE<=1;
+  $('#next').disabled = PAGE>=totalPages;
+}
+function shortSetting(s){ return (s||'').split(/[.;]/)[0].slice(0,40) || '—'; }
 
-      const cdH = new Uint8Array(46 + nameBytes.length);
-      const cdv = new DataView(cdH.buffer);
-      cdv.setUint32(0,0x02014b50,true);
-      cdv.setUint16(4,20,true);
-      cdv.setUint16(6,20,true);
-      cdv.setUint16(8,0,true);
-      cdv.setUint16(10,0,true);
-      cdv.setUint16(12, now.time, true);
-      cdv.setUint16(14, now.date, true);
-      cdv.setUint32(16, crc, true);
-      cdv.setUint32(20, data.length, true);
-      cdv.setUint32(24, data.length, true);
-      cdv.setUint16(28, nameBytes.length, true);
-      cdv.setUint16(30,0,true);
-      cdv.setUint16(32,0,true);
-      cdv.setUint16(34,0,true);
-      cdv.setUint16(36,0,true);
-      cdv.setUint32(38,0,true);
-      cdv.setUint32(42,offset,true);
-      cdH.set(nameBytes,46);
-      cd.push(cdH);
+function showEmptyDetail(){
+  $('#empty').style.display='';
+  $('#detail').style.display='none';
+  $('#detailHeading').textContent = 'Details';
+}
+function select(id){
+  ACTIVE = id;
+  renderList();
+  const item = ALL.find(x=>x.id===id);
+  if(!item){ showEmptyDetail(); return; }
+  // Update hash for shareable link
+  history.replaceState(null,'',`#case=${encodeURIComponent(item.slug)}`);
+  fillDetail(item);
+}
+function selectByIndex(ix){
+  const id = (FILTERED[ix]||{}).id;
+  if(typeof id==='number') select(id);
+}
+function fillDetail(c){
+  $('#empty').style.display='none';
+  $('#detail').style.display='';
+  $('#detailHeading').textContent = c.title||'Details';
+  $('#f_title').textContent = c.title||'';
+  $('#f_client_profile').innerHTML = brize(c.client_profile||'');
+  $('#f_setting').innerHTML = brize(c.setting||'');
+  $('#f_presenting_problem').innerHTML = brize(c.presenting_problem||'');
+  $('#f_relevant_history').innerHTML = brize(c.relevant_history||'');
+  $('#f_goals_and_preferences').innerHTML = brize(c.goals_and_preferences||'');
+  $('#f_strengths_and_resources').innerHTML = brize(c.strengths_and_resources||'');
+  $('#f_contextual_factors_and_barriers').innerHTML = brize(c.contextual_factors_and_barriers||'');
+  $('#f_ebp_decision_point').innerHTML = brize(c.ebp_decision_point||'');
+  $('#f_target_outcomes').innerHTML = brize(c.target_outcomes||'');
+  $('#f_risks_and_ethics').innerHTML = brize(c.risks_and_ethics||'');
+  $('#f_equity_signal').innerHTML = brize(c.equity_signal||'');
+  $('#f_narrative').innerHTML = brize(c.narrative||'');
+}
 
-      offset += localHeader.length + data.length;
-    });
-    const central = u8cat(cd);
-    const end = new Uint8Array(22);
-    const edv = new DataView(end.buffer);
-    edv.setUint32(0,0x06054b50,true);
-    edv.setUint16(4,0,true);
-    edv.setUint16(6,0,true);
-    edv.setUint16(8, files.length, true);
-    edv.setUint16(10, files.length, true);
-    edv.setUint32(12, central.length, true);
-    edv.setUint32(16, offset, true);
-    edv.setUint16(20, 0, true);
-    return new Blob([u8cat([...chunks, central, end])], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+/* Actions */
+$('#btnClear').addEventListener('click', ()=>{ $('#q').value=''; applyFilter(); });
+$('#prev').addEventListener('click', ()=>{ if(PAGE>1){ PAGE--; renderList(); } });
+$('#next').addEventListener('click', ()=>{ const max = Math.ceil(FILTERED.length/PER)||1; if(PAGE<max){ PAGE++; renderList(); }});
+$('#btnCopyLink').addEventListener('click', async ()=>{
+  try{ await navigator.clipboard.writeText(location.href); }catch{}
+});
+$('#btnPrint').addEventListener('click', ()=>{ window.print(); });
+$('#btnOpen').addEventListener('click', ()=>{
+  const c = ALL.find(x=>x.id===ACTIVE); if(!c) return;
+  try{ localStorage.setItem('EBP_PRELOAD_TITLE', c.title||''); }catch{}
+  location.href = 'ebp.html'; // same folder assumption
+});
+
+/* Keyboard shortcuts */
+document.addEventListener('keydown', (e)=>{
+  const k = e.key;
+  if(k==='/' && e.target.tagName!=='INPUT' && e.target.tagName!=='TEXTAREA'){ e.preventDefault(); $('#q').focus(); return; }
+  if(['ArrowDown','ArrowUp','Enter'].includes(k) && document.activeElement===document.body){
+    e.preventDefault();
+    if(!FILTERED.length) return;
+    const curIx = Math.max(0, FILTERED.findIndex(x=>x.id===ACTIVE));
+    if(k==='ArrowDown'){ selectByIndex(Math.min(curIx+1, FILTERED.length-1)); }
+    else if(k==='ArrowUp'){ selectByIndex(Math.max(curIx-1, 0)); }
+    else if(k==='Enter'){ $('#btnOpen').click(); }
   }
-  function asBlob(html){
-    const docXml = buildDocumentXML(html);
-    const files = [
-      { name:'[Content_Types].xml', data: utf8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
- <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
- <Default Extension="xml" ContentType="application/xml"/>
- <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-</Types>`)},
-      { name:'_rels/.rels', data: utf8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
- <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-</Relationships>`)},
-      { name:'word/document.xml', data: utf8(docXml) }
-    ];
-    return zipStore(files);
+});
+$('#q').addEventListener('input', applyFilter);
+
+/* Routing: load #case=slug if present */
+function trySelectFromHash(){
+  const m = location.hash.match(/case=([^&]+)/);
+  if(!m) return false;
+  const slug = decodeURIComponent(m[1]);
+  const ix = ALL.findIndex(c=>c.slug===slug);
+  if(ix>=0){
+    const page = Math.floor(ix / PER) + 1;
+    PAGE = page;
+    renderList();
+    select(ALL[ix].id);
+    return true;
   }
-  window.htmlDocx = { asBlob };
+  return false;
+}
+
+/* Boot */
+(async function(){
+  try{
+    const data = await loadData();
+    ALL = data;
+    applyFilter();
+    // try hash selection after initial render
+    trySelectFromHash();
+  }catch(e){
+    document.body.innerHTML = '<div class="wrap" style="margin-top:24px"><div class="empty">Error: '+esc(e.message)+'</div></div>';
+  }
 })();
 </script>
 </body>
