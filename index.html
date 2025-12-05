@@ -7,33 +7,39 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>EBP Case Randomizer & Note Builder</title>
+<title>EBP Assignment | Case Randomizer & Note Builder</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
   :root{
-    --bg:#f6f7fb;--card:#ffffff;--ink:#13151a;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb;
-    --ok:#0a7f3f;--warn:#c2410c;--shadow:0 2px 8px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06)
+    --bg:linear-gradient(135deg,#f6f7fb 0%,#eef2ff 35%,#f8fafc 100%);
+    --card:#ffffff;--ink:#0f172a;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb;
+    --accent-2:#7c3aed;--ok:#0a7f3f;--warn:#c2410c;--shadow:0 6px 30px rgba(15,23,42,.08)
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
-  header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:10}
+  header{position:sticky;top:0;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:10;box-shadow:0 6px 30px rgba(15,23,42,.05)}
   .wrap{max-width:1200px;margin:0 auto;padding:16px}
   .titlebar{display:flex;gap:12px;align-items:center;justify-content:space-between}
   .course{font-size:14px;color:var(--muted)}
   .toolbar{display:flex;flex-wrap:wrap;gap:8px}
-  button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font:inherit;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+  button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font:inherit;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.02);transition:.15s ease transform,box-shadow,border-color}
   button:hover{border-color:#cbd5e1}
-  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-  button.ghost{background:#f8fafc}
+  button:active{transform:translateY(1px)}
+  button.primary{background:linear-gradient(120deg,var(--accent),var(--accent-2));border-color:var(--accent);color:#fff;box-shadow:0 10px 30px rgba(37,99,235,.25)}
+  button.ghost{background:#f8fafc;border-color:#d9e2ec}
   .status{font-size:12px;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fafafa}
   .status.locked{border-color:#cce9d8;background:#f0fdf4;color:var(--ok)}
   .status.unlocked{border-color:#ffe2c7;background:#fff7ed;color:var(--warn)}
   .layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
   @media(max-width:1024px){.layout{grid-template-columns:1fr}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .card{background:var(--card);border:1px solid #e2e8f0;border-radius:16px;box-shadow:var(--shadow)}
   .card h2{margin:0;padding:16px;border-bottom:1px solid var(--line);font-size:18px}
   .card .body{padding:16px}
-  .banner{margin-top:8px;background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:10px;padding:8px 12px;color:#334155;font-size:13px}
+  .banner{margin-top:8px;background:#eef2ff;border:1px dashed #cbd5e1;border-radius:12px;padding:10px 12px;color:#312e81;font-size:13px}
+  .banner strong{color:#1e3a8a}
+  .hero{padding:14px 12px;border-radius:14px;background:linear-gradient(115deg,rgba(37,99,235,.1),rgba(124,58,237,.12));border:1px solid #dbeafe;box-shadow:0 10px 30px rgba(37,99,235,.08)}
+  .hero-title{font-size:22px;font-weight:800;color:#111827;margin:0}
+  .hero-sub{margin:4px 0 0;color:#475569}
   .grid{display:grid;grid-template-columns:220px 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden}
   .row{display:contents}
   .key{padding:10px 12px;background:#f8fafc;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-weight:600}
@@ -43,6 +49,7 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
   input[type="text"],textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;font:inherit}
   textarea{min-height:120px;resize:vertical}
   .pill{font-size:11px;border:1px solid var(--line);padding:3px 8px;border-radius:999px;background:#fbfdff;color:#0f172a}
+  .pill.accent{background:linear-gradient(120deg,rgba(37,99,235,.18),rgba(124,58,237,.2));border-color:rgba(37,99,235,.35);color:#1e3a8a;font-weight:700;letter-spacing:.01em}
   .sidecol{display:flex;flex-direction:column;gap:16px}
   .hr{height:1px;background:var(--line);margin:12px 0}
   .toast{position:fixed;bottom:12px;right:12px;background:#111;color:#fff;padding:10px 12px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
@@ -57,11 +64,18 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
 </head>
 <body>
 <header>
-  <div class="wrap titlebar">
-    <div>
-      <div style="font-size:20px;font-weight:800">EBP Case Randomizer & Note Builder</div>
+  <div class="wrap titlebar" style="align-items:flex-start;gap:12px">
+    <div class="hero" style="flex:1">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="hero-title">Evidence-Based Practice (EBP) Case Randomizer & Note Builder</div>
+          <div class="hero-sub">Built for the SOW5404 Evidence-Based Practice assignment. Use the separate Program Development site for that course.</div>
+        </div>
+        <div class="pill accent" aria-label="Assignment tag">EBP Assignment</div>
+      </div>
       <div class="course" id="courseTag">SOW5404 • Spring 2026</div>
       <div class="banner">Editing is enabled only when <strong>Locked</strong>. While locked, a draft autosaves to your browser every few seconds. <em>Always</em> click <strong>Save</strong> before leaving the page.</div>
+      <div class="banner" role="alert">Word export notice: When opening the downloaded file, Microsoft Word may show an "unreadable content" warning. Choose <strong>Yes</strong> to recover and the document will open normally.</div>
     </div>
     <div class="toolbar">
       <button id="btnRandom" title="Randomize case (Alt+R)">Randomize</button>
@@ -527,6 +541,7 @@ function hashString(s){ let h=5381; for(let i=0;i<s.length;i++){ h=((h<<5)+h) ^ 
 /* =============== STATE =============== */
 let locked=false, currentCase=null, autosaveTimer=null, studiesCount=3;
 let lastSavedHash='';
+let randomBag=[];
 
 /* =============== INIT =============== */
 document.addEventListener('DOMContentLoaded',()=>{
@@ -559,10 +574,22 @@ document.addEventListener('DOMContentLoaded',()=>{
 function bind(id,fn){const el=$(id); if(el) el.addEventListener('click',fn)}
 
 /* =============== RANDOMIZE / RENDER =============== */
+function nextRandomCase(){
+  if(!CASES||!CASES.length) return null;
+  if(!randomBag.length){
+    randomBag=CASES.map((_,i)=>i);
+    for(let i=randomBag.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [randomBag[i],randomBag[j]]=[randomBag[j],randomBag[i]];
+    }
+  }
+  const idx=randomBag.pop();
+  return CASES[idx]||null;
+}
 function onRandomize(){
-  if(!CASES||!CASES.length){toast('No cases available');return;}
-  const idx=Math.floor(Math.random()*CASES.length);
-  currentCase=CASES[idx];
+  const next=nextRandomCase();
+  if(!next){toast('No cases available');return;}
+  currentCase=next;
   renderCase(currentCase);
   toast('Case selected');
   clearBuilder();
@@ -845,6 +872,10 @@ function buildDocxFromHTML(htmlInput){
   <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
     <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
   </Relationships>`;
+  const docRels=`<?xml version="1.0" encoding="UTF-8"?>
+  <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+  </Relationships>`;
   const documentXML=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
     <w:body>${docBody}<w:sectPr/></w:body>
@@ -852,6 +883,7 @@ function buildDocxFromHTML(htmlInput){
   const files=[
     {name:'[Content_Types].xml',data:utf8Bytes(contentTypes)},
     {name:'_rels/.rels',data:utf8Bytes(rootRels)},
+    {name:'word/_rels/document.xml.rels',data:utf8Bytes(docRels)},
     {name:'word/document.xml',data:utf8Bytes(documentXML)},
     {name:'word/styles.xml',data:utf8Bytes(styles)}
   ];
