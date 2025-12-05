@@ -2,42 +2,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EBP Vignette Index</title>
 <style>
-  :root{ --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --line:#e5e7eb; --accent:#2563eb; }
-  *{ box-sizing:border-box }
-  html,body{ margin:0; padding:0; background:var(--bg); color:var(--text);
-    font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"; }
-  header{ position:sticky; top:0; z-index:5; background:var(--card); border-bottom:1px solid var(--line); }
-  .wrap{ max-width:1200px; margin:0 auto; padding:12px 16px; }
-  h1{ font-size:18px; margin:0 0 6px; }
-  .toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap }
-  input[type="search"]{ width:320px; max-width:55vw; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:#fafafa }
-  button{ border:1px solid var(--line); background:var(--card); border-radius:8px; padding:8px 10px; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.04) }
-  button:hover{ border-color:#d1d5db }
-  button.primary{ background:var(--accent); color:#fff; border-color:var(--accent) }
-  main{ max-width:1200px; margin:12px auto 20px; padding:0 16px; display:grid; grid-template-columns:1fr 1.2fr; gap:14px }
-  @media (max-width: 960px){ main{ grid-template-columns:1fr } }
-  .card{ background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.06) }
-  .hd{ padding:10px 12px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between }
-  .bd{ padding:10px 12px }
-  .muted{ color:var(--muted) }
-  .list{ max-height:70vh; overflow:auto }
-  .row{ display:flex; gap:10px; align-items:flex-start; border-bottom:1px dashed var(--line); padding:10px 6px; cursor:pointer }
-  .row:last-child{ border-bottom:0 }
-  .row.active{ background:#f3f4f6 }
-  .title{ font-weight:600; margin-bottom:2px }
-  .snippet{ color:var(--muted); font-size:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
-  .pill{ display:inline-block; background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff; border-radius:999px; padding:2px 8px; font-size:12px }
-  .grid{ display:grid; grid-template-columns:180px 1fr; gap:8px }
-  .label{ color:var(--muted) }
-  .narrative{ border-top:1px solid var(--line); margin-top:10px; padding-top:10px }
-  .kbd{ font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-        background:#111827; color:#e5e7eb; border-radius:6px; padding:0 6px; display:inline-block; font-size:12px }
-  .actions{ display:flex; gap:8px; flex-wrap:wrap }
-  .empty{ color:var(--muted); padding:8px; border:1px dashed var(--line); border-radius:10px; background:#fcfcfd }
+  :root{ --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --line:#e5e7eb; --accent:#2563eb }
+  *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
+  header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
+  .wrap{max-width:1200px;margin:0 auto;padding:12px 16px}
+  h1{font-size:18px;margin:0 0 6px}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  input[type=search]{width:320px;max-width:55vw;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fafafa}
+  button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 10px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  button:hover{border-color:#d1d5db} button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  main{max-width:1200px;margin:12px auto 20px;padding:0 16px;display:grid;grid-template-columns:1fr 1.2fr;gap:14px}
+  @media (max-width:960px){main{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .hd{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .bd{padding:10px 12px} .muted{color:var(--muted)}
+  .list{max-height:70vh;overflow:auto}
+  .row{display:flex;gap:10px;align-items:flex-start;border-bottom:1px dashed var(--line);padding:10px 6px;cursor:pointer}
+  .row:last-child{border-bottom:0} .row.active{background:#f3f4f6}
+  .title{font-weight:600;margin-bottom:2px}
+  .snippet{color:var(--muted);font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .pill{display:inline-block;background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff;border-radius:999px;padding:2px 8px;font-size:12px}
+  .grid{display:grid;grid-template-columns:180px 1fr;gap:8px}
+  .label{color:var(--muted)} .narrative{border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+  .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#111827;color:#e5e7eb;border-radius:6px;padding:0 6px;display:inline-block;font-size:12px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap} .empty{color:var(--muted);padding:8px;border:1px dashed var(--line);border-radius:10px;background:#fcfcfd}
+  details summary{cursor:pointer;user-select:none}
 </style>
 </head>
 <body>
@@ -55,26 +47,22 @@
 
 <main>
   <section class="card">
-    <div class="hd">
-      <strong>Vignettes</strong>
-      <div class="muted" id="pageMeta"></div>
-    </div>
+    <div class="hd"><strong>Vignettes</strong><div class="muted" id="pageMeta"></div></div>
     <div class="bd">
       <div id="list" class="list" role="listbox" aria-label="Vignette list"></div>
-      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:8px">
-        <button id="prev">Prev</button>
-        <button id="next">Next</button>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+        <button id="prev">Prev</button><button id="next">Next</button>
       </div>
     </div>
   </section>
 
   <section class="card" id="detailCard" aria-labelledby="detailHeading">
     <div class="hd">
-      <h2 id="detailHeading" style="font-size:16px; margin:0">Details</h2>
+      <h2 id="detailHeading" style="font-size:16px;margin:0">Details</h2>
       <div class="actions">
-        <button id="btnOpen" class="primary" title="Open in Note Builder (loads ebp.html)">Open in Note Builder</button>
-        <button id="btnCopyLink" title="Copy link to this case">Copy Link</button>
-        <button id="btnPrint" title="Print detail">Print</button>
+        <button id="btnOpen" class="primary">Open in Note Builder</button>
+        <button id="btnCopyLink">Copy Link</button>
+        <button id="btnPrint">Print</button>
       </div>
     </div>
     <div class="bd">
@@ -98,190 +86,255 @@
           <h3 style="margin:0 0 6px">Narrative vignette</h3>
           <div id="f_narrative"></div>
         </div>
+        <div class="narrative" id="extraWrap" style="display:none">
+          <details open>
+            <summary>Additional fields</summary>
+            <div id="extraFields" style="display:grid;grid-template-columns:180px 1fr;gap:6px;margin-top:6px"></div>
+          </details>
+        </div>
       </div>
     </div>
   </section>
 </main>
 
 <script>
-/** Data loader:
- *  - Prefer window.CASES from ebp_cases.js
- *  - Else fetch ebp_cases.json (same folder)
- *  - Else fetch absolute fallback (your uploaded bank was parsed for you)
- */
-const FALLBACK_JSON = 'ebp_cases.json'; // place ebp_cases.json next to this file
-
-const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function brize(s){ return esc(s).replace(/\n/g,'<br>'); }
-function normalizeCases(arr){
-  return (arr||[]).map((c,i)=>({
-    id: i,
-    slug: slugify(c.title||('case-'+(i+1))),
-    ...c
-  }));
-}
-function slugify(s){
-  return String(s||'').toLowerCase().trim()
-    .replace(/['"]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')
-    .slice(0,80);
-}
-
+const FALLBACK_JSON = 'ebp_cases.json';
+const $ = s => document.querySelector(s); const $$ = s => Array.from(document.querySelectorAll(s));
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]||c)).replace('&','&amp;')}
+function brize(s){return esc(s).replace(/\n/g,'<br>')}
+function slugify(s){return String(s||'').toLowerCase().trim().replace(/['"]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)}
+function normalize(arr){return (arr||[]).map((c,i)=>({id:i,slug:slugify(c.title||('case-'+(i+1))),...c}))}
 async function loadData(){
-  if(Array.isArray(window.CASES) && window.CASES.length){ return normalizeCases(window.CASES); }
-  try{
-    const r = await fetch(FALLBACK_JSON, {cache:'no-store'});
-    if(r.ok){
-      const j = await r.json();
-      return normalizeCases(j);
-    }
-  }catch(_){}
-  throw new Error('No vignette data found. Make sure ebp_cases.js or ebp_cases.json is deployed.');
+  if(Array.isArray(window.CASES)&&window.CASES.length) return normalize(window.CASES);
+  const r = await fetch(FALLBACK_JSON,{cache:'no-store'}); if(!r.ok) throw new Error('Missing ebp_cases data');
+  return normalize(await r.json());
 }
-
-/* State */
-let ALL=[], FILTERED=[], PAGE=1, PER=8, ACTIVE=-1;
-
-/* Render list & details */
+let ALL=[], FILTER=[], PAGE=1, PER=8, ACTIVE=-1;
+function fieldsAll(){return ['title','client_profile','setting','presenting_problem','relevant_history','goals_and_preferences','strengths_and_resources','contextual_factors_and_barriers','ebp_decision_point','target_outcomes','risks_and_ethics','equity_signal','narrative']}
 function applyFilter(){
-  const q = ($('#q').value||'').toLowerCase().trim();
-  const fields = ['title','client_profile','setting','presenting_problem','relevant_history','narrative','equity_signal'];
-  FILTERED = !q ? [...ALL] : ALL.filter(c=>{
-    return fields.some(f=>String(c[f]||'').toLowerCase().includes(q));
-  });
-  PAGE=1;
-  renderList();
-  if(FILTERED.length){
-    // if hash selected, selection will be applied in boot; else select first
-    if(ACTIVE<0) selectByIndex(0);
-  }else{
-    showEmptyDetail();
-  }
-  $('#count').textContent = `${FILTERED.length} result${FILTERED.length===1?'':'s'}`;
+  const q=($('#q').value||'').toLowerCase().trim();
+  FILTER=!q?[...ALL]:ALL.filter(c=>fieldsAll().some(f=>String(c[f]||'').toLowerCase().includes(q)));
+  PAGE=1; renderList(); FILTER.length?selectByIndex(0):showEmpty(); $('#count').textContent=`${FILTER.length} result${FILTER.length===1?'':'s'}`
 }
 function renderList(){
-  const start = (PAGE-1)*PER;
-  const slice = FILTERED.slice(start, start+PER);
-  const list = $('#list'); list.innerHTML = '';
-  slice.forEach((c,ix)=>{
-    const div = document.createElement('div');
-    div.className = 'row' + (c.id===ACTIVE ? ' active' : '');
-    div.setAttribute('role','option');
-    div.setAttribute('aria-selected', c.id===ACTIVE ? 'true':'false');
-    div.tabIndex = 0;
-    div.innerHTML = `
-      <div style="flex:1">
-        <div class="title">${esc(c.title)}</div>
-        <div class="snippet">${esc((c.client_profile||'').replace(/\n/g,' '))}</div>
-      </div>
-      <div><span class="pill">${esc(shortSetting(c.setting))}</span></div>
-    `;
-    div.addEventListener('click', ()=> select(c.id));
-    div.addEventListener('keydown', (e)=>{ if(e.key==='Enter') select(c.id); });
+  const start=(PAGE-1)*PER; const slice=FILTER.slice(start,start+PER); const list=$('#list'); list.innerHTML='';
+  slice.forEach(c=>{
+    const div=document.createElement('div'); div.className='row'+(c.id===ACTIVE?' active':''); div.role='option'; div.tabIndex=0;
+    div.innerHTML=`<div style="flex:1"><div class="title">${esc(c.title)}</div><div class="snippet">${esc((c.client_profile||'').replace(/\n/g,' '))}</div></div><div><span class="pill">${esc((c.setting||'').split(/[.;]/)[0].slice(0,40)||'—')}</span></div>`;
+    div.onclick=()=>select(c.id); div.onkeydown=e=>{if(e.key==='Enter')select(c.id)};
     list.appendChild(div);
   });
-  const totalPages = Math.max(1, Math.ceil(FILTERED.length / PER));
-  $('#pageMeta').textContent = `Page ${PAGE}/${totalPages}`;
-  $('#prev').disabled = PAGE<=1;
-  $('#next').disabled = PAGE>=totalPages;
+  const pages=Math.max(1,Math.ceil(FILTER.length/PER)); $('#pageMeta').textContent=`Page ${PAGE}/${pages}`; $('#prev').disabled=PAGE<=1; $('#next').disabled=PAGE>=pages;
 }
-function shortSetting(s){ return (s||'').split(/[.;]/)[0].slice(0,40) || '—'; }
-
-function showEmptyDetail(){
-  $('#empty').style.display='';
-  $('#detail').style.display='none';
-  $('#detailHeading').textContent = 'Details';
-}
+function showEmpty(){ $('#empty').style.display=''; $('#detail').style.display='none'; $('#detailHeading').textContent='Details' }
+function selectByIndex(ix){const id=(FILTER[ix]||{}).id; if(typeof id==='number') select(id)}
 function select(id){
-  ACTIVE = id;
-  renderList();
-  const item = ALL.find(x=>x.id===id);
-  if(!item){ showEmptyDetail(); return; }
-  // Update hash for shareable link
-  history.replaceState(null,'',`#case=${encodeURIComponent(item.slug)}`);
-  fillDetail(item);
-}
-function selectByIndex(ix){
-  const id = (FILTERED[ix]||{}).id;
-  if(typeof id==='number') select(id);
+  ACTIVE=id; renderList(); const c=ALL.find(x=>x.id===id); if(!c) return showEmpty();
+  history.replaceState(null,'',`#case=${encodeURIComponent(c.slug)}`); fillDetail(c);
 }
 function fillDetail(c){
-  $('#empty').style.display='none';
-  $('#detail').style.display='';
-  $('#detailHeading').textContent = c.title||'Details';
-  $('#f_title').textContent = c.title||'';
-  $('#f_client_profile').innerHTML = brize(c.client_profile||'');
-  $('#f_setting').innerHTML = brize(c.setting||'');
-  $('#f_presenting_problem').innerHTML = brize(c.presenting_problem||'');
-  $('#f_relevant_history').innerHTML = brize(c.relevant_history||'');
-  $('#f_goals_and_preferences').innerHTML = brize(c.goals_and_preferences||'');
-  $('#f_strengths_and_resources').innerHTML = brize(c.strengths_and_resources||'');
-  $('#f_contextual_factors_and_barriers').innerHTML = brize(c.contextual_factors_and_barriers||'');
-  $('#f_ebp_decision_point').innerHTML = brize(c.ebp_decision_point||'');
-  $('#f_target_outcomes').innerHTML = brize(c.target_outcomes||'');
-  $('#f_risks_and_ethics').innerHTML = brize(c.risks_and_ethics||'');
-  $('#f_equity_signal').innerHTML = brize(c.equity_signal||'');
-  $('#f_narrative').innerHTML = brize(c.narrative||'');
+  $('#empty').style.display='none'; $('#detail').style.display=''; $('#detailHeading').textContent=c.title||'Details';
+  $('#f_title').textContent=c.title||''; $('#f_client_profile').innerHTML=brize(c.client_profile||''); $('#f_setting').innerHTML=brize(c.setting||'');
+  $('#f_presenting_problem').innerHTML=brize(c.presenting_problem||''); $('#f_relevant_history').innerHTML=brize(c.relevant_history||'');
+  $('#f_goals_and_preferences').innerHTML=brize(c.goals_and_preferences||''); $('#f_strengths_and_resources').innerHTML=brize(c.strengths_and_resources||'');
+  $('#f_contextual_factors_and_barriers').innerHTML=brize(c.contextual_factors_and_barriers||''); $('#f_ebp_decision_point').innerHTML=brize(c.ebp_decision_point||'');
+  $('#f_target_outcomes').innerHTML=brize(c.target_outcomes||''); $('#f_risks_and_ethics').innerHTML=brize(c.risks_and_ethics||''); $('#f_equity_signal').innerHTML=brize(c.equity_signal||'');
+  $('#f_narrative').innerHTML=brize(c.narrative||'');
+  const extras=c.extra||c.__extra__||{}; const hasQ=extras.clinical_questions&&String(extras.clinical_questions).trim(); const hasR=Array.isArray(extras.client_records)&&extras.client_records.length;
+  const wrap=$('#extraWrap'); const tgt=$('#extraFields'); if(hasQ||hasR){wrap.style.display=''; tgt.innerHTML='';
+    if(hasQ){ addKV(tgt,'Clinical Questions to Consider',extras.clinical_questions) }
+    if(hasR){ addKV(tgt,'Client Records',extras.client_records.map(x=>`• ${x}`).join('\n')) }
+  }else{ wrap.style.display='none' }
 }
-
-/* Actions */
-$('#btnClear').addEventListener('click', ()=>{ $('#q').value=''; applyFilter(); });
-$('#prev').addEventListener('click', ()=>{ if(PAGE>1){ PAGE--; renderList(); } });
-$('#next').addEventListener('click', ()=>{ const max = Math.ceil(FILTERED.length/PER)||1; if(PAGE<max){ PAGE++; renderList(); }});
-$('#btnCopyLink').addEventListener('click', async ()=>{
-  try{ await navigator.clipboard.writeText(location.href); }catch{}
-});
-$('#btnPrint').addEventListener('click', ()=>{ window.print(); });
-$('#btnOpen').addEventListener('click', ()=>{
-  const c = ALL.find(x=>x.id===ACTIVE); if(!c) return;
-  try{ localStorage.setItem('EBP_PRELOAD_TITLE', c.title||''); }catch{}
-  location.href = 'ebp.html'; // same folder assumption
-});
-
-/* Keyboard shortcuts */
-document.addEventListener('keydown', (e)=>{
-  const k = e.key;
-  if(k==='/' && e.target.tagName!=='INPUT' && e.target.tagName!=='TEXTAREA'){ e.preventDefault(); $('#q').focus(); return; }
-  if(['ArrowDown','ArrowUp','Enter'].includes(k) && document.activeElement===document.body){
-    e.preventDefault();
-    if(!FILTERED.length) return;
-    const curIx = Math.max(0, FILTERED.findIndex(x=>x.id===ACTIVE));
-    if(k==='ArrowDown'){ selectByIndex(Math.min(curIx+1, FILTERED.length-1)); }
-    else if(k==='ArrowUp'){ selectByIndex(Math.max(curIx-1, 0)); }
-    else if(k==='Enter'){ $('#btnOpen').click(); }
-  }
-});
+function addKV(container,k,v){ const K=document.createElement('div'); K.textContent=k; K.style.color='#6b7280'; const V=document.createElement('div'); V.innerHTML=brize(v); container.appendChild(K); container.appendChild(V)}
+$('#btnClear').onclick=()=>{ $('#q').value=''; applyFilter() }; $('#prev').onclick=()=>{ if(PAGE>1){PAGE--;renderList()} }; $('#next').onclick=()=>{ const max=Math.ceil(FILTER.length/PER)||1; if(PAGE<max){PAGE++;renderList()} }
+$('#btnCopyLink').onclick=async()=>{ try{ await navigator.clipboard.writeText(location.href) }catch{} }; $('#btnPrint').onclick=()=>window.print();
+$('#btnOpen').onclick=()=>{ const c=ALL.find(x=>x.id===ACTIVE); if(!c) return; try{ localStorage.setItem('EBP_PRELOAD_TITLE', c.title||'') }catch{}; location.href='ebp.html' }
+document.addEventListener('keydown',e=>{ const k=e.key; if(k==='/'&& !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){ e.preventDefault(); $('#q').focus(); return }
+  if(['ArrowDown','ArrowUp','Enter'].includes(k) && document.activeElement===document.body){ e.preventDefault(); if(!FILTER.length) return;
+    const ix=Math.max(0, FILTER.findIndex(x=>x.id===ACTIVE)); if(k==='ArrowDown')selectByIndex(Math.min(ix+1,FILTER.length-1)); else if(k==='ArrowUp')selectByIndex(Math.max(ix-1,0)); else $('#btnOpen').click(); }});
 $('#q').addEventListener('input', applyFilter);
-
-/* Routing: load #case=slug if present */
-function trySelectFromHash(){
-  const m = location.hash.match(/case=([^&]+)/);
-  if(!m) return false;
-  const slug = decodeURIComponent(m[1]);
-  const ix = ALL.findIndex(c=>c.slug===slug);
-  if(ix>=0){
-    const page = Math.floor(ix / PER) + 1;
-    PAGE = page;
-    renderList();
-    select(ALL[ix].id);
-    return true;
-  }
-  return false;
-}
-
-/* Boot */
-(async function(){
-  try{
-    const data = await loadData();
-    ALL = data;
-    applyFilter();
-    // try hash selection after initial render
-    trySelectFromHash();
-  }catch(e){
-    document.body.innerHTML = '<div class="wrap" style="margin-top:24px"><div class="empty">Error: '+esc(e.message)+'</div></div>';
-  }
-})();
+function tryHash(){ const m=location.hash.match(/case=([^&]+)/); if(!m) return false; const slug=decodeURIComponent(m[1]); const ix=ALL.findIndex(c=>c.slug===slug); if(ix>=0){ PAGE=Math.floor(ix/PER)+1; renderList(); select(ALL[ix].id); return true } return false }
+(async function(){ const data=await loadData(); ALL=data; applyFilter(); tryHash() })();
 </script>
 </body>
 </html>
+
+<!-- OPTIONAL: tiny preload hook for /ebp.html (paste anywhere after CASES + renderCase are defined) -->
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  try{
+    const want = localStorage.getItem('EBP_PRELOAD_TITLE');
+    if(want){
+      const m = (Array.isArray(window.CASES)?window.CASES:[]).find(c=>c.title===want);
+      if(m){ window.current=m; window.locked=false; (window.clearForm||(()=>{}))(); (window.renderCase||(()=>{}))(); }
+      localStorage.removeItem('EBP_PRELOAD_TITLE');
+    }
+  }catch(_){}
+});
+</script>
+
+<!-- /program-eval-index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Program Evaluation Vignette Index</title>
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --line:#e5e7eb; --accent:#2563eb }
+  *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
+  header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
+  .wrap{max-width:1200px;margin:0 auto;padding:12px 16px}
+  h1{font-size:18px;margin:0 0 6px}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  input[type=search]{width:360px;max-width:60vw;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fafafa}
+  button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 10px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  button:hover{border-color:#d1d5db} button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  main{max-width:1200px;margin:12px auto 20px;padding:0 16px;display:grid;grid-template-columns:1fr 1.2fr;gap:14px}
+  @media (max-width:960px){main{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .hd{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .bd{padding:10px 12px} .muted{color:var(--muted)}
+  .list{max-height:70vh;overflow:auto}
+  .row{display:flex;gap:10px;align-items:flex-start;border-bottom:1px dashed var(--line);padding:10px 6px;cursor:pointer}
+  .row:last-child{border-bottom:0} .row.active{background:#f3f4f6}
+  .title{font-weight:600;margin-bottom:2px}
+  .snippet{color:var(--muted);font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .pill{display:inline-block;background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff;border-radius:999px;padding:2px 8px;font-size:12px}
+  .grid{display:grid;grid-template-columns:220px 1fr;gap:8px}
+  .label{color:var(--muted)} .narrative{border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+  details summary{cursor:pointer;user-select:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Program Evaluation Vignette Index</h1>
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="Search title, setting, population, problems, stakeholders…" aria-label="Search">
+      <button id="btnClear">Clear</button>
+      <span id="count" class="muted"></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="hd"><strong>Vignettes</strong><div class="muted" id="pageMeta"></div></div>
+    <div class="bd">
+      <div id="list" class="list" role="listbox" aria-label="Vignette list"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+        <button id="prev">Prev</button><button id="next">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="hd">
+      <h2 id="detailHeading" style="font-size:16px;margin:0">Details</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="btnOpen" class="primary">Open in Plan Builder</button>
+        <button id="btnCopyLink">Copy Link</button>
+        <button id="btnPrint">Print</button>
+      </div>
+    </div>
+    <div class="bd">
+      <div id="empty" class="muted" style="padding:8px;border:1px dashed var(--line);border-radius:10px;background:#fcfcfd">Select a vignette from the list.</div>
+      <div id="detail" style="display:none">
+        <div class="grid">
+          <div class="label">Title</div><div id="f_title"></div>
+          <div class="label">Setting snapshot</div><div id="f_setting_snapshot"></div>
+          <div class="label">Population</div><div id="f_population"></div>
+          <div class="label">Core problems</div><div id="f_core_problems"></div>
+          <div class="label">Stakeholders</div><div id="f_stakeholders"></div>
+          <div class="label">Equity signals</div><div id="f_equity_signals"></div>
+          <div class="label">Constraints & resources</div><div id="f_constraints_resources"></div>
+          <div class="label">Your role</div><div id="f_role"></div>
+        </div>
+        <div class="narrative">
+          <h3 style="margin:0 0 6px">Scenario summary</h3>
+          <div id="f_scenario_summary"></div>
+        </div>
+        <div class="narrative" id="extraWrap" style="display:none">
+          <details open>
+            <summary>Additional fields</summary>
+            <div id="extraFields" style="display:grid;grid-template-columns:220px 1fr;gap:6px;margin-top:6px"></div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const FALLBACK_JSON = 'program_eval_cases.json';
+const $ = s => document.querySelector(s);
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]||c)).replace('&','&amp;')}
+function brize(s){return esc(s).replace(/\n/g,'<br>')}
+function slugify(s){return String(s||'').toLowerCase().trim().replace(/['"]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)}
+function normalize(arr){return (arr||[]).map((c,i)=>({id:i,slug:slugify(c.title||('case-'+(i+1))),...c}))}
+async function loadData(){
+  if(Array.isArray(window.CASES)&&window.CASES.length) return normalize(window.CASES);
+  const r = await fetch(FALLBACK_JSON,{cache:'no-store'}); if(!r.ok) throw new Error('Missing program_eval_cases data');
+  return normalize(await r.json());
+}
+let ALL=[], FILTER=[], PAGE=1, PER=8, ACTIVE=-1;
+function fieldsAll(){return ['title','setting_snapshot','population','core_problems','stakeholders','equity_signals','constraints_resources','role','scenario_summary']}
+function applyFilter(){
+  const q=($('#q').value||'').toLowerCase().trim();
+  FILTER=!q?[...ALL]:ALL.filter(c=>fieldsAll().some(f=>String(c[f]||'').toLowerCase().includes(q)));
+  PAGE=1; renderList(); FILTER.length?selectByIndex(0):showEmpty(); $('#count').textContent=`${FILTER.length} result${FILTER.length===1?'':'s'}`
+}
+function renderList(){
+  const start=(PAGE-1)*PER; const slice=FILTER.slice(start,start+PER); const list=document.getElementById('list'); list.innerHTML='';
+  slice.forEach(c=>{
+    const div=document.createElement('div'); div.className='row'+(c.id===ACTIVE?' active':''); div.role='option'; div.tabIndex=0;
+    div.innerHTML=`<div style="flex:1"><div class="title">${esc(c.title)}</div><div class="snippet">${esc((c.setting_snapshot||'').replace(/\n/g,' '))}</div></div><div><span class="pill">${esc((c.population||'').split(/[.;]/)[0].slice(0,40)||'—')}</span></div>`;
+    div.onclick=()=>select(c.id); div.onkeydown=e=>{if(e.key==='Enter')select(c.id)}; list.appendChild(div);
+  });
+  const pages=Math.max(1,Math.ceil(FILTER.length/PER)); document.getElementById('pageMeta').textContent=`Page ${PAGE}/${pages}`;
+  document.getElementById('prev').disabled=PAGE<=1; document.getElementById('next').disabled=PAGE>=pages;
+}
+function showEmpty(){ document.getElementById('empty').style.display=''; document.getElementById('detail').style.display='none'; document.getElementById('detailHeading').textContent='Details' }
+function selectByIndex(ix){const id=(FILTER[ix]||{}).id; if(typeof id==='number') select(id)}
+function select(id){
+  ACTIVE=id; renderList(); const c=ALL.find(x=>x.id===id); if(!c) return showEmpty();
+  history.replaceState(null,'',`#case=${encodeURIComponent(c.slug)}`); fillDetail(c);
+}
+function fillDetail(c){
+  document.getElementById('empty').style.display='none'; document.getElementById('detail').style.display='';
+  document.getElementById('detailHeading').textContent=c.title||'Details';
+  const set=(id,val)=>document.getElementById(id).innerHTML=brize(val||'');
+  set('f_title',c.title); set('f_setting_snapshot',c.setting_snapshot); set('f_population',c.population); set('f_core_problems',c.core_problems);
+  set('f_stakeholders',c.stakeholders); set('f_equity_signals',c.equity_signals); set('f_constraints_resources',c.constraints_resources); set('f_role',c.role);
+  set('f_scenario_summary',c.scenario_summary);
+  const extras=c.extra||c.__extra__||{}; const names=Object.keys(extras).filter(k=>extras[k] && String(extras[k]).trim());
+  const wrap=document.getElementById('extraWrap'); const tgt=document.getElementById('extraFields');
+  if(names.length){ wrap.style.display=''; tgt.innerHTML=''; names.forEach(k=>{ const K=document.createElement('div'); K.textContent=k; K.style.color='#6b7280'; const V=document.createElement('div'); V.innerHTML=brize(Array.isArray(extras[k])?extras[k].join('\n'):extras[k]); tgt.appendChild(K); tgt.appendChild(V); }); }
+  else{ wrap.style.display='none' }
+}
+document.getElementById('btnClear').onclick=()=>{ document.getElementById('q').value=''; applyFilter() }
+document.getElementById('prev').onclick=()=>{ if(PAGE>1){PAGE--;renderList()} }
+document.getElementById('next').onclick=()=>{ const max=Math.ceil(FILTER.length/PER)||1; if(PAGE<max){PAGE++;renderList()} }
+document.getElementById('btnCopyLink').onclick=async()=>{ try{ await navigator.clipboard.writeText(location.href) }catch{} }
+document.getElementById('btnPrint').onclick=()=>window.print();
+document.getElementById('btnOpen').onclick=()=>{ const c=ALL.find(x=>x.id===ACTIVE); if(!c) return; try{ localStorage.setItem('PD_PRELOAD_TITLE', c.title||'') }catch{}; location.href='program-evaluation-generator.html' }
+document.getElementById('q').addEventListener('input', applyFilter);
+(async function(){ const data=await loadData(); ALL=data; applyFilter(); const m=location.hash.match(/case=([^&]+)/); if(m){ const slug=decodeURIComponent(m[1]); const ix=ALL.findIndex(c=>c.slug===slug); if(ix>=0){ PAGE=Math.floor(ix/PER)+1; renderList(); select(ALL[ix].id) } } })();
+</script>
+</body>
+</html>
+
+<!-- OPTIONAL: tiny preload hook for /program-evaluation-generator.html (after CASES + renderCase exist) -->
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  try{
+    const want = localStorage.getItem('PD_PRELOAD_TITLE');
+    if(want){
+      const m = (Array.isArray(window.CASES)?window.CASES:[]).find(c=>c.title===want);
+      if(m){ window.current=m; window.locked=false; (window.clearForm||(()=>{}))(); (window.renderCase||(()=>{}))(); }
+      localStorage.removeItem('PD_PRELOAD_TITLE');
+    }
+  }catch(_){}
+});
+</script>
