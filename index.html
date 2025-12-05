@@ -41,8 +41,9 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
   /* Desktop equal-height cards; body scrolls internally */
   @media(min-width:768px){
     .js-equal-card{display:flex;flex-direction:column;min-height:0;overflow:hidden}
-    .js-equal-card h2{position:sticky;top:0;z-index:2;background:var(--card)} /* avoid layout jump while scrolling */
-    .js-equal-card .body{flex:1;overflow:auto;padding:16px;scroll-behavior:smooth;
+    .js-equal-card h2{position:sticky;top:0;z-index:2;background:var(--card)}
+    .js-equal-card .body{
+      flex:1;overflow:auto;padding:16px;scroll-behavior:smooth;
       -webkit-mask-image:linear-gradient(to bottom,transparent 0,black 12px,black calc(100% - 12px),transparent 100%);
               mask-image:linear-gradient(to bottom,transparent 0,black 12px,black calc(100% - 12px),transparent 100%);
     }
@@ -110,7 +111,7 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
       <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;justify-content:space-between">
         <div style="flex:1;min-width:260px">
           <div class="hero-title">Evidence-Based Practice (EBP) Case Randomizer & Note Builder</div>
-          <div class="hero-sub">Built for the SOW5404 Evidence-Based Practice assignment. Use the separate Program Development site for that assignment.</div>
+          <div class="hero-sub">Built for the SOW5404 Evidence-Based Practice assignment. Use the separate Program Development site for that course.</div>
         </div>
         <div class="pill accent" aria-label="Assignment tag">EBP Assignment</div>
       </div>
@@ -373,7 +374,7 @@ risks_and_ethics:`Respect for autonomy; avoiding moralizing language; cultural h
 equity_signal:`Mateo’s experience is shaped by labor conditions in the service industry, cultural norms around social drinking, stigma tied to masculinity and alcohol, and financial pressures common among workers in tipped positions.`,
 ebp_decision_point:`How to support Mateo in reducing alcohol use while preserving financial stability and privacy.`,
 target_outcomes:`Reduced frequency of after-shift drinking; increased ability to manage urges; improved sense of control.`,
-narrative:`Mateo arrives wearing his restaurant uniform, smelling faintly of citrus cleaner and fryer oil. He apologizes for the wait even though he is early. His leg bounces as he sits, and he keeps adjusting his baseball cap as though he is trying to settle into his own body.
+narrative:`Mateo arrives wearing his restaurant uniform, smelling faintly of citrus cleaner and fryer oil. He apologizes for the wait even though he is early. Heir leg bounces as he sits, and he keeps adjusting his baseball cap as though he is trying to settle into his own body.
 
 He explains that last night he drank more than planned after a chaotic dinner rush. A coworker bought a round "to celebrate surviving Friday," and he felt awkward refusing. Once he started drinking, he found himself staying longer than intended. He woke up groggy, ashamed, and terrified he might be "heading down the same road" as his father. He emphasizes that he does not drink every day, but the pattern feels familiar and frightening.
 
@@ -643,7 +644,7 @@ function onRandomize(){
   renderCase(currentCase);
   toast('Case selected');
   clearBuilder();
-  equalizeCards(); // sync height after content change
+  equalizeCards();
 }
 function renderCase(c){
   $('caseTitle').textContent=c?.title||'Untitled';
@@ -679,7 +680,7 @@ function setLocked(v){
   scheduleHeroPadding();
   if(locked){startAutosave()} else {stopAutosave()}
   lastSavedHash='';
-  setTimeout(equalizeCards,0); // header height changed; re-equalize
+  setTimeout(equalizeCards,0);
 }
 function onLockToggle(){ if(!currentCase){toast('Randomize a case first');return;} setLocked(!locked) }
 function startAutosave(){ stopAutosave(); autosaveTimer=setInterval(onSave,4000) }
@@ -846,61 +847,32 @@ function onExport(){
 }
 function onNew(){clearBuilder(); toast('Cleared'); equalizeCards();}
 
-<!-- Replace your whole "EQUAL HEIGHTS (breathing room)" block with this -->
-<script>
-/* Bigger cards, measured from the card's top (not the header) */
-const BREATH = 12;          // why: small bottom gap feels better visually
-const MIN_CARD_PX = 560;    // why: generous minimum so both panels feel full
-const MAX_VH = 92;          // why: don't slam into the viewport top bar
-
+/* =============== EQUAL HEIGHTS (bigger, from card top) =============== */
+const BREATH = 12;              // bottom gap
+const MIN_CARD_PX = 600;        // generous minimum
+const MAX_VH = 92;              // don't hit browser chrome
 function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
-
 function equalizeCards(){
   const twoCol = !window.matchMedia('(max-width: 1024px)').matches;
   const cards = document.querySelectorAll('.js-equal-card');
-
-  if (!twoCol || cards.length === 0) {
-    cards.forEach(el => el.style.height = '');
-    return;
-  }
-
-  // Measure from the actual card stack, not the header
-  const firstCardTop = cards[0].getBoundingClientRect().top;
-  const fromTop = Math.max(0, firstCardTop); // if scrolled, rect is already relative to viewport
+  if (!twoCol || cards.length === 0) { cards.forEach(el => el.style.height = ''); return; }
+  const firstTop = cards[0].getBoundingClientRect().top;
   const vh = window.innerHeight;
-
-  // Room between the first card's top and the bottom of viewport
-  const available = Math.floor(vh - fromTop - BREATH);
-
-  // Clamp to a generous min and sensible max
+  const available = Math.floor(vh - Math.max(0, firstTop) - BREATH);
   const maxPx = Math.floor((MAX_VH / 100) * vh);
   const target = clamp(available, MIN_CARD_PX, maxPx);
-
   cards.forEach(el => el.style.height = target + 'px');
 }
-
 window.addEventListener('load', equalizeCards);
 window.addEventListener('resize', equalizeCards);
 
-// Re-run after major UI changes (keep these if you had them)
-if (window.renderCase) {
-  const _renderCase = window.renderCase;
-  window.renderCase = function(c){ _renderCase(c); equalizeCards(); };
-}
-if (window.setLocked) {
-  const _setLocked = window.setLocked;
-  window.setLocked = function(v){ _setLocked(v); setTimeout(equalizeCards, 0); };
-}
-</script>
-
-/* =============== SECTION NAV (Builder) =============== */
+/* =============== SECTION NAV (safe DOM build) =============== */
 function setupBuilderNav(){
   const builder = document.getElementById('builderCard');
   if(!builder) return;
   const body = builder.querySelector('.body');
   if(!body) return;
 
-  // helper: find node by text content
   function findByText(root, selector, text){
     const nodes = root.querySelectorAll(selector);
     const needle = text.toLowerCase();
@@ -909,16 +881,15 @@ function setupBuilderNav(){
   }
 
   const anchors = [];
-  const map = [
-    {el: findByText(body,'h3','PICO Builder'),       id:'sec_pico',     label:'PICO'},
-    {el: findByText(body,'label','Client & Practice'),id:'sec_ctx',     label:'Context'},
-    {el: findByText(body,'label','Search Strategy'),  id:'sec_search',  label:'Search'},
-    {el: body.querySelector('#studiesBlock label'),   id:'sec_studies', label:'Studies'},
+  [
+    {el: findByText(body,'h3','PICO Builder'),        id:'sec_pico',     label:'PICO'},
+    {el: findByText(body,'label','Client & Practice'),id:'sec_ctx',      label:'Context'},
+    {el: findByText(body,'label','Search Strategy'),  id:'sec_search',   label:'Search'},
+    {el: body.querySelector('#studiesBlock label'),   id:'sec_studies',  label:'Studies'},
     {el: findByText(body,'label','Critical Appraisal'),id:'sec_appraisal',label:'Appraisal'},
     {el: findByText(body,'label','Application & Delivery'),id:'sec_plan',label:'Plan'},
-    {el: findByText(body,'label','Assumptions'),      id:'sec_assump',  label:'Assumptions'}
-  ];
-  map.forEach(item=>{
+    {el: findByText(body,'label','Assumptions'),      id:'sec_assump',   label:'Assumptions'}
+  ].forEach(item=>{
     if(!item.el) return;
     const target = item.el.closest('div') || item.el;
     if(!target.id) target.id = item.id;
@@ -929,10 +900,21 @@ function setupBuilderNav(){
   const nav = document.createElement('div');
   nav.className = 'section-nav';
   nav.setAttribute('role','navigation');
-  nav.innerHTML = `
-    <div class="chips" aria-label="Section navigation">
-      ${anchors.map(a=>`<button type="button" data-target="${a.id}" aria-controls="${a.id}">${a.label}</button>`).join('')}
-    </div>`;
+
+  const chips = document.createElement('div');
+  chips.className = 'chips';
+  chips.setAttribute('aria-label','Section navigation');
+
+  anchors.forEach(a=>{
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.dataset.target = a.id;
+    btn.setAttribute('aria-controls', a.id);
+    btn.textContent = a.label;
+    chips.appendChild(btn);
+  });
+
+  nav.appendChild(chips);
   body.insertBefore(nav, body.firstChild);
 
   nav.addEventListener('click', (e)=>{
@@ -947,28 +929,21 @@ function setupBuilderNav(){
 }
 </script>
 
-<!-- ===== DOCX exporter shim (pure WordprocessingML, no warnings) ===== -->
+<!-- ===== DOCX exporter shim (pure WordprocessingML) ===== -->
 <script>
-/* --- tiny UTF-8 + ZIP (store) builder --- */
 function utf8Bytes(str){str=String(str);const b=[];for(let i=0;i<str.length;i++){let c=str.charCodeAt(i);if(c>=0xD800&&c<=0xDBFF&&i+1<str.length){const c2=str.charCodeAt(++i);if((c2&0xFC00)===0xDC00){c=0x10000+((c-0xD800)<<10)+(c2-0xDC00)}else{i--}}if(c<=0x7F)b.push(c);else if(c<=0x7FF)b.push(0xC0|(c>>6),0x80|(c&0x3F));else if(c<=0xFFFF)b.push(0xE0|(c>>12),0x80|((c>>6)&0x3F),0x80|(c&0x3F));else b.push(0xF0|(c>>18),0x80|((c>>12)&0x3F),0x80|((c>>6)&0x3F),0x80|(c&0x3F))}return new Uint8Array(b)}
 const CRC_TABLE=(()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++){c=((c&1)?(0xEDB88320^(c>>>1)):(c>>>1))}t[n]=c>>>0}return t})();function crc32(u8){let c=0^(-1);for(let i=0;i<u8.length;i++){c=(c>>>8)^CRC_TABLE[(c^u8[i])&255]}return (c^(-1))>>>0}
 function le16(n){return new Uint8Array([n&255,(n>>8)&255])}function le32(n){return new Uint8Array([n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255])}
 function cat(chunks){const L=chunks.reduce((a,b)=>a+b.length,0);const out=new Uint8Array(L);let o=0;for(const c of chunks){out.set(c,o);o+=c.length}return out}
 function zipBlobSync(files,mime){const LFH=0x04034b50,CDH=0x02014b50,EOCD=0x06054b50,ver=20,gpbf=0x0800,method=0;const now=new Date();const dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(Math.floor(now.getSeconds()/2)));const dosDate=(((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate());const lfhChunks=[];const centrals=[];let offset=0;const headers=[];for(const f of files){const name=utf8Bytes(f.name);const data=f.data;const sum=crc32(data);const lfh=cat([le32(LFH),le16(ver),le16(gpbf),le16(method),le16(dosTime),le16(dosDate),le32(sum),le32(data.length),le32(data.length),le16(name.length),le16(0),name,data]);lfhChunks.push(lfh);headers.push({name,sum,size:data.length,offset,dosTime,dosDate});offset+=lfh.length}const startCD=offset;for(const h of headers){const cdh=cat([le32(CDH),le16(0x033F),le16(0x003F),le16(gpbf),le16(method),le16(h.dosTime),le16(h.dosDate),le32(h.sum),le32(h.size),le32(h.size),le16(h.name.length),le16(0),le16(0),le16(0),le16(0),le32(0),le32(h.offset),h.name]);centrals.push(cdh);offset+=cdh.length}const centralDir=cat(centrals);const end=cat([le32(EOCD),le16(0),le16(0),le16(headers.length),le16(headers.length),le32(centralDir.length),le32(startCD),le16(0)]);const zip=cat([...lfhChunks,centralDir,end]);return new Blob([zip],{type:mime||'application/zip'})}
-
-/* ---- Minimal HTML -> WordprocessingML mapper ---- */
 function sanitize(text){return String(text||"").replace(/[\u2013\u2014]/g,"-").replace(/[\p{Extended_Pictographic}\uFE0F]/gu,"")}
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function runText(t){return `<w:r><w:t xml:space="preserve">${esc(t)}</w:t></w:r>`}
 function p(children,style){return `<w:p>${style?`<w:pPr><w:pStyle w:val="${style}"/></w:pPr>`:""}${children||""}</w:p>`}
 function heading(text,level){const map={1:"Heading1",2:"Heading2",3:"Heading3"};return p(runText(text),map[level]||"Heading2")}
 function paragraphFromHTML(node){
-  let out = "";
-  node.childNodes.forEach(ch => {
-    if (ch.nodeType === 3) out += runText(ch.nodeValue || "");
-    else if (ch.nodeName === "BR") out += '<w:r><w:br/></w:r>';
-    else if (ch.nodeType === 1) out += paragraphFromHTML(ch);
-  });
+  let out=""; node.childNodes.forEach(ch=>{ if(ch.nodeType===3) out+=runText(ch.nodeValue||"");
+    else if(ch.nodeName==="BR") out+='<w:r><w:br/></w:r>'; else if(ch.nodeType===1) out+=paragraphFromHTML(ch); });
   return out;
 }
 function para(text){return p(runText(text),null)}
@@ -1036,8 +1011,6 @@ function buildDocxFromHTML(htmlInput){
   ];
   return zipBlobSync(files,'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 }
-
-/* Shim */
 (function(){
   const api=window.htmlDocx||{};
   api.asBlob=function(html){ return buildDocxFromHTML(html); };
