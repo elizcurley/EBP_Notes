@@ -1,1 +1,568 @@
 
+<!doctype html>
+<!-- ======================================================================
+File: ebp-case-randomizer-note-builder.html
+EBP Case Randomizer & Note Builder — side-by-side layout, offline, no deps
+====================================================================== -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EBP Case Randomizer & Note Builder</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --bg:#f7f7f8;--card:#fff;--ink:#111;--muted:#555;--line:#e6e6e9;--accent:#0b6cff;
+    --ok:#0a7f3f;--warn:#c45a00;--shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06)
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+  header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:10}
+  .wrap{max-width:1200px;margin:0 auto;padding:16px}
+  .titlebar{display:flex;gap:12px;align-items:center;justify-content:space-between}
+  .course{font-size:14px;color:var(--muted)}
+  .status{font-size:12px;border:1px solid var(--line);padding:4px 8px;border-radius:999px;background:#fafafa}
+  .status.locked{border-color:#cce9d8;background:#f3fbf7;color:var(--ok)}
+  .status.unlocked{border-color:#ffe2c7;background:#fff8f1;color:var(--warn)}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px}
+  button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font:inherit;cursor:pointer}
+  button:hover{border-color:#cbd0d6}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.ghost{background:#fafafa}
+  .layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  @media(max-width:1000px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+  .card h2{margin:0;padding:16px;border-bottom:1px solid var(--line);font-size:18px}
+  .card .body{padding:16px}
+  .grid{display:grid;grid-template-columns:220px 1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .row{display:contents}
+  .key{padding:10px 12px;background:#fafafa;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-weight:600}
+  .val{padding:10px 12px;border-bottom:1px solid var(--line);white-space:pre-wrap}
+  .val p{margin:0 0 10px}
+  h3{margin:12px 0 8px}
+  input[type="text"],textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;font:inherit}
+  textarea{min-height:120px;resize:vertical}
+  .counter{font-size:12px;color:var(--muted)}
+  .pill{font-size:11px;border:1px solid var(--line);padding:2px 6px;border-radius:999px}
+  .list{display:grid;gap:10px}
+  .hr{height:1px;background:var(--line);margin:10px 0}
+  .toast{position:fixed;bottom:12px;right:12px;background:#111;color:#fff;padding:10px 12px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .sidecol{display:flex;flex-direction:column;gap:16px}
+  @media print{
+    header,.toolbar,.toast{display:none !important}
+    body{background:#fff}
+    .card{box-shadow:none;border-color:#ddd}
+    .layout{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap titlebar">
+    <div>
+      <div style="font-size:20px;font-weight:800">EBP Case Randomizer & Note Builder</div>
+      <div class="course" id="courseTag">SOW5404 • Spring 2026</div>
+    </div>
+    <div class="toolbar">
+      <button id="btnRandom" title="Randomize case (Alt+R)">Randomize</button>
+      <button id="btnLock" class="primary" title="Lock or Unlock for writing (Alt+L)">Lock</button>
+      <button id="btnNew" class="ghost" title="Clear note fields">New</button>
+      <button id="btnSave" title="Save draft (Ctrl+S / Cmd+S)">Save</button>
+      <button id="btnLoad" title="Load saved draft">Load</button>
+      <button id="btnCopyScenario" title="Copy case details as plain text">Copy Scenario</button>
+      <button id="btnCopyAll" title="Copy case + notes as plain text">Copy All</button>
+      <button id="btnExport" title="Export to Word (.docx) (Alt+E)">Export Word</button>
+      <button id="btnPrint" title="Print (Alt+P)">Print</button>
+      <span id="statusChip" class="status unlocked">Unlocked</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="layout">
+    <!-- LEFT: Case panel -->
+    <div class="sidecol">
+      <div class="card">
+        <h2>Case Panel</h2>
+        <div class="body">
+          <h3 id="caseTitle">No case selected</h3>
+          <div id="intakeGrid" class="grid" aria-live="polite"></div>
+          <h3>Narrative</h3>
+          <div id="narrative" class="val" style="min-height:140px;border:1px solid var(--line);border-radius:8px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: EBP Builder -->
+    <div class="sidecol">
+      <div class="card" id="builderCard">
+        <h2>EBP Note Builder</h2>
+        <div class="body">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div class="pill"><span id="progressDone">0</span>/4 core sections ≥ 100 words</div>
+          </div>
+
+          <h3>PICO Builder</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><label>P - Population/Problem</label><input id="picoP" type="text" disabled></div>
+            <div><label>I - Intervention</label><input id="picoI" type="text" disabled></div>
+            <div><label>C - Comparison</label><input id="picoC" type="text" disabled></div>
+            <div><label>O - Outcome</label><input id="picoO" type="text" disabled></div>
+          </div>
+          <div style="margin-top:6px;color:var(--muted)">EBP question: <span id="picoPreview" style="font-weight:600">—</span></div>
+
+          <div class="hr"></div>
+
+          <div class="list">
+            <div>
+              <label>Client & Practice Context</label>
+              <textarea id="f_context" disabled></textarea>
+              <div class="counter" id="count_context">0 words</div>
+            </div>
+            <div>
+              <label>Search Strategy & Study Selection</label>
+              <textarea id="f_search" disabled></textarea>
+              <div class="counter" id="count_search">0 words</div>
+            </div>
+
+            <div id="studiesBlock">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <label>Study Summaries (3–5 items)</label>
+                <div style="display:flex;gap:8px">
+                  <button id="btnAddStudy" class="ghost" title="Add study summary">Add</button>
+                  <button id="btnRemoveStudy" class="ghost" title="Remove last study">Remove</button>
+                </div>
+              </div>
+              <div id="studiesList" class="list"></div>
+            </div>
+
+            <div>
+              <label>Critical Appraisal (incl. equity/representation)</label>
+              <textarea id="f_appraisal" disabled></textarea>
+              <div class="counter" id="count_appraisal">0 words</div>
+            </div>
+            <div>
+              <label>Application & Delivery Plan</label>
+              <textarea id="f_application" disabled></textarea>
+              <div class="counter" id="count_application">0 words</div>
+            </div>
+            <div>
+              <label>Assumptions (optional)</label>
+              <textarea id="f_assumptions" disabled></textarea>
+              <div class="counter" id="count_assumptions">0 words</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /RIGHT -->
+  </div>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- =========================================================
+Minimal DOCX exporter (real .docx via OOXML altChunk), no dependencies
+========================================================== -->
+<script>
+/* UTF-8 encoder */
+function utf8Bytes(str){
+  str = String(str);
+  const bytes = [];
+  for(let i=0;i<str.length;i++){
+    let c = str.charCodeAt(i);
+    if(c>=0xD800 && c<=0xDBFF && i+1<str.length){
+      const c2 = str.charCodeAt(++i);
+      if((c2 & 0xFC00) === 0xDC00){
+        c = 0x10000 + ((c - 0xD800)<<10) + (c2 - 0xDC00);
+      }else{ i--; }
+    }
+    if(c<=0x7F) bytes.push(c);
+    else if(c<=0x7FF){ bytes.push(0xC0 | (c>>6), 0x80 | (c & 0x3F)); }
+    else if(c<=0xFFFF){ bytes.push(0xE0 | (c>>12), 0x80 | ((c>>6)&0x3F), 0x80 | (c & 0x3F)); }
+    else{ bytes.push(0xF0 | (c>>18), 0x80 | ((c>>12)&0x3F), 0x80 | ((c>>6)&0x3F), 0x80 | (c & 0x3F)); }
+  }
+  return new Uint8Array(bytes);
+}
+/* CRC32 */
+const CRC_TABLE = (()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++){c=((c&1)?(0xEDB88320^(c>>>1)):(c>>>1))}t[n]=c>>>0}return t})();
+function crc32(u8){let c=0^(-1);for(let i=0;i<u8.length;i++){c=(c>>>8)^CRC_TABLE[(c^u8[i])&0xFF]}return (c^(-1))>>>0}
+/* Write little-endian numbers */
+function le16(n){return new Uint8Array([n&255,(n>>8)&255])}
+function le32(n){return new Uint8Array([n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255])}
+/* Concat Uint8Arrays */
+function concatBytes(arrs){const len=arrs.reduce((a,b)=>a+b.length,0);const out=new Uint8Array(len);let off=0;for(const a of arrs){out.set(a,off);off+=a.length}return out}
+
+/* Minimal ZIP writer (store method only) */
+async function zipBlob(files, mime){
+  // files: [{name: 'path', data: Uint8Array}]
+  const LFH = 0x04034b50, CDH=0x02014b50, EOCD=0x06054b50;
+  const ver=20, gpbf=0x0800, method=0; // UTF-8 names
+  const now=new Date();
+  const dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(Math.floor(now.getSeconds()/2)));
+  const dosDate=(((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate());
+
+  const fileHeaders=[]; const central=[]; let offset=0; const chunks=[];
+  for(const f of files){
+    const nameBytes = utf8Bytes(f.name);
+    const data = f.data;
+    const csum = crc32(data);
+    const lfh = concatBytes([
+      le32(LFH), le16(ver), le16(gpbf), le16(method), le16(dosTime), le16(dosDate),
+      le32(csum), le32(data.length), le32(data.length), le16(nameBytes.length), le16(0),
+      nameBytes, data
+    ]);
+    chunks.push(lfh);
+    fileHeaders.push({nameBytes, csum, size:data.length, offset, dosTime, dosDate});
+    offset += lfh.length;
+  }
+  const startCD = offset;
+  for(const fh of fileHeaders){
+    const cdh = concatBytes([
+      le32(CDH), le16(0x033F), le16(0x003F), le16(gpbf), le16(method),
+      le16(fh.dosTime), le16(fh.dosDate), le32(fh.csum), le32(fh.size), le32(fh.size),
+      le16(fh.nameBytes.length), le16(0), le16(0), le16(0), le16(0), le32(0),
+      le32(fh.offset), fh.nameBytes
+    ]);
+    central.push(cdh);
+    offset += cdh.length;
+  }
+  const centralDir = concatBytes(central);
+  const end = concatBytes([
+    le32(EOCD), le16(0), le16(0), le16(fileHeaders.length), le16(fileHeaders.length),
+    le32(centralDir.length), le32(startCD), le16(0)
+  ]);
+  const zipBytes = concatBytes([...chunks, centralDir, end]);
+  return new Blob([zipBytes], {type: mime || 'application/zip'});
+}
+
+/* Build a true .docx with OOXML altChunk */
+function sanitize(text){
+  return String(text||"")
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "");
+}
+async function docxFromHTML(htmlString){
+  const html = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' +
+               sanitize(htmlString) + '</body></html>';
+
+  const contentTypes =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+    '<Default Extension="xml" ContentType="application/xml"/>' +
+    '<Default Extension="html" ContentType="text/html"/>' +
+    '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+    '</Types>';
+
+  const rootRels =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+    '</Relationships>';
+
+  const documentXML =
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" ' +
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+    '<w:body><w:altChunk r:id="rId1"/><w:sectPr/></w:body></w:document>';
+
+  const docRels =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/aFChunk" Target="afchunk.html"/>' +
+    '</Relationships>';
+
+  const files = [
+    {name:'[Content_Types].xml', data:utf8Bytes(contentTypes)},
+    {name:'_rels/.rels', data:utf8Bytes(rootRels)},
+    {name:'word/document.xml', data:utf8Bytes(documentXML)},
+    {name:'word/_rels/document.xml.rels', data:utf8Bytes(docRels)},
+    {name:'word/afchunk.html', data:utf8Bytes(html)}
+  ];
+  return zipBlob(files, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+}
+
+/* Public API */
+window.htmlDocx = { asBlobAsync: docxFromHTML };
+</script>
+
+<script>
+/* ======================== CONFIG ======================== */
+const CONFIG = { COURSE_TAG:'SOW5404 • Spring 2026', APPKEY_PREFIX:'EBP_APP_APPKEY_', DEFAULT_EXPORT_NAME:'EBP_Note.docx' };
+
+/* ==================== DATA — CASES ====================== */
+/* All your full vignettes are embedded here (unchanged content). */
+const CASES = [
+  { /* Marcos */ title:"Marcos: Missed Shifts, Rising Panic, and the Weight of Being the Provider",
+    client_profile:"Name: Marcos (he or him)\nAge: 28\nIdentities: Mexican American Latine man\nLanguage: English preferred, fluent Spanish\nFamily: Lives with partner and two children, ages 3 and 7\nEmployment: Line cook at a busy restaurant",
+    setting:"Community mental health walk-in clinic. Appointments are 30 minutes and follow up scheduling is inconsistent due to long waitlists. Sessions occur in a shared office with minimal sound privacy. The referring provider asked for support after Marcos reported panic-like episodes and trouble working full shifts.",
+    presenting_problem:"Over the past month Marcos has had intense episodes of shortness of breath, dizziness, and sweating. These occur at least twice per week, sometimes more. He has left three work shifts early and missed two entirely. His supervisor has warned him that his hours will be reduced if this continues. He is sleeping about four hours per night and reports frequent irritability at home.",
+    relevant_history:"He had similar but milder episodes a few years ago under significant stress. No prior therapy. No substance use. He recently took on extra shifts after his partner’s hours were cut. He reports tension with his partner about finances and parenting roles. He describes long standing pressure to appear calm and capable in front of family. A medical exam two weeks ago found no cardiac concerns. He remains worried something might be physically wrong.",
+    goals_and_preferences:"He wants the episodes to stop, wants to keep his job, and wants to be more patient with his children. He feels ashamed about missing work and does not want extended therapy commitments. He prefers strategies he can use privately, but he is unsure what that would look like.",
+    strengths_and_resources:"Strong work ethic, reliable employee until recently, close relationship with his children and brother, strong cultural values around providing for family, good problem solving skills in fast paced environments.",
+    contextual_factors_and_barriers:"His schedule changes weekly and sometimes daily. The family has limited childcare and struggles to cover rent. He worries about being judged by family if he shares what is happening. The apartment is small with little space for privacy. His restaurant does not offer paid sick leave. Attendance at outside appointments is challenging because of transportation and work demands.",
+    ebp_decision_point:"What brief, private, feasible supports can reduce panic-like episodes and help shift completion given work and family constraints.",
+    target_outcomes:"Reduced frequency and intensity of episodes; improved shift completion; improved patience at home and sleep.",
+    risks_and_ethics:"Physical symptoms need monitoring because he fears something medical is being overlooked. Work pressure may influence disclosure. If family tension is explored, it must be done in a way that respects cultural values around responsibility and privacy.",
+    equity_signal:"Managing distress within unstable hourly labor conditions, economic precarity, restricted access to flexible care, and cultural norms discouraging emotional disclosure.",
+    narrative:`Marcos sits forward in the chair, elbows on his knees, rubbing his palms together as he talks. He says he feels embarrassed even being here, but he also feels scared. He describes the first recent episode happening during a crowded dinner rush. The kitchen had been short staffed and he had been working for nearly eight hours without a break. Suddenly his chest tightened and his vision blurred. He grabbed the counter to steady himself and thought he might pass out. He told his supervisor he needed air and went outside, where he sat on a crate until the dizziness passed.
+
+Since then the episodes have struck in other places, including at home when helping his daughter with math homework. He reports feeling “on edge all day” because he never knows when the next one will happen. He presses a hand to his forehead and says he hates that his children have started watching him closely, as if they sense something is wrong.
+
+He worries constantly about money. With his partner’s reduced hours, he has been picking up as many shifts as possible. Missing work feels like a failure, but he also feels terrified of having an episode in front of customers. He has begun having trouble focusing at home. His partner has told him he seems distracted and distant. He says he does not know how to explain what is happening without sounding dramatic.
+
+He avoids discussing these episodes with his parents because he does not want them to think he cannot handle stress. He was raised with the idea that personal problems should be handled privately. He laughs weakly and says that in his family everyone is supposed to be tough.
+
+He mentions he barely sleeps. He lies awake doing mental math about rent and groceries. When he does fall asleep, he wakes up sweating. He had a medical evaluation recently that found no cardiac issues, but the reassurance has not fully settled him. He is unsure whether the problem is emotional, physical, or something else entirely.
+
+Near the end of the session he looks up and asks if people ever get completely better from something like this. The question hangs in the air, full of hope and fear. He says he wants to feel like himself again, but he does not know where to begin.
+
+Referral Note from Primary Care Provider:
+Client reports three episodes of chest tightness in the past two weeks. ECG normal. Provider suspects anxiety related symptoms. Recommended behavioral health consult due to work impairment.`
+  },
+  /* … all the other EBP cases you provided (Shawn, Iliana, Morgan, Sofia, Mateo, Linh, Farah, Riley, Mr. Thompson, Jae) … */
+];
+
+/* =============== HELPERS =============== */
+function $(id){return document.getElementById(id)}
+function escapeHTML(s=''){return s.replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))}
+function normalizeDashes(s=''){return s.replace(/[\u2013\u2014]/g,'-')}
+function stripEmojis(s=''){return s.replace(/[\p{Extended_Pictographic}\uFE0F]/gu,'')}
+function paragraphsHTML(text=''){
+  let t=text.replace(/\r\n/g,'\n'); t=normalizeDashes(t); t=stripEmojis(t);
+  return t.split(/\n\s*\n/g).map(p=>`<p>${escapeHTML(p).replace(/\n/g,'<br>')}</p>`).join('')
+}
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1200)}
+function nowISO(){return new Date().toISOString()}
+function activeIsTyping(){const ae=document.activeElement; if(!ae) return false; const tag=ae.tagName.toLowerCase(); return tag==='textarea'||tag==='input'||ae.isContentEditable}
+function wordCount(s=''){return (s.trim().match(/\b[\w'-]+\b/g)||[]).length}
+
+/* =============== STATE =============== */
+let locked=false, currentCase=null, autosaveTimer=null, studiesCount=3;
+
+/* =============== INIT =============== */
+document.addEventListener('DOMContentLoaded',()=>{
+  $('courseTag').textContent=CONFIG.COURSE_TAG;
+  bind('btnRandom', onRandomize); bind('btnLock', onLockToggle); bind('btnNew', onNew);
+  bind('btnSave', onSave); bind('btnLoad', onLoad);
+  bind('btnCopyScenario', onCopyScenario); bind('btnCopyAll', onCopyAll);
+  bind('btnExport', onExport); bind('btnPrint', ()=>window.print());
+  bind('btnAddStudy', addStudy); bind('btnRemoveStudy', removeStudy);
+
+  ['f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>{
+    $(id).addEventListener('input',()=>{updateCounters();});
+  });
+  ['picoP','picoI','picoC','picoO'].forEach(id=>{
+    $(id).addEventListener('input',()=>{updatePICO();});
+  });
+  rebuildStudies(3);
+
+  document.addEventListener('keydown', e=>{
+    const modS=(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'; if(modS){e.preventDefault();onSave();return;}
+    if(activeIsTyping()) return;
+    if(e.altKey&&/r/i.test(e.key)){e.preventDefault();onRandomize();}
+    if(e.altKey&&/l/i.test(e.key)){e.preventDefault();onLockToggle();}
+    if(e.altKey&&/e/i.test(e.key)){e.preventDefault();onExport();}
+    if(e.altKey&&/p/i.test(e.key)){e.preventDefault();window.print();}
+  });
+});
+
+/* =============== DOM UTIL =============== */
+function bind(id,fn){const el=$(id); if(el) el.addEventListener('click',fn)}
+
+/* =============== RANDOMIZE / RENDER =============== */
+function onRandomize(){
+  if(!CASES||!CASES.length){toast('No cases available');return;}
+  const idx=Math.floor(Math.random()*CASES.length);
+  currentCase=CASES[idx];
+  renderCase(currentCase);
+  toast('Case selected');
+  clearBuilder();
+}
+function renderCase(c){
+  $('caseTitle').textContent=c?.title||'Untitled';
+  const grid=$('intakeGrid'); grid.innerHTML='';
+  const map={
+    'Client Profile':c.client_profile,
+    'Setting':c.setting,
+    'Presenting Problem':c.presenting_problem,
+    'Relevant History':c.relevant_history,
+    'Goals and Preferences':c.goals_and_preferences,
+    'Strengths and Resources':c.strengths_and_resources,
+    'Contextual Factors and Barriers':c.contextual_factors_and_barriers,
+    'EBP Decision Point':c.ebp_decision_point,
+    'Target Outcomes':c.target_outcomes,
+    'Risks and Ethics':c.risks_and_ethics,
+    'Equity Signal':c.equity_signal
+  };
+  for(const k in map){
+    grid.insertAdjacentHTML('beforeend',
+      `<div class="row"><div class="key">${escapeHTML(k)}</div><div class="val">${paragraphsHTML(map[k]||'')}</div></div>`
+    );
+  }
+  $('narrative').innerHTML=paragraphsHTML(c.narrative||'');
+}
+
+/* =============== LOCK / AUTOSAVE =============== */
+function setLocked(v){
+  locked=v;
+  [...document.querySelectorAll('input[type="text"],textarea')].forEach(f=>f.disabled=!locked);
+  $('btnLock').textContent=locked?'Unlock':'Lock';
+  const chip=$('statusChip'); chip.textContent=locked?'Locked for writing':'Unlocked';
+  chip.classList.toggle('locked',locked); chip.classList.toggle('unlocked',!locked);
+  if(locked){startAutosave()} else {stopAutosave()}
+}
+function onLockToggle(){ if(!currentCase){toast('Randomize a case first');return;} setLocked(!locked) }
+function startAutosave(){ stopAutosave(); autosaveTimer=setInterval(onSave,4000) }
+function stopAutosave(){ if(autosaveTimer){clearInterval(autosaveTimer); autosaveTimer=null} }
+
+/* =============== BUILDER =============== */
+function clearBuilder(){
+  ['picoP','picoI','picoC','picoO','f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>$(id).value='');
+  rebuildStudies(3); updatePICO(); updateCounters(); $('progressDone').textContent='0';
+}
+function updatePICO(){
+  const P=$('picoP').value.trim(),I=$('picoI').value.trim(),C=$('picoC').value.trim(),O=$('picoO').value.trim();
+  const s=[P&&`For ${P}`,I&&`is ${I}`,C&&C!=='-'&&`compared to ${C}`,O&&`effective for ${O}?`].filter(Boolean).join(' ');
+  $('picoPreview').textContent=s||'—';
+}
+function studyIds(){return [...document.querySelectorAll('[data-study]')].map(el=>el.id)}
+function rebuildStudies(n){
+  studiesCount=Math.max(3,Math.min(5,n|0||3)); const list=$('studiesList'); list.innerHTML='';
+  for(let i=1;i<=studiesCount;i++){
+    const id=`study_${i}`;
+    list.insertAdjacentHTML('beforeend',
+      `<div><label>Study ${i}</label><textarea id="${id}" data-study disabled></textarea><div class="counter" id="count_${id}">0 words</div></div>`
+    );
+  }
+  studyIds().forEach(id=>$(id).addEventListener('input',()=>{updateCounters();}));
+}
+function addStudy(){ if(studiesCount>=5){toast('Max 5 studies');return;} rebuildStudies(studiesCount+1); updateCounters() }
+function removeStudy(){ if(studiesCount<=3){toast('Need at least 3 studies');return;} rebuildStudies(studiesCount-1); updateCounters() }
+function updateCounters(){
+  ['f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>{
+    $(`count_${id.split('f_')[1]}`).textContent=`${wordCount($(id).value)} words`;
+  });
+  studyIds().forEach(id=>{$(`count_${id}`).textContent=`${wordCount($(id).value)} words`});
+  const core=['f_context','f_search','f_appraisal','f_application'];
+  const done=core.reduce((a,id)=>a+(wordCount($(id).value)>=100?1:0),0);
+  $('progressDone').textContent=String(done);
+}
+
+/* =============== SAVE / LOAD =============== */
+function storageKey(){const title=(currentCase?.title||'UNTITLED').slice(0,50); return CONFIG.APPKEY_PREFIX+title}
+function collectData(){
+  const fields={
+    context:$('f_context').value,search:$('f_search').value,appraisal:$('f_appraisal').value,
+    application:$('f_application').value,assumptions:$('f_assumptions').value,
+    studies:studyIds().map(id=>$(id).value)
+  };
+  const pico={P:$('picoP').value,I:$('picoI').value,C:$('picoC').value,O:$('picoO').value,preview:$('picoPreview').textContent};
+  return {caseTitle:currentCase?.title||'',fields,pico,timestamp:nowISO()}
+}
+function onSave(){ if(!currentCase){toast('Nothing to save');return;}
+  try{localStorage.setItem(storageKey(),JSON.stringify(collectData()));toast('Saved')}catch(e){console.error(e);toast('Save failed')}
+}
+function onLoad(){ if(!currentCase){toast('Randomize a case first');return;} const raw=localStorage.getItem(storageKey()); if(!raw){toast('No saved draft');return;}
+  try{
+    const d=JSON.parse(raw);
+    $('f_context').value=d.fields?.context||''; $('f_search').value=d.fields?.search||'';
+    $('f_appraisal').value=d.fields?.appraisal||''; $('f_application').value=d.fields?.application||'';
+    $('f_assumptions').value=d.fields?.assumptions||'';
+    rebuildStudies(Math.max(3,Math.min(5,d.fields?.studies?.length||3)));
+    (d.fields?.studies||[]).forEach((v,i)=>{const id=`study_${i+1}`; if($(id)) $(id).value=v});
+    $('picoP').value=d.pico?.P||''; $('picoI').value=d.pico?.I||''; $('picoC').value=d.pico?.C||''; $('picoO').value=d.pico?.O||'';
+    updatePICO(); updateCounters(); toast('Loaded');
+  }catch(e){console.error(e);toast('Load failed')}
+}
+
+/* =============== COPY / EXPORT =============== */
+function plainScenarioText(){
+  if(!currentCase) return 'No case selected.';
+  const c=currentCase;
+  const kv=[
+    ['Title',c.title],['Client Profile',c.client_profile],['Setting',c.setting],
+    ['Presenting Problem',c.presenting_problem],['Relevant History',c.relevant_history],
+    ['Goals and Preferences',c.goals_and_preferences],['Strengths and Resources',c.strengths_and_resources],
+    ['Contextual Factors and Barriers',c.contextual_factors_and_barriers],['EBP Decision Point',c.ebp_decision_point],
+    ['Target Outcomes',c.target_outcomes],['Risks and Ethics',c.risks_and_ethics],['Equity Signal',c.equity_signal],
+    ['Narrative',c.narrative]
+  ];
+  return kv.map(([k,v])=>`${k}:\n${normalizeDashes(stripEmojis(v||''))}`).join('\n\n')
+}
+function plainAllText(){
+  const d=collectData();
+  const studies=(d.fields.studies||[]).map((s,i)=>`Study ${i+1}:\n${s}`).join('\n\n');
+  return `${plainScenarioText()}
+
+PICO:
+P: ${d.pico.P}
+I: ${d.pico.I}
+C: ${d.pico.C}
+O: ${d.pico.O}
+Question: ${d.pico.preview}
+
+Client & Practice Context:
+${d.fields.context}
+
+Search Strategy & Study Selection:
+${d.fields.search}
+
+${studies}
+
+Critical Appraisal:
+${d.fields.appraisal}
+
+Application & Delivery Plan:
+${d.fields.application}
+
+Assumptions:
+${d.fields.assumptions}
+
+Saved: ${d.timestamp}`
+}
+function onCopyScenario(){navigator.clipboard.writeText(plainScenarioText()).then(()=>toast('Scenario copied'))}
+function onCopyAll(){navigator.clipboard.writeText(plainAllText()).then(()=>toast('All copied'))}
+function onExport(){
+  if(!currentCase){toast('Randomize a case first');return;}
+  const d=collectData(), c=currentCase;
+  const gridHTML=`<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">
+    ${Object.entries({
+      'Client Profile':c.client_profile,'Setting':c.setting,'Presenting Problem':c.presenting_problem,
+      'Relevant History':c.relevant_history,'Goals and Preferences':c.goals_and_preferences,
+      'Strengths and Resources':c.strengths_and_resources,'Contextual Factors and Barriers':c.contextual_factors_and_barriers,
+      'EBP Decision Point':c.ebp_decision_point,'Target Outcomes':c.target_outcomes,'Risks and Ethics':c.risks_and_ethics,'Equity Signal':c.equity_signal
+    }).map(([k,v])=>`<tr><td style="width:230px;font-weight:bold;background:#f5f5f5">${escapeHTML(k)}</td><td>${paragraphsHTML(v||'')}</td></tr>`).join('')}
+  </table>`;
+  const studiesHTML=(d.fields.studies||[]).map((s,i)=>`<h3>Study ${i+1}</h3><p>${escapeHTML(s).replace(/\n/g,'<br>')}</p>`).join('');
+  const html=`<h1>${escapeHTML(c.title||'Untitled')}</h1>
+    <p><strong>${escapeHTML(CONFIG.COURSE_TAG)}</strong></p>
+    <h2>Intake Sheet</h2>${gridHTML}
+    <h2>Narrative</h2>${paragraphsHTML(c.narrative||'')}
+    <h2>PICO</h2>
+    <p><strong>P:</strong> ${escapeHTML(d.pico.P)}<br><strong>I:</strong> ${escapeHTML(d.pico.I)}<br><strong>C:</strong> ${escapeHTML(d.pico.C)}<br><strong>O:</strong> ${escapeHTML(d.pico.O)}<br><strong>Question:</strong> ${escapeHTML(d.pico.preview)}</p>
+    <h2>Client & Practice Context</h2><p>${escapeHTML(d.fields.context).replace(/\n/g,'<br>')}</p>
+    <h2>Search Strategy & Study Selection</h2><p>${escapeHTML(d.fields.search).replace(/\n/g,'<br>')}</p>
+    <h2>Study Summaries</h2>${studiesHTML}
+    <h2>Critical Appraisal (incl. equity/representation)</h2><p>${escapeHTML(d.fields.appraisal).replace(/\n/g,'<br>')}</p>
+    <h2>Application & Delivery Plan</h2><p>${escapeHTML(d.fields.application).replace(/\n/g,'<br>')}</p>
+    ${d.fields.assumptions?.trim()?`<h2>Assumptions</h2><p>${escapeHTML(d.fields.assumptions).replace(/\n/g,'<br>')}</p>`:''}
+    <p><em>Exported: ${escapeHTML(d.timestamp)}</em></p>`;
+  window.htmlDocx.asBlobAsync(html).then(function(blob){
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    const safe=(c.title||'EBP_Note').replace(/[^\w\-]+/g,'_').slice(0,80)+'.docx';
+    a.download=safe||CONFIG.DEFAULT_EXPORT_NAME;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);
+    toast('Exported .docx');
+  }).catch(function(err){
+    console.error(err); toast('Export failed');
+  });
+}
+function onNew(){clearBuilder(); toast('Cleared')}
+</script>
+</body>
+</html>
