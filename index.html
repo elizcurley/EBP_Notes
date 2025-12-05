@@ -151,7 +151,7 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
   </div>
 </main>
 
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 
 
@@ -193,7 +193,7 @@ He mentions he barely sleeps. He lies awake doing mental math about rent and gro
 Near the end of the session he looks up and asks if people ever get completely better from something like this. The question hangs in the air, full of hope and fear. He says he wants to feel like himself again, but he does not know where to begin.
 
 Referral Note from Primary Care Provider:
-Client reports three episodes of chest tightness in the past two weeks. ECG normal. Provider suspects anxiety related symptoms. Recommended behavioral health consult due to work impairmen`},
+Client reports three episodes of chest tightness in the past two weeks. ECG normal. Provider suspects anxiety related symptoms. Recommended behavioral health consult due to work impairment.`},
 /* Shawn */
 {title:"Shawn: Headaches, Exhaustion, and Everyone Counting on Him",
 client_profile:`Age 32. He and him. Black. Works full-time in a warehouse distribution center. Primary caregiver for his mother who has mobility limitations. Lives with his mother and younger sister. Limited health insurance coverage.`,
@@ -506,8 +506,27 @@ function nowISO(){return new Date().toISOString()}
 function activeIsTyping(){const ae=document.activeElement; if(!ae) return false; const tag=ae.tagName.toLowerCase(); return tag==='textarea'||tag==='input'||ae.isContentEditable}
 function wordCount(s=''){return (s.trim().match(/\b[\w'-]+\b/g)||[]).length}
 
+/* clipboard fallback (HTTPS or file:// safe) */
+async function copyTextSafe(txt){
+  try{
+    if(navigator.clipboard && window.isSecureContext!==false){
+      await navigator.clipboard.writeText(txt);
+      return true;
+    }
+  }catch(_){}
+  const ta=document.createElement('textarea');
+  ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  let ok=false; try{ ok=document.execCommand('copy'); }catch(_){}
+  ta.remove(); return ok;
+}
+
+/* simple hash to skip redundant autosaves */
+function hashString(s){ let h=5381; for(let i=0;i<s.length;i++){ h=((h<<5)+h) ^ s.charCodeAt(i); } return (h>>>0).toString(36); }
+
 /* =============== STATE =============== */
 let locked=false, currentCase=null, autosaveTimer=null, studiesCount=3;
+let lastSavedHash='';
 
 /* =============== INIT =============== */
 document.addEventListener('DOMContentLoaded',()=>{
@@ -580,6 +599,7 @@ function setLocked(v){
   const chip=$('statusChip'); chip.textContent=locked?'Locked for writing':'Unlocked';
   chip.classList.toggle('locked',locked); chip.classList.toggle('unlocked',!locked);
   if(locked){startAutosave()} else {stopAutosave()}
+  lastSavedHash=''; // reset autosave guard on state change
 }
 function onLockToggle(){ if(!currentCase){toast('Randomize a case first');return;} setLocked(!locked) }
 function startAutosave(){ stopAutosave(); autosaveTimer=setInterval(onSave,4000) }
@@ -589,19 +609,28 @@ function stopAutosave(){ if(autosaveTimer){clearInterval(autosaveTimer); autosav
 function clearBuilder(){
   ['picoP','picoI','picoC','picoO','f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>$(id).value='');
   rebuildStudies(3); updatePICO();
+  lastSavedHash=''; // reset guard
 }
 function updatePICO(){
-  const P=$('picoP').value.trim(),I=$('picoI').value.trim(),C=$('picoC').value.trim(),O=$('picoO').value.trim();
-  const s=[P&&`For ${P}`,I&&`is ${I}`,C&&C!=='-'&&`compared to ${C}`,O&&`effective for ${O}?`].filter(Boolean).join(' ');
+  const P=$('picoP').value.trim(), I=$('picoI').value.trim(),
+        C=$('picoC').value.trim(), O=$('picoO').value.trim();
+  let parts=[];
+  if(P) parts.push(`For ${P},`);
+  if(I) parts.push(`is ${I}`);
+  if(C && C!=='-') parts.push(`compared to ${C}`);
+  if(O) parts.push(`effective for ${O}?`);
+  const s=parts.join(' ').replace(/\s+,/g,',').trim();
   $('picoPreview').textContent=s||'—';
 }
 function studyIds(){return [...document.querySelectorAll('[data-study]')].map(el=>el.id)}
 function rebuildStudies(n){
-  studiesCount=Math.max(3,Math.min(5,n|0||3)); const list=$('studiesList'); list.innerHTML='';
+  studiesCount=Math.max(3,Math.min(5,n|0||3));
+  const list=$('studiesList'); list.innerHTML='';
+  const shouldDisable = !locked; // mirror current lock state
   for(let i=1;i<=studiesCount;i++){
     const id=`study_${i}`;
     list.insertAdjacentHTML('beforeend',
-      `<div><textarea id="${id}" data-study disabled></textarea></div>`
+      `<div><textarea id="${id}" data-study ${shouldDisable?'disabled':''}></textarea></div>`
     );
   }
 }
@@ -620,7 +649,14 @@ function collectData(){
   return {caseTitle:currentCase?.title||'',fields,pico,timestamp:nowISO()}
 }
 function onSave(){ if(!currentCase){toast('Nothing to save');return;}
-  try{localStorage.setItem(storageKey(),JSON.stringify(collectData()));toast('Saved')}catch(e){console.error(e);toast('Save failed')}
+  try{
+    const payload = JSON.stringify(collectData());
+    const h = hashString(payload);
+    if(h===lastSavedHash){ return; } // skip redundant write
+    localStorage.setItem(storageKey(), payload);
+    lastSavedHash = h;
+    toast('Saved');
+  }catch(e){console.error(e);toast('Save failed')}
 }
 function onLoad(){ if(!currentCase){toast('Randomize a case first');return;} const raw=localStorage.getItem(storageKey()); if(!raw){toast('No saved draft');return;}
   try{
@@ -632,6 +668,7 @@ function onLoad(){ if(!currentCase){toast('Randomize a case first');return;} con
     (d.fields?.studies||[]).forEach((v,i)=>{const id=`study_${i+1}`; if($(id)) $(id).value=v});
     $('picoP').value=d.pico?.P||''; $('picoI').value=d.pico?.I||''; $('picoC').value=d.pico?.C||''; $('picoO').value=d.pico?.O||'';
     updatePICO(); toast('Loaded');
+    lastSavedHash=''; // reset guard after load
   }catch(e){console.error(e);toast('Load failed')}
 }
 
@@ -680,8 +717,14 @@ ${d.fields.assumptions}
 
 Saved: ${d.timestamp}`
 }
-function onCopyScenario(){navigator.clipboard.writeText(plainScenarioText()).then(()=>toast('Scenario copied'))}
-function onCopyAll(){navigator.clipboard.writeText(plainAllText()).then(()=>toast('All copied'))}
+async function onCopyScenario(){
+  const ok = await copyTextSafe(plainScenarioText());
+  toast(ok?'Scenario copied':'Copy failed');
+}
+async function onCopyAll(){
+  const ok = await copyTextSafe(plainAllText());
+  toast(ok?'All copied':'Copy failed');
+}
 function onExport(){
   if(!currentCase){toast('Randomize a case first');return;}
   const d=collectData(), c=currentCase;
