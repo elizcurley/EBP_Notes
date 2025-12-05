@@ -823,6 +823,144 @@ function onExport(){
 function onNew(){clearBuilder(); toast('Cleared')}
 </script>
 
+  <!-- ===== Enhancements: breathing room, sticky headers, scroll shadows, section nav ===== -->
+<style>
+  /* Breathing room + sticky titles + nicer scrolling */
+  .js-equal-card{overflow:hidden}
+  .js-equal-card h2{
+    position: sticky; top: 0; z-index: 2;
+    background: var(--card); /* cover content while scrolling */
+  }
+  .js-equal-card .body{
+    scroll-behavior: smooth;
+    /* Soft top/bottom fade to hint scrollability (WebKit + standard) */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+  }
+
+  /* Tiny section nav inside Builder */
+  .section-nav{
+    position: sticky; top: 0; z-index: 3;
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 8px 0 10px;
+    margin: -6px 0 8px; /* tuck it closer to content */
+  }
+  .section-nav .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .section-nav button{
+    padding:6px 10px;border-radius:999px;font-size:12px;
+    border:1px solid var(--line);background:#f8fafc;cursor:pointer
+  }
+  .section-nav button:focus{outline:2px solid var(--accent);outline-offset:1px}
+</style>
+
+<script>
+(function(){
+  /* ------------------ 1) Equal-height with breathing room ------------------ */
+  const BREATH = 24;  // px gap from bottom of viewport
+  const EQ_SEL = '.js-equal-card';
+
+  function equalizeCards(){
+    const twoCol = !window.matchMedia('(max-width: 1024px)').matches;
+    const cards = document.querySelectorAll(EQ_SEL);
+    if(!twoCol){ cards.forEach(el=>el.style.height=''); return; }
+    const header = document.querySelector('header');
+    const rect = header ? header.getBoundingClientRect() : null;
+    const headerBottom = rect ? rect.bottom + window.scrollY : 0;
+    const gap = 16; // matches .layout gap
+    const available = Math.max(360, Math.floor(window.innerHeight - headerBottom - gap - BREATH));
+    cards.forEach(el => el.style.height = available + 'px');
+  }
+
+  window.addEventListener('load', equalizeCards);
+  window.addEventListener('resize', equalizeCards);
+
+  // Reuse your existing hooks if present:
+  if (window.renderCase) {
+    const _renderCase = window.renderCase;
+    window.renderCase = function(c){ _renderCase(c); equalizeCards(); };
+  }
+  if (window.setLocked) {
+    const _setLocked = window.setLocked;
+    window.setLocked = function(v){ _setLocked(v); setTimeout(equalizeCards, 0); };
+  }
+
+  /* ------------------ 2) Builder section navigator ------------------ */
+  const builder = document.getElementById('builderCard');
+  if(builder){
+    const body = builder.querySelector('.body');
+    if(body){
+      // Ensure anchor ids exist on each section heading
+      const map = [
+        {sel: 'h3:contains("PICO Builder")', id: 'sec_pico', label: 'PICO'},
+        {sel: 'label:contains("Client & Practice Context")', id: 'sec_ctx', label: 'Context'},
+        {sel: 'label:contains("Search Strategy")', id: 'sec_search', label: 'Search'},
+        {sel: '#studiesBlock label', id: 'sec_studies', label: 'Studies'},
+        {sel: 'label:contains("Critical Appraisal")', id: 'sec_appraisal', label: 'Appraisal'},
+        {sel: 'label:contains("Application & Delivery Plan")', id: 'sec_plan', label: 'Plan'},
+        {sel: 'label:contains("Assumptions")', id: 'sec_assump', label: 'Assumptions'}
+      ];
+
+      // :contains() polyfill via manual query text check
+      function queryByContains(root, tagSelector, text){
+        const [tag, attr] = tagSelector.split(':')[0].split('.');
+        const nodes = root.querySelectorAll(tag || '*');
+        const needle = text.toLowerCase();
+        for(const n of nodes){
+          if(n.textContent && n.textContent.toLowerCase().includes(needle)) return n;
+        }
+        return null;
+      }
+
+      const anchors = [];
+      map.forEach(item=>{
+        let el;
+        if(item.sel.includes(':contains(')){
+          const m = item.sel.match(/^(.*):contains\("(.*)"\)$/);
+          el = m ? queryByContains(body, m[1], m[2]) : null;
+        }else{
+          el = body.querySelector(item.sel);
+        }
+        if(el){
+          // id goes on the closest block container
+          const target = el.closest('div') || el;
+          if(!target.id) target.id = item.id;
+          anchors.push({id: target.id, label: item.label});
+        }
+      });
+
+      if(anchors.length){
+        const nav = document.createElement('div');
+        nav.className = 'section-nav';
+        nav.setAttribute('role','navigation');
+        nav.innerHTML = `
+          <div class="chips" aria-label="Section navigation">
+            ${anchors.map(a=>`<button type="button" data-target="${a.id}" aria-controls="${a.id}">${a.label}</button>`).join('')}
+          </div>
+        `;
+        body.insertBefore(nav, body.firstChild);
+
+        // Scroll to targets inside the scrollable body
+        nav.addEventListener('click', (e)=>{
+          const btn = e.target.closest('button[data-target]');
+          if(!btn) return;
+          const id = btn.getAttribute('data-target');
+          const tgt = body.querySelector('#'+CSS.escape(id));
+          if(!tgt) return;
+          const top = tgt.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop - 6;
+          body.scrollTo({ top, behavior:'smooth' });
+        });
+      }
+    }
+  }
+
+  /* ------------------ 3) First run ------------------ */
+  // In case this script loads after your DOMContentLoaded:
+  equalizeCards();
+})();
+</script>
+
+
 <!-- ===== DOCX exporter shim (pure WordprocessingML, no warnings) ===== -->
 <script>
 /* --- tiny UTF-8 + ZIP (store) builder --- */
