@@ -6,25 +6,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EBP Case Randomizer & Note Builder</title>
 <style>
-  :root{
-    --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --line:#e5e7eb; --accent:#2563eb;
-  }
+  :root{ --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --line:#e5e7eb; --accent:#2563eb; }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"}
   header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:3}
   .wrap{max-width:1200px;margin:0 auto;padding:16px}
   h1{font-size:18px;margin:0 0 8px}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-  button{
-    border:1px solid var(--line); background:var(--card); border-radius:8px; padding:8px 10px; cursor:pointer;
-    box-shadow:0 1px 2px rgba(0,0,0,.04);
-  }
+  button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 10px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.04)}
   button:hover{border-color:#d1d5db}
   button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
   button:disabled{opacity:.6;cursor:not-allowed}
   main{max-width:1200px;margin:16px auto;padding:0 16px;display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
   @media (max-width: 960px){ main{grid-template-columns:1fr} }
-  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
   .card .hd{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
   .card .hd h2{font-size:16px;margin:0}
   .card .bd{padding:14px}
@@ -33,21 +28,19 @@
   .muted{color:var(--muted)}
   .narrative{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
   .pill{display:inline-block;background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff;border-radius:999px;padding:2px 8px;font-size:12px}
-  textarea, input[type="text"]{
-    width:100%; padding:8px; border:1px solid var(--line); border-radius:8px; background:#fafafa;
-  }
+  textarea, input[type="text"]{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fafafa}
   textarea:disabled, input:disabled{background:#f3f4f6}
   .row{margin-bottom:10px}
   .row label{display:block;font-weight:600;margin-bottom:6px}
   .flex{display:flex;gap:8px;align-items:center}
   .flex-col{display:flex;flex-direction:column;gap:8px}
   .counts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
-  .count{border:1px dashed var(--line); border-radius:10px; padding:6px 8px; text-align:center}
+  .count{border:1px dashed var(--line);border-radius:10px;padding:6px 8px;text-align:center}
   .count strong{display:block;font-size:16px}
   .progress{margin-top:8px}
-  .studies .item{border:1px solid var(--line); border-radius:10px; padding:8px; margin-bottom:8px; background:#fafafa}
+  .studies .item{border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:8px;background:#fafafa}
   .studies .item .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;background:#111827;color:#e5e7eb;border-radius:6px;padding:0px 6px;display:inline-block;font-size:12px}
+  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;background:#111827;color:#e5e7eb;border-radius:6px;padding:0 6px;display:inline-block;font-size:12px}
   .empty{padding:10px;border:1px dashed var(--line);border-radius:10px;background:#fcfcfd;color:var(--muted)}
 </style>
 </head>
@@ -172,17 +165,12 @@
 /* ===================== Utilities ===================== */
 const $ = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
-const debounce = (fn, ms=600) => {
-  let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
-};
+const debounce = (fn, ms=600) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
 function wordCount(s){ return (s||'').trim().split(/\s+/).filter(Boolean).length; }
 function escHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function brize(s){ return escHtml(s).replace(/\n/g,'<br>'); }
-function paragraphsFromText(s){
-  const safe=(s||'').replace(/\r\n/g,'\n');
-  return safe.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
-}
-/* ===================== DEBUGGABLE RANDOMIZER (REQUIRED PATTERN) ===================== */
+function paragraphsFromText(s){ const safe=(s||'').replace(/\r\n/g,'\n'); return safe.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean); }
+/* ===================== DEBUGGABLE RANDOMIZER (SHOW THIS EXACT PATTERN) ===================== */
 // defined above handlers
 const CASES = [ /* at least 6–10 full cases */ 
   {
@@ -353,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 /* ===================== end required pattern ===================== */
 
-/* ====== App-specific bindings & logic (below required pattern) ====== */
+/* ====== App-specific logic ====== */
 const fields = {
   context: $('#context'),
   search: $('#search'),
@@ -417,8 +405,7 @@ function storageKey(){
 
 function saveDraft(manual=false){
   if(!locked || !current) return;
-  const key = storageKey();
-  if(!key) return;
+  const key = storageKey(); if(!key) return;
   const payload = { caseTitle: current.title, fields: collectFields(), ts: new Date().toISOString() };
   localStorage.setItem(key, JSON.stringify(payload));
   $('#status').textContent = manual ? 'Draft saved' : 'Autosaved';
@@ -461,12 +448,11 @@ function setStudiesCount(n, resetValues=false){
   const count = Math.max(3, Math.min(5, n||3));
   for(let i=0;i<count;i++){
     const div = document.createElement('div'); div.className='item';
-    div.innerHTML = `
-      <div class="top"><strong>Study ${i+1}</strong></div>
+    div.innerHTML = `<div class="top"><strong>Study ${i+1}</strong></div>
       <textarea rows="3" data-ix="${i}" placeholder="Key details: design, sample, main findings, limitations…"></textarea>`;
     wrap.appendChild(div);
   }
-  if(resetValues===false){ /* keep */ }
+  if(resetValues===false){ /* keep existing values */ }
 }
 
 /* ---------- Build export HTML ---------- */
@@ -506,7 +492,6 @@ function buildExportHTML(){
     parts.push(pp(f.assumptions));
   }
 
-  // Append Intake summary (optional)
   if(current){
     parts.push(h(2,'Intake Snapshot'));
     const intakeBits = [
@@ -522,9 +507,7 @@ function buildExportHTML(){
     parts.push(paragraphsHTML(current.narrative));
   }
 
-  return `
-<!DOCTYPE html><html><head><meta charset="utf-8"><title>EBP Note</title></head>
-<body>${parts.join('\n')}</body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>EBP Note</title></head><body>${parts.join('\n')}</body></html>`;
 }
 
 /* ---------- Clipboard (plain text) ---------- */
@@ -540,7 +523,7 @@ function composeClipboardText(){
     `\nSearch Strategy & Study Selection\n${par(f.search)}`,
     `\nStudy Summaries\n${(f.studies||[]).map((s,i)=>`${i+1}. ${s}`).join('\n')}`,
     `\nCritical Appraisal\n${par(f.appraise)}`,
-    `\nApplication & Delivery Plan\n${par(f.apply)}`,
+    `\nApplication & Delivery Plan\n${par(f.apply)}`
   ];
   if(f.assumptions && f.assumptions.trim()){
     arr.push(`\nAssumptions\n${par(f.assumptions)}`);
@@ -549,12 +532,6 @@ function composeClipboardText(){
 }
 
 /* ---------- Events ---------- */
-function notTypingTarget(e){
-  const ae = document.activeElement;
-  if(!ae) return true;
-  return !(ae.tagName==='TEXTAREA' || (ae.tagName==='INPUT' && ae.type==='text') || ae.isContentEditable);
-}
-
 const autosave = debounce(()=>saveDraft(false), 800);
 
 function bindInputs(){
@@ -611,10 +588,16 @@ function initButtons(){
   $('#btnPrint').addEventListener('click', ()=>window.print());
 }
 
+function notTypingTarget(){
+  const ae = document.activeElement;
+  if(!ae) return true;
+  return !(ae.tagName==='TEXTAREA' || (ae.tagName==='INPUT' && ae.type==='text') || ae.isContentEditable);
+}
+
 function initShortcuts(){
   document.addEventListener('keydown', (e)=>{
     const alt = e.altKey, ctrl = e.ctrlKey||e.metaKey, k = e.key.toLowerCase();
-    if(!notTypingTarget(e)) return;
+    if(!notTypingTarget()) return;
     if(alt && k==='r'){ e.preventDefault(); $('#btnRandom').click(); }
     else if(alt && k==='l'){ e.preventDefault(); $('#btnLock').click(); }
     else if(alt && k==='e'){ e.preventDefault(); $('#btnExport').click(); }
@@ -624,73 +607,72 @@ function initShortcuts(){
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  // extend required binding block
   initButtons();
   initShortcuts();
   bindInputs();
   initStudies();
 });
+</script>
 
-/* ===================== Minimal offline htmlDocx.asBlob ===================== */
-/* Why: keep everything offline. Converts simple HTML -> OOXML and zips (store-only). */
+<!-- ===================== Fixed offline htmlDocx.asBlob (UTF-8 + valid OOXML) ===================== -->
+<script>
 (function(){
-  function xmlEscape(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c])); }
-  function textRun(t, props=''){ return `<w:r>${props?`<w:rPr>${props}</w:rPr>`:''}<w:t xml:space="preserve">${xmlEscape(t)}</w:t></w:r>`; }
-  function br(){ return `<w:r><w:br/></w:r>`; }
-  function p(inner, pPr=''){ return `<w:p>${pPr?`<w:pPr>${pPr}</w:pPr>`:''}${inner||''}</w:p>`; }
+  const enc = new TextEncoder();
+  const utf8 = (s) => enc.encode(String(s ?? ""));
+  function xmlEscape(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c])); }
+  const textRun = (t, props='') => `<w:r>${props?`<w:rPr>${props}</w:rPr>`:''}<w:t xml:space="preserve">${xmlEscape(t)}</w:t></w:r>`;
+  const br = () => `<w:r><w:br/></w:r>`;
+  const para = (inner, pPr='') => `<w:p>${pPr?`<w:pPr>${pPr}</w:pPr>`:''}${inner||''}</w:p>`;
 
   function nodeToParas(node){
-    // Supports: h1–h3, p, br, ul/li (as •), strong/b, em/i, u, span, text
     const out=[];
     const walk = (n, accRuns=[])=>{
-      if(n.nodeType===3){ // text
+      if(n.nodeType===3){
         if(n.nodeValue) accRuns.push(textRun(n.nodeValue));
       } else if(n.nodeType===1){
         const tag = n.tagName.toLowerCase();
         if(tag==='br'){ accRuns.push(br()); }
         else if(['strong','b','em','i','u'].includes(tag)){
           const innerRuns=[]; n.childNodes.forEach(c=>walk(c, innerRuns));
-          let rPr='';
-          if(tag==='strong'||tag==='b') rPr += '<w:b/>';
-          if(tag==='em'||tag==='i') rPr += '<w:i/>';
-          if(tag==='u') rPr += '<w:u w:val="single"/>';
-          accRuns.push(`<w:r><w:rPr>${rPr}</w:rPr>${innerRuns.join('').replace(/^<w:r>|<\/w:r>$/g,'')}</w:r>`);
+          let rPr=''; if(tag==='strong'||tag==='b') rPr+='<w:b/>'; if(tag==='em'||tag==='i') rPr+='<w:i/>'; if(tag==='u') rPr+='<w:u w:val="single"/>';
+          const textOnly = innerRuns.join('').replace(/^<w:r>|<\/w:r>$/g,'');
+          accRuns.push(`<w:r><w:rPr>${rPr}</w:rPr>${textOnly}</w:r>`);
         }
-        else if(['span'].includes(tag)){
-          n.childNodes.forEach(c=>walk(c, accRuns));
-        }
+        else if(tag==='span'){ n.childNodes.forEach(c=>walk(c, accRuns)); }
         else if(['h1','h2','h3','p'].includes(tag)){
           const runs=[]; n.childNodes.forEach(c=>walk(c, runs));
-          let size = tag==='h1'?36:tag==='h2'?28:tag==='h3'?24:22;
-          if(tag==='p') size=22;
-          const para = p(runs.join(''), tag==='p'?'':`<w:pPr><w:spacing w:after="160"/></w:pPr>`);
-          // wrap runs with bold & size for headings
-          out.push(tag==='p'?para:p(textRun('',`<w:b/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/>`) + runs.join('')));
+          if(tag==='p'){
+            out.push(para(runs.join('')));
+          }else{
+            const size = tag==='h1'?36:tag==='h2'?28:24;
+            const first = runs.length ? runs[0].replace('<w:r>','<w:r><w:rPr><w:b/><w:sz w:val="'+size+'"/><w:szCs w:val="'+size+'"/></w:rPr>') : textRun('', `<w:b/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/>`);
+            const rest = runs.length ? runs.slice(1).join('') : '';
+            out.push(para(first+rest, '<w:spacing w:after="160"/>'));
+          }
         }
         else if(tag==='ul'){
           n.childNodes.forEach(li=>{
             if(li.tagName && li.tagName.toLowerCase()==='li'){
               const runs=[textRun('• ')];
               li.childNodes.forEach(c=>walk(c, runs));
-              out.push(p(runs.join('')));
+              out.push(para(runs.join('')));
             }
           });
         }
-        else {
+        else{
           n.childNodes.forEach(c=>walk(c, accRuns));
         }
       }
       return accRuns;
     };
-    // top-level: if raw text, wrap to <p>
+
     if(node.childNodes && node.childNodes.length){
       node.childNodes.forEach(ch=>{
-        if(ch.nodeType===3){ out.push(p(textRun(ch.nodeValue))); }
+        if(ch.nodeType===3){ out.push(para(textRun(ch.nodeValue))); }
         else if(ch.nodeType===1 && ['h1','h2','h3','p','ul'].includes(ch.tagName.toLowerCase())){
           walk(ch);
         } else if(ch.nodeType===1){
-          // wrap other elements content into a paragraph
-          const runs=[]; walk(ch, runs); if(runs.length) out.push(p(runs.join('')));
+          const runs=[]; walk(ch, runs); if(runs.length) out.push(para(runs.join('')));
         }
       });
     }
@@ -700,13 +682,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function buildDocumentXML(html){
     const doc = new DOMParser().parseFromString(html,'text/html');
     const body = doc.body;
-    const content = nodeToParas(body);
-    const xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    const content = nodeToParas(body) || para(textRun(''));
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:o="urn:schemas-microsoft-com:office:office"
  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
- xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
+ xmlns:m="http://schemas.microsoft.com/office/2006/math"
  xmlns:v="urn:schemas-microsoft-com:vml"
  xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"
  xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
@@ -715,10 +697,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
  xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
  xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"
  xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk"
- xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml"
+ xmlns:wne="http://schemas.microsoft.com/office/2006/wordml"
  xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
   <w:body>
-    ${content || p(textRun(''))}
+    ${content}
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840"/>
       <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
@@ -727,104 +709,93 @@ document.addEventListener('DOMContentLoaded', ()=>{
     </w:sectPr>
   </w:body>
 </w:document>`;
-    return xml;
   }
 
-  // Tiny ZIP (store only)
-  function strToUint8(str){ const arr=new Uint8Array(str.length); for(let i=0;i<str.length;i++) arr[i]=str.charCodeAt(i); return arr; }
-  function uint8Concat(chunks){
-    let len=0; chunks.forEach(c=>len+=c.length);
-    const out=new Uint8Array(len); let o=0; chunks.forEach(c=>{out.set(c,o);o+=c.length;}); return out;
-  }
-  function crc32(buf){
-    let c=~0; for(let i=0;i<buf.length;i++){ c=(c>>>8)^CRC_TABLE[(c^buf[i])&0xFF]; } return ~c>>>0;
-  }
+  function u8cat(chunks){ let len=0; chunks.forEach(c=>len+=c.length); const out=new Uint8Array(len); let o=0; chunks.forEach(c=>{out.set(c,o);o+=c.length;}); return out; }
   const CRC_TABLE = (()=>{ let c,t=new Uint32Array(256); for(let n=0;n<256;n++){ c=n; for(let k=0;k<8;k++) c=((c&1)?(0xEDB88320^(c>>>1)):(c>>>1)); t[n]=c>>>0; } return t; })();
+  function crc32(buf){ let c=~0>>>0; for(let i=0;i<buf.length;i++){ c=(c>>>8)^CRC_TABLE[(c^buf[i])&0xFF]; } return (~c)>>>0; }
   function dateToDos(d=new Date()){
-    const time = (d.getHours()<<11) | (d.getMinutes()<<5) | (d.getSeconds()/2|0);
+    const time = (d.getHours()<<11) | (d.getMinutes()<<5) | ((d.getSeconds()/2)|0);
     const date = ((d.getFullYear()-1980)<<9) | ((d.getMonth()+1)<<5) | d.getDate();
     return {time, date};
   }
   function zipStore(files){
-    // files: [{name:string, data:Uint8Array}]
     const cd=[]; let offset=0; const chunks=[];
-    const now= dateToDos(new Date());
+    const now = dateToDos(new Date());
     files.forEach(f=>{
-      const nameBytes = strToUint8(f.name);
+      const nameBytes = utf8(f.name);
       const data = f.data;
       const crc = crc32(data);
       const localHeader = new Uint8Array(30 + nameBytes.length);
-      // Local file header
       const dv = new DataView(localHeader.buffer);
-      dv.setUint32(0,0x04034b50,true); // signature
-      dv.setUint16(4,20,true); // version needed
-      dv.setUint16(6,0,true); // flags
-      dv.setUint16(8,0,true); // compression 0=store
+      dv.setUint32(0,0x04034b50,true);
+      dv.setUint16(4,20,true);
+      dv.setUint16(6,0,true);
+      dv.setUint16(8,0,true);
       dv.setUint16(10, now.time, true);
       dv.setUint16(12, now.date, true);
       dv.setUint32(14, crc, true);
       dv.setUint32(18, data.length, true);
       dv.setUint32(22, data.length, true);
       dv.setUint16(26, nameBytes.length, true);
-      dv.setUint16(28, 0, true); // extra len
+      dv.setUint16(28, 0, true);
       localHeader.set(nameBytes,30);
       chunks.push(localHeader, data);
-      // Central directory header
+
       const cdH = new Uint8Array(46 + nameBytes.length);
       const cdv = new DataView(cdH.buffer);
       cdv.setUint32(0,0x02014b50,true);
-      cdv.setUint16(4,20,true); // version made by
-      cdv.setUint16(6,20,true); // version needed
-      cdv.setUint16(8,0,true); // flags
-      cdv.setUint16(10,0,true); // compression
-      cdv.setUint16(12,now.time,true);
-      cdv.setUint16(14,now.date,true);
-      cdv.setUint32(16,crc,true);
-      cdv.setUint32(20,data.length,true);
-      cdv.setUint32(24,data.length,true);
-      cdv.setUint16(28,nameBytes.length,true);
-      cdv.setUint16(30,0,true); // extra len
-      cdv.setUint16(32,0,true); // comment len
-      cdv.setUint16(34,0,true); // disk start
-      cdv.setUint16(36,0,true); // internal attrs
-      cdv.setUint32(38,0,true); // external attrs
-      cdv.setUint32(42,offset,true); // local header offset
+      cdv.setUint16(4,20,true);
+      cdv.setUint16(6,20,true);
+      cdv.setUint16(8,0,true);
+      cdv.setUint16(10,0,true);
+      cdv.setUint16(12, now.time, true);
+      cdv.setUint16(14, now.date, true);
+      cdv.setUint32(16, crc, true);
+      cdv.setUint32(20, data.length, true);
+      cdv.setUint32(24, data.length, true);
+      cdv.setUint16(28, nameBytes.length, true);
+      cdv.setUint16(30,0,true);
+      cdv.setUint16(32,0,true);
+      cdv.setUint16(34,0,true);
+      cdv.setUint16(36,0,true);
+      cdv.setUint32(38,0,true);
+      cdv.setUint32(42,offset,true);
       cdH.set(nameBytes,46);
       cd.push(cdH);
+
       offset += localHeader.length + data.length;
     });
-    const central = uint8Concat(cd);
+    const central = u8cat(cd);
     const end = new Uint8Array(22);
     const edv = new DataView(end.buffer);
-    edv.setUint32(0,0x06054b50,true); // end of central dir
-    edv.setUint16(4,0,true); // disk number
-    edv.setUint16(6,0,true); // disk with central dir
+    edv.setUint32(0,0x06054b50,true);
+    edv.setUint16(4,0,true);
+    edv.setUint16(6,0,true);
     edv.setUint16(8, files.length, true);
     edv.setUint16(10, files.length, true);
     edv.setUint32(12, central.length, true);
     edv.setUint32(16, offset, true);
-    edv.setUint16(20, 0, true); // comment len
-    return new Blob([uint8Concat([...chunks, central, end])], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    edv.setUint16(20, 0, true);
+    return new Blob([u8cat([...chunks, central, end])], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
   }
-
   function asBlob(html){
     const docXml = buildDocumentXML(html);
     const files = [
-      { name:'[Content_Types].xml', data: strToUint8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      { name:'[Content_Types].xml', data: utf8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
  <Default Extension="xml" ContentType="application/xml"/>
  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
 </Types>`)},
-      { name:'_rels/.rels', data: strToUint8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      { name:'_rels/.rels', data: utf8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
 </Relationships>`)},
-      { name:'word/document.xml', data: strToUint8(docXml) }
+      { name:'word/document.xml', data: utf8(docXml) }
     ];
     return zipStore(files);
   }
-
   window.htmlDocx = { asBlob };
 })();
 </script>
