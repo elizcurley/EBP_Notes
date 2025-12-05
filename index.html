@@ -527,6 +527,7 @@ function hashString(s){ let h=5381; for(let i=0;i<s.length;i++){ h=((h<<5)+h) ^ 
 /* =============== STATE =============== */
 let locked=false, currentCase=null, autosaveTimer=null, studiesCount=3;
 let lastSavedHash='';
+let randomBag=[];
 
 /* =============== INIT =============== */
 document.addEventListener('DOMContentLoaded',()=>{
@@ -559,10 +560,22 @@ document.addEventListener('DOMContentLoaded',()=>{
 function bind(id,fn){const el=$(id); if(el) el.addEventListener('click',fn)}
 
 /* =============== RANDOMIZE / RENDER =============== */
+function nextRandomCase(){
+  if(!CASES||!CASES.length) return null;
+  if(!randomBag.length){
+    randomBag=CASES.map((_,i)=>i);
+    for(let i=randomBag.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [randomBag[i],randomBag[j]]=[randomBag[j],randomBag[i]];
+    }
+  }
+  const idx=randomBag.pop();
+  return CASES[idx]||null;
+}
 function onRandomize(){
-  if(!CASES||!CASES.length){toast('No cases available');return;}
-  const idx=Math.floor(Math.random()*CASES.length);
-  currentCase=CASES[idx];
+  const next=nextRandomCase();
+  if(!next){toast('No cases available');return;}
+  currentCase=next;
   renderCase(currentCase);
   toast('Case selected');
   clearBuilder();
@@ -845,6 +858,10 @@ function buildDocxFromHTML(htmlInput){
   <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
     <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
   </Relationships>`;
+  const docRels=`<?xml version="1.0" encoding="UTF-8"?>
+  <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+  </Relationships>`;
   const documentXML=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
     <w:body>${docBody}<w:sectPr/></w:body>
@@ -852,6 +869,7 @@ function buildDocxFromHTML(htmlInput){
   const files=[
     {name:'[Content_Types].xml',data:utf8Bytes(contentTypes)},
     {name:'_rels/.rels',data:utf8Bytes(rootRels)},
+    {name:'word/_rels/document.xml.rels',data:utf8Bytes(docRels)},
     {name:'word/document.xml',data:utf8Bytes(documentXML)},
     {name:'word/styles.xml',data:utf8Bytes(styles)}
   ];
