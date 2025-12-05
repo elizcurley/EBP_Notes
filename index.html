@@ -35,6 +35,10 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
   .card{background:var(--card);border:1px solid #e2e8f0;border-radius:16px;box-shadow:var(--shadow)}
   .card h2{margin:0;padding:16px;border-bottom:1px solid var(--line);font-size:18px}
   .card .body{padding:16px}
+  @media(min-width:768px){
+    .card.fill{height:calc(100vh - 210px);display:flex;flex-direction:column}
+    .card.fill .body{flex:1;overflow:auto;padding:16px}
+  }
   .banner{margin-top:8px;background:#eef2ff;border:1px dashed #cbd5e1;border-radius:12px;padding:10px 12px;color:#312e81;font-size:13px}
   .banner strong{color:#1e3a8a}
   .hero{padding:14px 12px;border-radius:14px;background:linear-gradient(115deg,rgba(37,99,235,.1),rgba(124,58,237,.12));border:1px solid #dbeafe;box-shadow:0 10px 30px rgba(37,99,235,.08)}
@@ -96,7 +100,7 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
   <div class="layout">
     <!-- LEFT: Case panel -->
     <div class="sidecol">
-      <div class="card">
+      <div class="card fill">
         <h2>Case Panel</h2>
         <div class="body">
           <h3 id="caseTitle">No case selected</h3>
