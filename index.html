@@ -32,7 +32,7 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
   .status{font-size:12px;border:1px solid var(--line);padding:4px 10px;border-radius:999px;background:#fafafa}
   .status.locked{border-color:#cce9d8;background:#f0fdf4;color:var(--ok)}
   .status.unlocked{border-color:#ffe2c7;background:#fff7ed;color:var(--warn)}
-  .layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  .layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;align-items:stretch}
   @media(max-width:1024px){.layout{grid-template-columns:1fr}}
   .card{background:var(--card);border:1px solid #e2e8f0;border-radius:16px;box-shadow:var(--shadow)}
   .card h2{margin:0;padding:16px;border-bottom:1px solid var(--line);font-size:18px}
@@ -530,6 +530,23 @@ function nowISO(){return new Date().toISOString()}
 function activeIsTyping(){const ae=document.activeElement; if(!ae) return false; const tag=ae.tagName.toLowerCase(); return tag==='textarea'||tag==='input'||ae.isContentEditable}
 function wordCount(s=''){return (s.trim().match(/\b[\w'-]+\b/g)||[]).length}
 
+function updateHeroPadding(){
+  const hero=document.querySelector('.hero.has-floating');
+  const toolbar=document.querySelector('.toolbar.floating');
+  if(!hero||!toolbar) return;
+  if(window.matchMedia('(max-width:1080px)').matches){
+    hero.style.setProperty('--hero-top-pad','18px');
+    return;
+  }
+  const pad=Math.max(110, toolbar.offsetHeight+32);
+  hero.style.setProperty('--hero-top-pad', `${pad}px`);
+}
+let heroPadTimer=null;
+function scheduleHeroPadding(){
+  clearTimeout(heroPadTimer);
+  heroPadTimer=setTimeout(updateHeroPadding,120);
+}
+
 /* clipboard fallback (HTTPS or file:// safe) */
 async function copyTextSafe(txt){
   try{
@@ -561,6 +578,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   bind('btnCopyScenario', onCopyScenario); bind('btnCopyAll', onCopyAll);
   bind('btnExport', onExport); bind('btnPrint', ()=>window.print());
   bind('btnAddStudy', addStudy); bind('btnRemoveStudy', removeStudy);
+
+  updateHeroPadding();
+  window.addEventListener('resize', scheduleHeroPadding);
 
   ['f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>{
     $(id).addEventListener('input',()=>{updatePICO();});
@@ -635,6 +655,7 @@ function setLocked(v){
   $('btnLock').textContent=locked?'Unlock':'Lock';
   const chip=$('statusChip'); chip.textContent=locked?'Locked for writing':'Unlocked';
   chip.classList.toggle('locked',locked); chip.classList.toggle('unlocked',!locked);
+  scheduleHeroPadding();
   if(locked){startAutosave()} else {stopAutosave()}
   lastSavedHash=''; // reset autosave guard on state change
 }
