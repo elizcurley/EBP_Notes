@@ -846,22 +846,52 @@ function onExport(){
 }
 function onNew(){clearBuilder(); toast('Cleared'); equalizeCards();}
 
-/* =============== EQUAL HEIGHTS (breathing room) =============== */
-const BREATH = 24; // why: visual breathing room from viewport bottom
+<!-- Replace your whole "EQUAL HEIGHTS (breathing room)" block with this -->
+<script>
+/* Bigger cards, measured from the card's top (not the header) */
+const BREATH = 12;          // why: small bottom gap feels better visually
+const MIN_CARD_PX = 560;    // why: generous minimum so both panels feel full
+const MAX_VH = 92;          // why: don't slam into the viewport top bar
+
+function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
 function equalizeCards(){
-  if (window.matchMedia('(max-width: 1024px)').matches) {
-    document.querySelectorAll('.js-equal-card').forEach(el => el.style.height = '');
+  const twoCol = !window.matchMedia('(max-width: 1024px)').matches;
+  const cards = document.querySelectorAll('.js-equal-card');
+
+  if (!twoCol || cards.length === 0) {
+    cards.forEach(el => el.style.height = '');
     return;
   }
-  const header = document.querySelector('header');
-  const rect = header ? header.getBoundingClientRect() : null;
-  const headerBottom = rect ? (rect.bottom + window.scrollY) : 0;
-  const gap = 16; // matches .layout gap
-  const available = Math.max(360, Math.floor(window.innerHeight - headerBottom - gap - BREATH));
-  document.querySelectorAll('.js-equal-card').forEach(el => el.style.height = available + 'px');
+
+  // Measure from the actual card stack, not the header
+  const firstCardTop = cards[0].getBoundingClientRect().top;
+  const fromTop = Math.max(0, firstCardTop); // if scrolled, rect is already relative to viewport
+  const vh = window.innerHeight;
+
+  // Room between the first card's top and the bottom of viewport
+  const available = Math.floor(vh - fromTop - BREATH);
+
+  // Clamp to a generous min and sensible max
+  const maxPx = Math.floor((MAX_VH / 100) * vh);
+  const target = clamp(available, MIN_CARD_PX, maxPx);
+
+  cards.forEach(el => el.style.height = target + 'px');
 }
+
 window.addEventListener('load', equalizeCards);
 window.addEventListener('resize', equalizeCards);
+
+// Re-run after major UI changes (keep these if you had them)
+if (window.renderCase) {
+  const _renderCase = window.renderCase;
+  window.renderCase = function(c){ _renderCase(c); equalizeCards(); };
+}
+if (window.setLocked) {
+  const _setLocked = window.setLocked;
+  window.setLocked = function(v){ _setLocked(v); setTimeout(equalizeCards, 0); };
+}
+</script>
 
 /* =============== SECTION NAV (Builder) =============== */
 function setupBuilderNav(){
