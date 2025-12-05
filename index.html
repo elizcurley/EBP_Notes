@@ -119,7 +119,8 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
 
     <!-- RIGHT: EBP Builder -->
     <div class="sidecol">
-      <div class="card" id="builderCard">
+      <!-- CHANGE: add 'fill' to match height with left -->
+      <div class="card fill" id="builderCard">
         <h2>EBP Note Builder</h2>
         <div class="body">
           <div class="pill" style="margin-bottom:8px">PICO + 5 sections</div>
@@ -176,8 +177,6 @@ EBP Case Randomizer & Note Builder — single-file, offline, no deps
 </main>
 
 <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-
-
 
 <script>
 /* ======================== CONFIG ======================== */
@@ -657,7 +656,7 @@ function setLocked(v){
   chip.classList.toggle('locked',locked); chip.classList.toggle('unlocked',!locked);
   scheduleHeroPadding();
   if(locked){startAutosave()} else {stopAutosave()}
-  lastSavedHash=''; // reset autosave guard on state change
+  lastSavedHash='';
 }
 function onLockToggle(){ if(!currentCase){toast('Randomize a case first');return;} setLocked(!locked) }
 function startAutosave(){ stopAutosave(); autosaveTimer=setInterval(onSave,4000) }
@@ -667,7 +666,7 @@ function stopAutosave(){ if(autosaveTimer){clearInterval(autosaveTimer); autosav
 function clearBuilder(){
   ['picoP','picoI','picoC','picoO','f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>$(id).value='');
   rebuildStudies(3); updatePICO();
-  lastSavedHash=''; // reset guard
+  lastSavedHash='';
 }
 function updatePICO(){
   const P=$('picoP').value.trim(), I=$('picoI').value.trim(),
@@ -684,7 +683,7 @@ function studyIds(){return [...document.querySelectorAll('[data-study]')].map(el
 function rebuildStudies(n){
   studiesCount=Math.max(3,Math.min(5,n|0||3));
   const list=$('studiesList'); list.innerHTML='';
-  const shouldDisable = !locked; // mirror current lock state
+  const shouldDisable = !locked;
   for(let i=1;i<=studiesCount;i++){
     const id=`study_${i}`;
     list.insertAdjacentHTML('beforeend',
@@ -710,7 +709,7 @@ function onSave(){ if(!currentCase){toast('Nothing to save');return;}
   try{
     const payload = JSON.stringify(collectData());
     const h = hashString(payload);
-    if(h===lastSavedHash){ return; } // skip redundant write
+    if(h===lastSavedHash){ return; }
     localStorage.setItem(storageKey(), payload);
     lastSavedHash = h;
     toast('Saved');
@@ -726,7 +725,7 @@ function onLoad(){ if(!currentCase){toast('Randomize a case first');return;} con
     (d.fields?.studies||[]).forEach((v,i)=>{const id=`study_${i+1}`; if($(id)) $(id).value=v});
     $('picoP').value=d.pico?.P||''; $('picoI').value=d.pico?.I||''; $('picoC').value=d.pico?.C||''; $('picoO').value=d.pico?.O||'';
     updatePICO(); toast('Loaded');
-    lastSavedHash=''; // reset guard after load
+    lastSavedHash='';
   }catch(e){console.error(e);toast('Load failed')}
 }
 
@@ -824,8 +823,7 @@ function onExport(){
 function onNew(){clearBuilder(); toast('Cleared')}
 </script>
 
-
-  <!-- ===== DOCX exporter shim (pure WordprocessingML, no warnings) ===== -->
+<!-- ===== DOCX exporter shim (pure WordprocessingML, no warnings) ===== -->
 <script>
 /* --- tiny UTF-8 + ZIP (store) builder --- */
 function utf8Bytes(str){str=String(str);const b=[];for(let i=0;i<str.length;i++){let c=str.charCodeAt(i);if(c>=0xD800&&c<=0xDBFF&&i+1<str.length){const c2=str.charCodeAt(++i);if((c2&0xFC00)===0xDC00){c=0x10000+((c-0xD800)<<10)+(c2-0xDC00)}else{i--}}if(c<=0x7F)b.push(c);else if(c<=0x7FF)b.push(0xC0|(c>>6),0x80|(c&0x3F));else if(c<=0xFFFF)b.push(0xE0|(c>>12),0x80|((c>>6)&0x3F),0x80|(c&0x3F));else b.push(0xF0|(c>>18),0x80|((c>>12)&0x3F),0x80|((c>>6)&0x3F),0x80|(c&0x3F))}return new Uint8Array(b)}
@@ -904,7 +902,7 @@ function buildDocxFromHTML(htmlInput){
     <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
   </Relationships>`;
   const docRels=`<?xml version="1.0" encoding="UTF-8"?>
-  <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationships xmlns="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
     <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
   </Relationships>`;
   const documentXML=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -930,8 +928,6 @@ function buildDocxFromHTML(htmlInput){
   console.info('DOCX shim active: pure-WordprocessingML');
 })();
 </script>
-
-
 
 </body>
 </html>
