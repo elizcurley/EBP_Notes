@@ -1,340 +1,582 @@
-<!-- /ebp-index.html -->
-<!DOCTYPE html>
+<!-- ======================================================================
+File: ebp-case-randomizer-note-builder.html
+EBP Case Randomizer & Note Builder — single-file, offline, no dependencies
+====================================================================== -->
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EBP Vignette Index</title>
+<meta charset="utf-8">
+<title>EBP Case Randomizer & Note Builder</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  :root{ --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --line:#e5e7eb; --accent:#2563eb }
-  *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
-  header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
-  .wrap{max-width:1200px;margin:0 auto;padding:12px 16px}
-  h1{font-size:18px;margin:0 0 6px}
-  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  input[type=search]{width:320px;max-width:55vw;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fafafa}
-  button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 10px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-  button:hover{border-color:#d1d5db} button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-  main{max-width:1200px;margin:12px auto 20px;padding:0 16px;display:grid;grid-template-columns:1fr 1.2fr;gap:14px}
-  @media (max-width:960px){main{grid-template-columns:1fr}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-  .hd{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-  .bd{padding:10px 12px} .muted{color:var(--muted)}
-  .list{max-height:70vh;overflow:auto}
-  .row{display:flex;gap:10px;align-items:flex-start;border-bottom:1px dashed var(--line);padding:10px 6px;cursor:pointer}
-  .row:last-child{border-bottom:0} .row.active{background:#f3f4f6}
-  .title{font-weight:600;margin-bottom:2px}
-  .snippet{color:var(--muted);font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .pill{display:inline-block;background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff;border-radius:999px;padding:2px 8px;font-size:12px}
-  .grid{display:grid;grid-template-columns:180px 1fr;gap:8px}
-  .label{color:var(--muted)} .narrative{border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
-  .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#111827;color:#e5e7eb;border-radius:6px;padding:0 6px;display:inline-block;font-size:12px}
-  .actions{display:flex;gap:8px;flex-wrap:wrap} .empty{color:var(--muted);padding:8px;border:1px dashed var(--line);border-radius:10px;background:#fcfcfd}
-  details summary{cursor:pointer;user-select:none}
+  :root{--bg:#f7f7f8;--card:#fff;--ink:#111;--muted:#555;--line:#e6e6e9;--accent:#0b6cff;--ok:#0a7f3f;--warn:#c45a00;--shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06)}
+  *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45}
+  header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:10}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  .titlebar{display:flex;gap:12px;align-items:center;justify-content:space-between}
+  .course{font-size:14px;color:var(--muted)} .status{font-size:12px;border:1px solid var(--line);padding:4px 8px;border-radius:999px;background:#fafafa}
+  .status.locked{border-color:#cce9d8;background:#f3fbf7;color:var(--ok)} .status.unlocked{border-color:#ffe2c7;background:#fff8f1;color:var(--warn)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);margin:16px 0}
+  .card h2{margin:0;padding:16px;border-bottom:1px solid var(--line);font-size:18px} .card .body{padding:16px}
+  .grid{display:grid;grid-template-columns:220px 1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .row{display:contents} .key{padding:10px 12px;background:#fafafa;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-weight:600}
+  .val{padding:10px 12px;border-bottom:1px solid var(--line);white-space:pre-wrap}.val p{margin:0 0 10px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px}
+  button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font:inherit;cursor:pointer}
+  button:hover{border-color:#cbd0d6} button.primary{background:var(--accent);border-color:var(--accent);color:#fff} button.ghost{background:#fafafa}
+  .two{display:grid;grid-template-columns:1fr;gap:16px} @media(min-width:980px){.two{grid-template-columns:1fr 1fr}}
+  .muted{color:var(--muted);font-size:12px} .note{border:1px dashed #cbd0d6;padding:10px;border-radius:8px;background:#fcfcfd}
+  .row2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px} label{font-weight:600;font-size:14px}
+  input[type="text"],textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;font:inherit}
+  textarea{min-height:120px;resize:vertical} .counter{font-size:12px;color:var(--muted)} .pill{font-size:11px;border:1px solid var(--line);padding:2px 6px;border-radius:999px}
+  .flex{display:flex;align-items:center;gap:10px;flex-wrap:wrap} .list{display:grid;gap:8px} .hr{height:1px;background:var(--line);margin:10px 0}
+  .toast{position:fixed;bottom:12px;right:12px;background:#111;color:#fff;padding:10px 12px;border-radius:10px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateY(0)}
+  @media print{header,.toolbar,.toast{display:none !important} body{background:#fff} .card{box-shadow:none;border-color:#ddd}}
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap">
-    <h1>EBP Vignette Index</h1>
-    <div class="toolbar">
-      <input id="q" type="search" placeholder="Search title, client, setting, narrative… (press /)" aria-label="Search">
-      <button id="btnClear">Clear</button>
-      <span id="count" class="muted"></span>
-      <span style="margin-left:auto" class="muted">Shortcuts: <span class="kbd">/</span> focus · <span class="kbd">↑</span>/<span class="kbd">↓</span> move · <span class="kbd">Enter</span> open</span>
+  <div class="wrap titlebar">
+    <div>
+      <div style="font-size:20px;font-weight:800">EBP Case Randomizer & Note Builder</div>
+      <div class="course" id="courseTag">SOW5404 • Spring 2026</div>
     </div>
+    <div class="flex"><span id="statusChip" class="status unlocked">Unlocked</span></div>
   </div>
 </header>
 
-<main>
-  <section class="card">
-    <div class="hd"><strong>Vignettes</strong><div class="muted" id="pageMeta"></div></div>
-    <div class="bd">
-      <div id="list" class="list" role="listbox" aria-label="Vignette list"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-        <button id="prev">Prev</button><button id="next">Next</button>
+<main class="wrap">
+  <div class="card">
+    <h2>Case Panel</h2>
+    <div class="body">
+      <div class="toolbar" style="margin-bottom:12px">
+        <button id="btnRandom" title="Randomize case (Alt+R)">Randomize</button>
+        <button id="btnLock" class="primary" title="Lock or Unlock for writing (Alt+L)">Lock</button>
+        <button id="btnNew" class="ghost" title="Clear note fields">New</button>
+        <button id="btnSave" title="Save draft (Ctrl+S / Cmd+S)">Save</button>
+        <button id="btnLoad" title="Load saved draft">Load</button>
+        <button id="btnCopyScenario" title="Copy case details as plain text">Copy Scenario</button>
+        <button id="btnCopyAll" title="Copy case + notes as plain text">Copy All</button>
+        <button id="btnExport" title="Export to Word (.docx) (Alt+E)">Export Word</button>
+        <button id="btnPrint" title="Print (Alt+P)">Print</button>
       </div>
-    </div>
-  </section>
 
-  <section class="card" id="detailCard" aria-labelledby="detailHeading">
-    <div class="hd">
-      <h2 id="detailHeading" style="font-size:16px;margin:0">Details</h2>
-      <div class="actions">
-        <button id="btnOpen" class="primary">Open in Note Builder</button>
-        <button id="btnCopyLink">Copy Link</button>
-        <button id="btnPrint">Print</button>
-      </div>
-    </div>
-    <div class="bd">
-      <div id="empty" class="empty">Select a vignette from the list.</div>
-      <div id="detail" style="display:none">
-        <div class="grid">
-          <div class="label">Title</div><div id="f_title"></div>
-          <div class="label">Client profile</div><div id="f_client_profile"></div>
-          <div class="label">Setting</div><div id="f_setting"></div>
-          <div class="label">Presenting problem</div><div id="f_presenting_problem"></div>
-          <div class="label">Relevant history</div><div id="f_relevant_history"></div>
-          <div class="label">Goals & preferences</div><div id="f_goals_and_preferences"></div>
-          <div class="label">Strengths & resources</div><div id="f_strengths_and_resources"></div>
-          <div class="label">Contextual factors & barriers</div><div id="f_contextual_factors_and_barriers"></div>
-          <div class="label">EBP decision point</div><div id="f_ebp_decision_point"></div>
-          <div class="label">Target outcomes</div><div id="f_target_outcomes"></div>
-          <div class="label">Risks & ethics</div><div id="f_risks_and_ethics"></div>
-          <div class="label">Equity signal</div><div id="f_equity_signal"></div>
+      <div class="two">
+        <div>
+          <div class="note muted">Paragraphs are preserved. Em/en dashes are replaced with hyphens.</div>
+          <h3 id="caseTitle" style="margin:12px 0 8px">No case selected</h3>
+          <div id="intakeGrid" class="grid" aria-live="polite"></div>
         </div>
-        <div class="narrative">
-          <h3 style="margin:0 0 6px">Narrative vignette</h3>
-          <div id="f_narrative"></div>
-        </div>
-        <div class="narrative" id="extraWrap" style="display:none">
-          <details open>
-            <summary>Additional fields</summary>
-            <div id="extraFields" style="display:grid;grid-template-columns:180px 1fr;gap:6px;margin-top:6px"></div>
-          </details>
+        <div>
+          <h3 style="margin:12px 0 8px">Narrative</h3>
+          <div id="narrative" class="note" style="min-height:140px"></div>
         </div>
       </div>
-    </div>
-  </section>
-</main>
-
-<script>
-const FALLBACK_JSON = 'ebp_cases.json';
-const $ = s => document.querySelector(s); const $$ = s => Array.from(document.querySelectorAll(s));
-function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]||c)).replace('&','&amp;')}
-function brize(s){return esc(s).replace(/\n/g,'<br>')}
-function slugify(s){return String(s||'').toLowerCase().trim().replace(/['"]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)}
-function normalize(arr){return (arr||[]).map((c,i)=>({id:i,slug:slugify(c.title||('case-'+(i+1))),...c}))}
-async function loadData(){
-  if(Array.isArray(window.CASES)&&window.CASES.length) return normalize(window.CASES);
-  const r = await fetch(FALLBACK_JSON,{cache:'no-store'}); if(!r.ok) throw new Error('Missing ebp_cases data');
-  return normalize(await r.json());
-}
-let ALL=[], FILTER=[], PAGE=1, PER=8, ACTIVE=-1;
-function fieldsAll(){return ['title','client_profile','setting','presenting_problem','relevant_history','goals_and_preferences','strengths_and_resources','contextual_factors_and_barriers','ebp_decision_point','target_outcomes','risks_and_ethics','equity_signal','narrative']}
-function applyFilter(){
-  const q=($('#q').value||'').toLowerCase().trim();
-  FILTER=!q?[...ALL]:ALL.filter(c=>fieldsAll().some(f=>String(c[f]||'').toLowerCase().includes(q)));
-  PAGE=1; renderList(); FILTER.length?selectByIndex(0):showEmpty(); $('#count').textContent=`${FILTER.length} result${FILTER.length===1?'':'s'}`
-}
-function renderList(){
-  const start=(PAGE-1)*PER; const slice=FILTER.slice(start,start+PER); const list=$('#list'); list.innerHTML='';
-  slice.forEach(c=>{
-    const div=document.createElement('div'); div.className='row'+(c.id===ACTIVE?' active':''); div.role='option'; div.tabIndex=0;
-    div.innerHTML=`<div style="flex:1"><div class="title">${esc(c.title)}</div><div class="snippet">${esc((c.client_profile||'').replace(/\n/g,' '))}</div></div><div><span class="pill">${esc((c.setting||'').split(/[.;]/)[0].slice(0,40)||'—')}</span></div>`;
-    div.onclick=()=>select(c.id); div.onkeydown=e=>{if(e.key==='Enter')select(c.id)};
-    list.appendChild(div);
-  });
-  const pages=Math.max(1,Math.ceil(FILTER.length/PER)); $('#pageMeta').textContent=`Page ${PAGE}/${pages}`; $('#prev').disabled=PAGE<=1; $('#next').disabled=PAGE>=pages;
-}
-function showEmpty(){ $('#empty').style.display=''; $('#detail').style.display='none'; $('#detailHeading').textContent='Details' }
-function selectByIndex(ix){const id=(FILTER[ix]||{}).id; if(typeof id==='number') select(id)}
-function select(id){
-  ACTIVE=id; renderList(); const c=ALL.find(x=>x.id===id); if(!c) return showEmpty();
-  history.replaceState(null,'',`#case=${encodeURIComponent(c.slug)}`); fillDetail(c);
-}
-function fillDetail(c){
-  $('#empty').style.display='none'; $('#detail').style.display=''; $('#detailHeading').textContent=c.title||'Details';
-  $('#f_title').textContent=c.title||''; $('#f_client_profile').innerHTML=brize(c.client_profile||''); $('#f_setting').innerHTML=brize(c.setting||'');
-  $('#f_presenting_problem').innerHTML=brize(c.presenting_problem||''); $('#f_relevant_history').innerHTML=brize(c.relevant_history||'');
-  $('#f_goals_and_preferences').innerHTML=brize(c.goals_and_preferences||''); $('#f_strengths_and_resources').innerHTML=brize(c.strengths_and_resources||'');
-  $('#f_contextual_factors_and_barriers').innerHTML=brize(c.contextual_factors_and_barriers||''); $('#f_ebp_decision_point').innerHTML=brize(c.ebp_decision_point||'');
-  $('#f_target_outcomes').innerHTML=brize(c.target_outcomes||''); $('#f_risks_and_ethics').innerHTML=brize(c.risks_and_ethics||''); $('#f_equity_signal').innerHTML=brize(c.equity_signal||'');
-  $('#f_narrative').innerHTML=brize(c.narrative||'');
-  const extras=c.extra||c.__extra__||{}; const hasQ=extras.clinical_questions&&String(extras.clinical_questions).trim(); const hasR=Array.isArray(extras.client_records)&&extras.client_records.length;
-  const wrap=$('#extraWrap'); const tgt=$('#extraFields'); if(hasQ||hasR){wrap.style.display=''; tgt.innerHTML='';
-    if(hasQ){ addKV(tgt,'Clinical Questions to Consider',extras.clinical_questions) }
-    if(hasR){ addKV(tgt,'Client Records',extras.client_records.map(x=>`• ${x}`).join('\n')) }
-  }else{ wrap.style.display='none' }
-}
-function addKV(container,k,v){ const K=document.createElement('div'); K.textContent=k; K.style.color='#6b7280'; const V=document.createElement('div'); V.innerHTML=brize(v); container.appendChild(K); container.appendChild(V)}
-$('#btnClear').onclick=()=>{ $('#q').value=''; applyFilter() }; $('#prev').onclick=()=>{ if(PAGE>1){PAGE--;renderList()} }; $('#next').onclick=()=>{ const max=Math.ceil(FILTER.length/PER)||1; if(PAGE<max){PAGE++;renderList()} }
-$('#btnCopyLink').onclick=async()=>{ try{ await navigator.clipboard.writeText(location.href) }catch{} }; $('#btnPrint').onclick=()=>window.print();
-$('#btnOpen').onclick=()=>{ const c=ALL.find(x=>x.id===ACTIVE); if(!c) return; try{ localStorage.setItem('EBP_PRELOAD_TITLE', c.title||'') }catch{}; location.href='ebp.html' }
-document.addEventListener('keydown',e=>{ const k=e.key; if(k==='/'&& !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){ e.preventDefault(); $('#q').focus(); return }
-  if(['ArrowDown','ArrowUp','Enter'].includes(k) && document.activeElement===document.body){ e.preventDefault(); if(!FILTER.length) return;
-    const ix=Math.max(0, FILTER.findIndex(x=>x.id===ACTIVE)); if(k==='ArrowDown')selectByIndex(Math.min(ix+1,FILTER.length-1)); else if(k==='ArrowUp')selectByIndex(Math.max(ix-1,0)); else $('#btnOpen').click(); }});
-$('#q').addEventListener('input', applyFilter);
-function tryHash(){ const m=location.hash.match(/case=([^&]+)/); if(!m) return false; const slug=decodeURIComponent(m[1]); const ix=ALL.findIndex(c=>c.slug===slug); if(ix>=0){ PAGE=Math.floor(ix/PER)+1; renderList(); select(ALL[ix].id); return true } return false }
-(async function(){ const data=await loadData(); ALL=data; applyFilter(); tryHash() })();
-</script>
-</body>
-</html>
-
-<!-- OPTIONAL: tiny preload hook for /ebp.html (paste anywhere after CASES + renderCase are defined) -->
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-  try{
-    const want = localStorage.getItem('EBP_PRELOAD_TITLE');
-    if(want){
-      const m = (Array.isArray(window.CASES)?window.CASES:[]).find(c=>c.title===want);
-      if(m){ window.current=m; window.locked=false; (window.clearForm||(()=>{}))(); (window.renderCase||(()=>{}))(); }
-      localStorage.removeItem('EBP_PRELOAD_TITLE');
-    }
-  }catch(_){}
-});
-</script>
-
-<!-- /program-eval-index.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Program Evaluation Vignette Index</title>
-<style>
-  :root{ --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --line:#e5e7eb; --accent:#2563eb }
-  *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
-  header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
-  .wrap{max-width:1200px;margin:0 auto;padding:12px 16px}
-  h1{font-size:18px;margin:0 0 6px}
-  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  input[type=search]{width:360px;max-width:60vw;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fafafa}
-  button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 10px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-  button:hover{border-color:#d1d5db} button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-  main{max-width:1200px;margin:12px auto 20px;padding:0 16px;display:grid;grid-template-columns:1fr 1.2fr;gap:14px}
-  @media (max-width:960px){main{grid-template-columns:1fr}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-  .hd{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-  .bd{padding:10px 12px} .muted{color:var(--muted)}
-  .list{max-height:70vh;overflow:auto}
-  .row{display:flex;gap:10px;align-items:flex-start;border-bottom:1px dashed var(--line);padding:10px 6px;cursor:pointer}
-  .row:last-child{border-bottom:0} .row.active{background:#f3f4f6}
-  .title{font-weight:600;margin-bottom:2px}
-  .snippet{color:var(--muted);font-size:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .pill{display:inline-block;background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff;border-radius:999px;padding:2px 8px;font-size:12px}
-  .grid{display:grid;grid-template-columns:220px 1fr;gap:8px}
-  .label{color:var(--muted)} .narrative{border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
-  details summary{cursor:pointer;user-select:none}
-</style>
-</head>
-<body>
-<header>
-  <div class="wrap">
-    <h1>Program Evaluation Vignette Index</h1>
-    <div class="toolbar">
-      <input id="q" type="search" placeholder="Search title, setting, population, problems, stakeholders…" aria-label="Search">
-      <button id="btnClear">Clear</button>
-      <span id="count" class="muted"></span>
     </div>
   </div>
-</header>
 
-<main>
-  <section class="card">
-    <div class="hd"><strong>Vignettes</strong><div class="muted" id="pageMeta"></div></div>
-    <div class="bd">
-      <div id="list" class="list" role="listbox" aria-label="Vignette list"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-        <button id="prev">Prev</button><button id="next">Next</button>
+  <div class="card" id="builderCard">
+    <h2>EBP Note Builder</h2>
+    <div class="body">
+      <div class="flex" style="justify-content:space-between">
+        <div class="muted">Lock to enable editing and autosave.</div>
+        <div class="pill"><span id="progressDone">0</span>/4 core sections ≥ 100 words</div>
       </div>
-    </div>
-  </section>
 
-  <section class="card">
-    <div class="hd">
-      <h2 id="detailHeading" style="font-size:16px;margin:0">Details</h2>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button id="btnOpen" class="primary">Open in Plan Builder</button>
-        <button id="btnCopyLink">Copy Link</button>
-        <button id="btnPrint">Print</button>
+      <h3 style="margin-top:12px">PICO Builder</h3>
+      <div class="row2">
+        <div><label>P - Population/Problem</label><input id="picoP" type="text" disabled></div>
+        <div><label>I - Intervention</label><input id="picoI" type="text" disabled></div>
+        <div><label>C - Comparison</label><input id="picoC" type="text" disabled></div>
+        <div><label>O - Outcome</label><input id="picoO" type="text" disabled></div>
+      </div>
+      <div class="muted" style="margin-top:6px">EBP question: <span id="picoPreview" style="font-weight:600">—</span></div>
+
+      <div class="hr"></div>
+
+      <div class="list">
+        <div>
+          <label>Client & Practice Context</label>
+          <textarea id="f_context" disabled></textarea>
+          <div class="counter" id="count_context">0 words</div>
+        </div>
+        <div>
+          <label>Search Strategy & Study Selection</label>
+          <textarea id="f_search" disabled></textarea>
+          <div class="counter" id="count_search">0 words</div>
+        </div>
+
+        <div id="studiesBlock">
+          <div class="flex" style="justify-content:space-between">
+            <label>Study Summaries (3–5 items)</label>
+            <div class="flex">
+              <button id="btnAddStudy" class="ghost" title="Add study summary">Add</button>
+              <button id="btnRemoveStudy" class="ghost" title="Remove last study">Remove</button>
+            </div>
+          </div>
+          <div id="studiesList" class="list"></div>
+        </div>
+
+        <div>
+          <label>Critical Appraisal (incl. equity/representation)</label>
+          <textarea id="f_appraisal" disabled></textarea>
+          <div class="counter" id="count_appraisal">0 words</div>
+        </div>
+        <div>
+          <label>Application & Delivery Plan</label>
+          <textarea id="f_application" disabled></textarea>
+          <div class="counter" id="count_application">0 words</div>
+        </div>
+        <div>
+          <label>Assumptions (optional)</label>
+          <textarea id="f_assumptions" disabled></textarea>
+          <div class="counter" id="count_assumptions">0 words</div>
+        </div>
       </div>
     </div>
-    <div class="bd">
-      <div id="empty" class="muted" style="padding:8px;border:1px dashed var(--line);border-radius:10px;background:#fcfcfd">Select a vignette from the list.</div>
-      <div id="detail" style="display:none">
-        <div class="grid">
-          <div class="label">Title</div><div id="f_title"></div>
-          <div class="label">Setting snapshot</div><div id="f_setting_snapshot"></div>
-          <div class="label">Population</div><div id="f_population"></div>
-          <div class="label">Core problems</div><div id="f_core_problems"></div>
-          <div class="label">Stakeholders</div><div id="f_stakeholders"></div>
-          <div class="label">Equity signals</div><div id="f_equity_signals"></div>
-          <div class="label">Constraints & resources</div><div id="f_constraints_resources"></div>
-          <div class="label">Your role</div><div id="f_role"></div>
-        </div>
-        <div class="narrative">
-          <h3 style="margin:0 0 6px">Scenario summary</h3>
-          <div id="f_scenario_summary"></div>
-        </div>
-        <div class="narrative" id="extraWrap" style="display:none">
-          <details open>
-            <summary>Additional fields</summary>
-            <div id="extraFields" style="display:grid;grid-template-columns:220px 1fr;gap:6px;margin-top:6px"></div>
-          </details>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
 </main>
 
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- Minimal html-docx-js (offline) -->
 <script>
-const FALLBACK_JSON = 'program_eval_cases.json';
-const $ = s => document.querySelector(s);
-function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]||c)).replace('&','&amp;')}
-function brize(s){return esc(s).replace(/\n/g,'<br>')}
-function slugify(s){return String(s||'').toLowerCase().trim().replace(/['"]/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)}
-function normalize(arr){return (arr||[]).map((c,i)=>({id:i,slug:slugify(c.title||('case-'+(i+1))),...c}))}
-async function loadData(){
-  if(Array.isArray(window.CASES)&&window.CASES.length) return normalize(window.CASES);
-  const r = await fetch(FALLBACK_JSON,{cache:'no-store'}); if(!r.ok) throw new Error('Missing program_eval_cases data');
-  return normalize(await r.json());
-}
-let ALL=[], FILTER=[], PAGE=1, PER=8, ACTIVE=-1;
-function fieldsAll(){return ['title','setting_snapshot','population','core_problems','stakeholders','equity_signals','constraints_resources','role','scenario_summary']}
-function applyFilter(){
-  const q=($('#q').value||'').toLowerCase().trim();
-  FILTER=!q?[...ALL]:ALL.filter(c=>fieldsAll().some(f=>String(c[f]||'').toLowerCase().includes(q)));
-  PAGE=1; renderList(); FILTER.length?selectByIndex(0):showEmpty(); $('#count').textContent=`${FILTER.length} result${FILTER.length===1?'':'s'}`
-}
-function renderList(){
-  const start=(PAGE-1)*PER; const slice=FILTER.slice(start,start+PER); const list=document.getElementById('list'); list.innerHTML='';
-  slice.forEach(c=>{
-    const div=document.createElement('div'); div.className='row'+(c.id===ACTIVE?' active':''); div.role='option'; div.tabIndex=0;
-    div.innerHTML=`<div style="flex:1"><div class="title">${esc(c.title)}</div><div class="snippet">${esc((c.setting_snapshot||'').replace(/\n/g,' '))}</div></div><div><span class="pill">${esc((c.population||'').split(/[.;]/)[0].slice(0,40)||'—')}</span></div>`;
-    div.onclick=()=>select(c.id); div.onkeydown=e=>{if(e.key==='Enter')select(c.id)}; list.appendChild(div);
+(function(a){function b(a){return new Blob([a],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})}
+function c(a){return a.replace(/[\u2013\u2014]/g,"-")}
+function d(a){var b='<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>'+a+"</body></html>";
+var c='Mime-Version: 1.0\nContent-Type: multipart/related; boundary="NEXT.ITEM-BOUNDARY"\n\n--NEXT.ITEM-BOUNDARY\nContent-Location: file:///C:/document.html\nContent-Type: text/html; charset=utf-8\nContent-Transfer-Encoding: 8bit\n\n'+b+"\n\n--NEXT.ITEM-BOUNDARY--";
+return "data:message/rfc822;base64,"+btoa(unescape(encodeURIComponent(c)))} a.htmlDocx={asBlob:function(a){return b(atob(d(c(a)).split(",")[1]))}}})(window);
+</script>
+
+<script>
+/* ======================== CONFIG ======================== */
+const CONFIG = { COURSE_TAG:'SOW5404 • Spring 2026', APPKEY_PREFIX:'EBP_APP_APPKEY_', DEFAULT_EXPORT_NAME:'EBP_Note.docx' };
+
+/* ==================== DATA — CASES ====================== */
+const CASES = [
+  { /* Marcos */ title:"Marcos: Missed Shifts, Rising Panic, and the Weight of Being the Provider",
+    client_profile:"Name: Marcos (he or him)\nAge: 28\nIdentities: Mexican American Latine man\nLanguage: English preferred, fluent Spanish\nFamily: Lives with partner and two children, ages 3 and 7\nEmployment: Line cook at a busy restaurant",
+    setting:"Community mental health walk-in clinic. Appointments are 30 minutes and follow up scheduling is inconsistent due to long waitlists. Sessions occur in a shared office with minimal sound privacy. The referring provider asked for support after Marcos reported panic-like episodes and trouble working full shifts.",
+    presenting_problem:"Over the past month Marcos has had intense episodes of shortness of breath, dizziness, and sweating. These occur at least twice per week, sometimes more. He has left three work shifts early and missed two entirely. His supervisor has warned him that his hours will be reduced if this continues. He is sleeping about four hours per night and reports frequent irritability at home.",
+    relevant_history:"He had similar but milder episodes a few years ago under significant stress. No prior therapy. No substance use. He recently took on extra shifts after his partner’s hours were cut. He reports tension with his partner about finances and parenting roles. He describes long standing pressure to appear calm and capable in front of family. A medical exam two weeks ago found no cardiac concerns. He remains worried something might be physically wrong.",
+    goals_and_preferences:"He wants the episodes to stop, wants to keep his job, and wants to be more patient with his children. He feels ashamed about missing work and does not want extended therapy commitments. He prefers strategies he can use privately, but he is unsure what that would look like.",
+    strengths_and_resources:"Strong work ethic, reliable employee until recently, close relationship with his children and brother, strong cultural values around providing for family, good problem solving skills in fast paced environments.",
+    contextual_factors_and_barriers:"His schedule changes weekly and sometimes daily. The family has limited childcare and struggles to cover rent. He worries about being judged by family if he shares what is happening. The apartment is small with little space for privacy. His restaurant does not offer paid sick leave. Attendance at outside appointments is challenging because of transportation and work demands.",
+    ebp_decision_point:"What brief, private, feasible supports can reduce panic-like episodes and help shift completion given work and family constraints.",
+    target_outcomes:"Reduced frequency and intensity of episodes; improved shift completion; improved patience at home and sleep.",
+    risks_and_ethics:"Physical symptoms need monitoring because he fears something medical is being overlooked. Work pressure may influence disclosure. If family tension is explored, it must be done in a way that respects cultural values around responsibility and privacy.",
+    equity_signal:"Managing distress within unstable hourly labor conditions, economic precarity, restricted access to flexible care, and cultural norms discouraging emotional disclosure.",
+    narrative:`Marcos sits forward in the chair, elbows on his knees, rubbing his palms together as he talks. He says he feels embarrassed even being here, but he also feels scared. He describes the first recent episode happening during a crowded dinner rush. The kitchen had been short staffed and he had been working for nearly eight hours without a break. Suddenly his chest tightened and his vision blurred. He grabbed the counter to steady himself and thought he might pass out. He told his supervisor he needed air and went outside, where he sat on a crate until the dizziness passed.
+
+Since then the episodes have struck in other places, including at home when helping his daughter with math homework. He reports feeling “on edge all day” because he never knows when the next one will happen. He presses a hand to his forehead and says he hates that his children have started watching him closely, as if they sense something is wrong.
+
+He worries constantly about money. With his partner’s reduced hours, he has been picking up as many shifts as possible. Missing work feels like a failure, but he also feels terrified of having an episode in front of customers. He has begun having trouble focusing at home. His partner has told him he seems distracted and distant. He says he does not know how to explain what is happening without sounding dramatic.
+
+He avoids discussing these episodes with his parents because he does not want them to think he cannot handle stress. He was raised with the idea that personal problems should be handled privately. He laughs weakly and says that in his family everyone is supposed to be tough.
+
+He mentions he barely sleeps. He lies awake doing mental math about rent and groceries. When he does fall asleep, he wakes up sweating. He had a medical evaluation recently that found no cardiac issues, but the reassurance has not fully settled him. He is unsure whether the problem is emotional, physical, or something else entirely.
+
+Near the end of the session he looks up and asks if people ever get completely better from something like this. The question hangs in the air, full of hope and fear. He says he wants to feel like himself again, but he does not know where to begin.
+
+Referral Note from Primary Care Provider:
+Client reports three episodes of chest tightness in the past two weeks. ECG normal. Provider suspects anxiety related symptoms. Recommended behavioral health consult due to work impairment.`
+  },
+  { /* Shawn */ title:"Shawn: Headaches, Exhaustion, and Everyone Counting on Him",
+    client_profile:"Age 32. He and him. Black. Works full-time in a warehouse distribution center. Primary caregiver for his mother who has mobility limitations. Lives with his mother and younger sister. Limited health insurance coverage.",
+    setting:"Emergency Department social work consult in a busy urban hospital. Brief, private space but significant time pressure. Social worker has 15 minutes before Shawn is discharged.",
+    presenting_problem:"Shawn arrived with severe headaches, dizziness, and a feeling that he might pass out. He has visited the Emergency Department three times in the last two months with similar symptoms. Medical tests are normal, and clinicians suspect stress-related contributors but have not ruled out other causes. Shawn appears embarrassed, saying he “must be wasting everyone’s time.”",
+    relevant_history:"Shawn works early morning shifts with heavy lifting. He often skips breaks to leave on time to take care of his mother’s needs. He has not seen a primary care provider in over a year because scheduling conflicts make it difficult. He reports worsening sleep, increased irritability, and sometimes feeling “on edge” without knowing why. He denies any diagnosis of anxiety or depression. He frequently feels responsible for keeping his family stable after his father’s death.",
+    goals_and_preferences:"Shawn wants the headaches and dizziness to stop. He wants to “get back to normal” and keep his job performance strong. He prefers not to take medications without clear need. He also says he “doesn’t have time” for therapy appointments but is open to learning strategies he can do between shifts. He wants to avoid anything that would require rearranging caregiving responsibilities.",
+    strengths_and_resources:"Reliable worker. Deeply committed to family. Strong problem-solving skills. Has one close friend at work he trusts. Engaged in his church community when able.",
+    contextual_factors_and_barriers:"Erratic work schedule, transportation challenges, limited access to primary care, caregiver responsibilities, financial strain, internalized expectations to be “strong.”",
+    ebp_decision_point:"Brief coping supports vs. stronger linkages to outpatient care vs. workplace-related contributors to address now.",
+    target_outcomes:"Reduced headache frequency or severity; improved functioning; consistent follow-up with appropriate supports.",
+    risks_and_ethics:"Avoid minimizing symptoms with a potential medical basis; avoid implying blame; attend to racialized labor expectations.",
+    equity_signal:"Racialized labor expectations, limited flexible healthcare, and caregiving responsibilities shape options and stress exposure.",
+    narrative:`Shawn sits on the edge of the Emergency Department stretcher, shoulders rounded, his work uniform still covered in dust. The bright lights make him wince. He keeps apologizing for “being back again,” as though he owes the staff an explanation for his pain. When he shifts, he massages the back of his neck, wincing like the movement itself reminds him of something he’s been trying to ignore.
+
+He describes waking that morning with a pounding headache that spread behind his eyes. At work, he started feeling lightheaded. He thought the sensation would pass, but it grew worse when he reached for a heavy box. His supervisor insisted he go to the Emergency Department “just to be safe.” Instead of relief, Shawn says he feels like a burden.
+
+When you ask about stress, he shrugs. “I mean, everyone’s stressed. That’s life.” Slowly, details surface: the early shifts with mandatory overtime, the small kitchen paycheck that keeps the household just stable, his mother’s increased mobility challenges, and his fear that if he slows down, everything will fall apart. He laughs softly when you ask about rest. “Rest is for people with backup plans.”
+
+Shawn admits he has been snapping at his sister more often, which makes him feel guilty. Sleep is inconsistent. He often lies awake, thinking through bills or replaying moments when he could have “done better.” The more you gently explore, the more he admits the symptoms have been building for months.
+
+Still, he insists he cannot change his routine. Appointments feel impossible. Asking for help feels disrespectful to everything his parents sacrificed. He says he doesn’t want medication unless absolutely necessary but is open to “tools or tips” that won’t require more time off or additional costs.
+
+As the discharge process begins, Shawn watches the clock anxiously. He needs to get home to help his mother with lunch and prepare for his next shift. He looks exhausted but determined, like someone who cannot imagine putting his own needs first without something else falling apart.
+
+Client Records:
+ED Nursing Note Excerpt: Patient reports increasing headache frequency for 8 weeks. Describes pressure behind eyes, intermittent dizziness. Vitals stable. Patient states stress at work and caregiving demands but reluctant to discuss further.
+Employer Attendance Printout: Left early 3 times; used 1 sick day; Supervisor: Strong worker. Concerned about fatigue.`
+  },
+  { /* Iliana */ title:"Iliana: A Mother in a New Country Trying Not to Fall Apart",
+    client_profile:"Age 27. She and her. Recently immigrated from Guatemala. Speaks Spanish; understands some English but prefers Spanish. Lives with her two young children in a family shelter.",
+    setting:"Family shelter social work intake room. Limited privacy; frequent interruptions. Shelter requires brief, goal-oriented assessments due to high demand.",
+    presenting_problem:"Iliana reports persistent feelings of overwhelm, difficulty sleeping, and episodes of sudden crying. She worries she is “not being a good mother” because the children “see her sad.” Staff observed her appearing distressed during nightly check-in and suggested meeting with the social worker.",
+    relevant_history:"Iliana left Guatemala after escalating threats from a former partner. She traveled with her children through multiple regions before arriving in the United States. Since arrival, she has focused on survival: securing shelter, food, and school enrollment for her children. She has no local family. She has applied for asylum but has not yet received updates.",
+    goals_and_preferences:"She wants to be calm enough to care for her children, sleep better, and stop crying suddenly. Talking helps but she becomes nervous when asked about past experiences. She prefers methods that do not require leaving the shelter until she feels more settled. She does not want to take pills that will make her tired.",
+    strengths_and_resources:"Loving parent. Deep cultural and spiritual resilience. Strong connection to her children. Participates in informal mutual aid networks among other Spanish-speaking mothers.",
+    contextual_factors_and_barriers:"Uncertain immigration status, limited English, lack of transportation, shared living space, limited childcare, minimal phone data, high emotional load, and ongoing fear that her former partner may find her.",
+    ebp_decision_point:"Stabilize distress via brief grounding, community support connections, or structured referrals given barriers and preferences.",
+    target_outcomes:"Improved emotional regulation; reduced distress episodes; improved sleep or functioning during caregiving routines.",
+    risks_and_ethics:"Trauma risk; avoid coercive disclosure; ensure safety without retraumatization; cultural humility with spiritual coping.",
+    equity_signal:"Migration trauma, gender-based violence, language access barriers, and structural vulnerability shape options.",
+    narrative:`The intake room is cramped, and the hum of shelter activity seeps through the thin door. Iliana sits with her hands folded tightly, as if holding herself together. She smiles politely at first, but as she begins describing her last few weeks, tears gather at the edges of her eyes. She apologizes repeatedly for crying, explaining that she “never used to be like this.”
+
+She describes waking in the middle of the night with her heart pounding. She tries to be quiet so she does not wake the children sleeping beside her. During the day, she becomes overwhelmed by simple tasks: filling out paperwork, remembering appointments, managing the shelter schedule. She sometimes feels her vision narrow when both children need her attention at the same time. She says the sadness comes “like a wave,” fast and unpredictable.
+
+She is careful about the details she shares. When you ask gently about her journey to the United States, she hesitates, saying the memories are difficult. She shifts to talking about her children instead. They love school, she says. They are learning English quickly. She wants to be strong for them. She smiles again, briefly, before her face collapses into worry.
+
+Iliana says she is afraid to leave the shelter alone. She worries her former partner may somehow find them. She has avoided taking buses because she does not understand the routes. She has one friend in the shelter she trusts, another mother who shares snacks and watches her children during showers. Sometimes Iliana joins the mothers in the hallway for quiet evening conversations, which she says helps.
+
+When asked what she hopes will change, she sighs: she wants to feel calm enough to sleep and patient enough to support her children without feeling like she is failing. She does not want medication unless there is no other way. She says talking helps but she does not want to talk about “the dangerous things” yet. Her hands tremble slightly as she rubs her palms together.
+
+There is a sense that she is holding a very heavy story, but she is not ready to open it. She wants help, but on her terms, slowly, gently.
+
+Client Records:
+Shelter Nightly Log Entry: Resident tearful during check-in; difficulty sleeping; children appeared well; encouraged to meet with social worker.
+School Social Worker Voicemail: Committed to education but missed last meeting; may need help coordinating appointments.`
+  },
+  { /* Morgan */ title:"Morgan: Executive Overload, Missed Deadlines, and the Fear of Letting People Down",
+    client_profile:"Age 24. They and them. White, nonbinary. Works part-time as a graphic design contractor. Lives with two roommates. No formal diagnoses reported. Mild sensory sensitivities and chronic trouble organizing tasks.",
+    setting:"Community mental health drop-in center. Brief counseling session with 20 minutes available. Semi-private room with occasional hallway noise and interruptions.",
+    presenting_problem:"Reports “meltdowns” linked to missed deadlines and overwhelm. Contractor work unstable due to late submissions or forgotten steps. Hyperfocus periods followed by crashes where tasks feel impossible. Shame and fear of disappointing clients.",
+    relevant_history:"Strong creative academics; struggled with organization/time management. Always needed reminders and structure. Recently moved and lost social routine. Planning apps overwhelm via notifications. Inconsistent therapy due to fluctuating income.",
+    goals_and_preferences:"Manage work tasks without spiraling; stop freezing near deadlines. Supports that fit creative workflow, not rigid systems. Dislikes feeling monitored. Open to emotion-regulation and task initiation strategies.",
+    strengths_and_resources:"Strong creative skills. Supportive roommates. Good insight. Online creative communities. Curious and reflective.",
+    contextual_factors_and_barriers:"Irregular income, unpredictable hours, self-employed pressure, fear of losing clients, crowded living environment, sensory overload, inconsistent sleep.",
+    ebp_decision_point:"Grounding and emotion regulation vs structured supports adapted to preferences and flexible work life.",
+    target_outcomes:"Improved task follow-through; reduced distress during deadlines; improved daily functioning.",
+    risks_and_ethics:"Avoid pathologizing neurodivergence; ensure autonomy; avoid overwhelming with rigidity.",
+    equity_signal:"Labor instability, self-employed precarity, neurodivergent needs, and gender identity misunderstandings intersect.",
+    narrative:`Morgan sits curled forward, both hands wrapped around a large insulated cup they forgot to fill before the appointment. Their eyes flick from the window to the notebooks scattered across the table, as though each one holds a reminder of something undone. They apologize three times before you can tell them they have nothing to apologize for.
+
+They describe a pattern they cannot break. They accept a design assignment, feel excited, and spend hours sketching. But when it is time to finalize the piece or send drafts, their body seems to shut down. “It’s like my brain hits a wall,” they say. They stare at the screen, unable to begin. Their chest tightens, their thoughts race, and suddenly they are cleaning the kitchen or scrolling for hours. By the time they return to the project, they are embarrassed, behind, or both.
+
+They explain that these shutdowns make them feel like a fraud. Their clients think they are talented, but Morgan fears they will eventually realize “how broken” they are. When you ask what they do during overwhelm, Morgan says they try breathing exercises they saw online, but sometimes the exercises make them feel more aware of how “bad at life skills” they are.
+
+Morgan moved to the city hoping for independence. They love their roommates but feel guilty when they overhear them reminding Morgan of overdue tasks. At times, they avoid opening emails entirely. “If I don’t look, I can pretend I’m not disappointing anyone,” they say, picking at the sleeve of their sweater.
+
+When asked about supports that have worked in the past, Morgan brightens slightly. They loved a structured mentorship in college but felt overwhelmed by the weekly assignments. They enjoy working in cafés but find them overstimulating. They are open to strategies that start small and respect their creative process.
+
+As the meeting ends, Morgan says quietly, “I just want to feel like I can trust myself again.” There is exhaustion in their voice, but also a spark of hope that things might feel more manageable with the right approach.
+
+Client Records:
+Email Excerpt From Client: Checking in again. We haven’t received the revised draft. Please confirm timeline.
+Self-Report Note: To do today: finish banner, send invoice, wash bedding. Feeling stuck. Maybe try starting with one small thing?`
+  },
+  { /* Sofia */ title:"Sofia: School Refusal, Sensory Overload, and a Family Caught in the Middle",
+    client_profile:"Age 15. She and her. White, autistic student at a specialized public school. Lives with mother and younger brother. Receives school-based support services.",
+    setting:"School social work office in a specialized education program. Social worker has a scheduled 30-minute session. Moderate privacy but frequent school announcements interrupt.",
+    presenting_problem:"Missed nine days in the past month. Morning overwhelm leads to refusal. Describes intense sensory discomfort in crowded hallways and a buzzing sensation that builds until escape.",
+    relevant_history:"Diagnosed in early childhood. Sensory sensitivities include sound, fluorescent lighting, and unexpected touch. Historically enjoyed school when routines were stable. Changes this year disrupted predictability. Past teasing, does not want to discuss. No academic difficulty.",
+    goals_and_preferences:"Wants sensory environment manageable and to not feel sick entering the building. Prefers private strategies and dislikes attention. Does not want to talk about social stressors. Mother wants attendance and fewer morning conflicts. School wants consistency.",
+    strengths_and_resources:"High academics; insight into triggers; supportive mother; strong artistic interests; one teacher who understands her style.",
+    contextual_factors_and_barriers:"Long commute on noisy bus; limited quiet spaces; unpredictable transitions; parent work schedule; insurance limits.",
+    ebp_decision_point:"Sensory strategies vs gradual exposure vs environmental supports requiring collaboration.",
+    target_outcomes:"Reduced refusal; increased attendance; reduced sensory distress before and during school.",
+    risks_and_ethics:"Avoid forced compliance; center student voice; balance demands with access needs; protect from stigma.",
+    equity_signal:"Autistic students face environments built without sensory access. Refusal risks disciplinary responses shaped by systemic misunderstandings.",
+    narrative:`Sofia sits at the small round table with her knees pulled to her chest, her hoodie drawn up around her face. The fluorescent overhead lights flicker slightly. She glances up each time they buzz, then looks back down. Her mother sighs softly, rubbing her temples in exhaustion.
+
+Sofia explains that mornings have become unbearable. She wakes up already tense, anticipating the hallway noise. She describes the cafeteria as “a hundred radios playing different static.” Even in class, she finds herself bracing for the bell. When she cannot predict sounds or movements, her heartbeat speeds up, and her hands shake. Some days she makes it to the car before crying; other days she refuses to put on her shoes.
+
+Her mother speaks with equal parts frustration and worry. She is afraid that missed days will affect Sofia’s progress. She also fears losing her job when she is late because of morning meltdowns. She feels caught between advocating for her daughter and wanting the school to understand the situation more fully.
+
+Sofia avoids discussing peers. When asked about this year’s changes, she shrugs and looks away. She says she does not want to “make a big deal” but does not feel comfortable in some spaces anymore. She has one teacher she trusts, who lets her work quietly in a corner when the room gets too loud.
+
+As you explore her hopes, Sofia quietly says she wants to come to school, but she wants it to feel “less like drowning.” She is unsure what would help but says she likes drawing because it feels grounding. She is open to trying small things but fears they will not make a difference.
+
+Client Records:
+Attendance Summary: Absences this month 9; Tardies 4; Parent notes: Overwhelmed. Could not get on bus.
+Teacher Email Excerpt: Very capable academically. Participates fully when comfortable. Major challenge is sensory overload in transitions.`
+  },
+  { /* Mateo */ title:"Mateo: Trying to Stay Sober in a Workplace Built Around Alcohol",
+    client_profile:"Age 29. He and him. Mexican American. Works full-time as a server and bar-back at a popular restaurant. Lives with two cousins. Bilingual Spanish and English; prefers English in professional settings. No formal mental health diagnoses reported.",
+    setting:"Community behavioral health walk-in clinic. Semi-private cubicle with limited soundproofing. Approximately 25 minutes.",
+    presenting_problem:"Increasing difficulty staying sober while working around alcohol. Not drinking every day but slipping more often after stressful shifts. Feels ashamed and confused.",
+    relevant_history:"Heavier drinking began two years ago during a stressful breakup. Periods of sobriety lasting several weeks. No formal program; a few anonymous online meetings. Father struggled with alcohol; worries about same problem. Job performance strong but late twice recently after drinking nights.",
+    goals_and_preferences:"Avoid after-shift drinking and avoid snowballing. Does not want to quit restaurant job. Prefers privacy - coworkers/cousins not to know. Unsure about long-term therapy; open to before/after-shift strategies.",
+    strengths_and_resources:"Strong interpersonal skills; good work ethic; supportive cousins; professionalism; insight; motivated; stable housing.",
+    contextual_factors_and_barriers:"Restaurant culture normalizes heavy drinking; coworker invitations; evening schedules; limited late transportation; stigma; family history triggers.",
+    ebp_decision_point:"Harm reduction, environmental/relational supports, or brief skills to interrupt habitual patterns.",
+    target_outcomes:"Reduced after-shift drinking frequency; increased urge management; improved sense of control.",
+    risks_and_ethics:"Respect autonomy; avoid moralizing; cultural humility; avoid strategies that jeopardize employment or safety.",
+    equity_signal:"Service industry labor conditions, social drinking norms, masculinity stigma, and tipped income pressures shape experience.",
+    narrative:`Mateo arrives wearing his restaurant uniform, smelling faintly of citrus cleaner and fryer oil. He apologizes for the wait even though he is early. His leg bounces as he sits, and he keeps adjusting his baseball cap as though he is trying to settle into his own body.
+
+He explains that last night he drank more than planned after a chaotic dinner rush. A coworker bought a round “to celebrate surviving Friday,” and he felt awkward refusing. Once he started drinking, he found himself staying longer than intended. He woke up groggy, ashamed, and terrified he might be “heading down the same road” as his father. He emphasizes that he does not drink every day, but the pattern feels familiar and frightening.
+
+When you ask what he wants, he says he wants to feel “in control again.” He likes his job and the social nature of the work. He does not want to be the person who says no to everything. At the same time, he hates waking up worried he messed up again. He describes a tug-of-war inside himself: the part that enjoys relaxing with coworkers and the part that feels sick afterward. He worries he is disappointing himself and the people he loves.
+
+He mentions two cousins he lives with who “party sometimes” but do not pressure him. He has thought about attending more online meetings but feels embarrassed turning his camera on and anxious about being seen in person. He does not want to quit drinking entirely, at least not right now, but he does want to stop crossing the line he keeps crossing.
+
+During quieter moments, he admits he feels lonely after work and finds it easier to join his coworkers than go home to an empty apartment. He wonders if he drinks partly to delay sitting with certain emotions. His eyes well when he says this, but he quickly looks away.
+
+Mateo says he needs tools that work when he is exhausted, overstimulated, and surrounded by coworkers who see drinking as bonding. He does not know what those tools might be, but he knows he cannot keep doing things the same way.
+
+Client Records:
+Shift Manager Note: Everything ok? You were a little off today. Let me know if you need to swap a shift or something.
+Self-Monitoring: Days without drinking: 4 … Then 0. Need a plan. I can do better.`
+  },
+  { /* Linh */ title:"Linh: Parenting Through Behaviors That Feel Bigger Than She Can Hold",
+    client_profile:"Age 34. She and her. Vietnamese American. Lives in a small apartment with her 8-year-old son, Bao. Works evenings at a restaurant. Co-parents informally with Bao’s father, who is inconsistently involved.",
+    setting:"Pediatric primary care clinic. Short social work appointment following a recent teacher concern form. Limited privacy because of thin walls and occasional staff interruptions. Time-limited session with about 20 minutes available.",
+    presenting_problem:"Bao has been more active, unfocused, and argumentative at home and at school. Linh feels overwhelmed by his behaviors and unsure how to respond effectively. The school has described him as disruptive and off-task. Linh fears the school views her as a failing parent and worries Bao is being singled out.",
+    relevant_history:"Bao started third grade two months ago. His previous school years were smoother, though he always had high energy. The evening work schedule means Linh is often tired when supervising homework, and arguments have increased. Bao becomes frustrated quickly, sometimes crying or shutting down when he cannot focus. Linh reports that she grew up in a context where children were expected to sit still and comply, and she feels confused about how to interpret Bao’s behavior.",
+    goals_and_preferences:"Linh wants home life to feel calmer and wants Bao to feel supported, not punished. She does not want him to feel broken. She prefers practical tools she can use at home, especially in the evenings. She is open to learning strategies but worries about language misunderstandings when speaking with school staff. She wants to avoid long weekly programs because of her work schedule.",
+    strengths_and_resources:"Warm relationship with Bao. Strong family values and resilience. Engaged in a Vietnamese community church. Bao is imaginative, curious, and affectionate. Linh is highly motivated to support him.",
+    contextual_factors_and_barriers:"Evening work shifts; limited childcare; language nuance in school communications; cultural expectations around obedience; limited transportation; financial stress; inconsistent father involvement.",
+    ebp_decision_point:"Parenting strategies for emotional regulation and homework routines; school communication supports; developmental lens guidance.",
+    target_outcomes:"Improved homework routines; decreased conflict at home; improved caregiver confidence responding to challenging behaviors.",
+    risks_and_ethics:"Avoid culturally insensitive assumptions. Ensure Linh is not blamed for systemic or developmental factors. Avoid stigmatizing language. Clarify that exploring supports does not mean premature labeling.",
+    equity_signal:"Immigrant parents encounter school systems that assume shared discipline beliefs; language, socioeconomic constraints, and expectations shape interpretations.",
+    narrative:`Linh sits upright in the small clinic office chair, smoothing Bao’s jacket on her lap even though he is not present. Her expression is a mix of worry and exhaustion. She explains that she received a note from the school yesterday describing Bao as “disruptive” and “unusually emotional.” She did not sleep well because she kept rereading the phrasing, wondering if the teachers blame her.
+
+She describes Bao as bright and enthusiastic. At home he loves showing her drawings, asking endless questions, and helping in the kitchen. But lately homework has turned into a fight almost every evening. He rushes through math problems, makes mistakes, then becomes upset when she asks him to slow down. Sometimes he cries and says his brain “feels too busy.” Linh feels pulled between comforting him and insisting he finish his work.
+
+She explains that she works long evening shifts at a restaurant, often coming home tired and stressed. She tries to create structure for Bao but feels her energy is limited. In her own childhood, children were expected to sit calmly and complete tasks without negotiation. She feels confused when traditional methods do not seem to work for Bao. “I tell him to focus, but he cannot,” she says, her voice breaking slightly. “I do not understand what he needs from me.”
+
+As she talks, her fears come to light. She is worried the school is labeling him too quickly. She is worried teachers will think her parenting is inadequate. She is worried that if she pushes too hard, she will harm his confidence, but if she does not push enough, he will fall behind. She wonders whether other children struggle like this or whether something is wrong.
+
+When asked what she hopes will change, Linh says she wants home to feel peaceful again. She wants Bao to succeed without feeling overwhelmed. She wants to understand how to support him in ways that match her values, her schedule, and his needs. She knows she cannot change the pressures of work or school, but she hopes there are tools that can make their evenings less painful.
+
+Client Records:
+Teacher Concern Form: Frequently leaves seat, appears distracted, sometimes refuses directions. Strengths include creativity and verbal engagement.
+School Voicemail: Please schedule a meeting to talk about supports we think may help.`
+  },
+  { /* Farah */ title:"Farah: Grief, Insomnia, and a Body That Will Not Rest",
+    client_profile:"Age 26. She and her. Afghan American. Works part-time at a bakery. Lives with extended family. English preferred but sometimes switches to Dari during emotional moments. No formal mental health diagnoses documented.",
+    setting:"Primary care social work consultation in a busy outpatient clinic. Ten minutes of privacy before the physician returns with discharge instructions. Thin walls, frequent interruptions.",
+    presenting_problem:"Severe insomnia, loss of appetite, persistent stomach tightness. Sometimes lightheaded and detached. Family urged visit after noticing no sleep. Physician referred to explore stress-related factors.",
+    relevant_history:"Father died unexpectedly seven weeks ago. She helped coordinate religious and cultural mourning rituals but has not shared much of her own feelings. Avoids discussing father at work and feels numb until nighttime. Took on more household responsibilities and supports younger siblings.",
+    goals_and_preferences:"Wants to sleep; stomach to stop hurting; mornings bearable. Approaches must respect cultural mourning practices. Does not want to be pushed to move on. Prefers private, non-pharmacological tools.",
+    strengths_and_resources:"Strong family ties; spiritual grounding; thoughtful; supportive workplace supervisor; strong community connections through mosque.",
+    contextual_factors_and_barriers:"Crowded multigenerational home; nighttime responsibilities; cultural expectations of emotional privacy; limited finances; part-time work instability; immigration stress in family.",
+    ebp_decision_point:"Non-pharmacological supports for insomnia/somatic distress during acute grief aligned with values and privacy.",
+    target_outcomes:"Improved sleep quality; reduced somatic tension; restored daily functioning.",
+    risks_and_ethics:"Avoid pathologizing healthy grief; honor spiritual frameworks; cultural humility; attend to power differentials.",
+    equity_signal:"Immigration stress, cultural mourning expectations, economic precarity, and healthcare systems recognizing culturally congruent grief expression.",
+    narrative:`Farah sits quietly, hands folded neatly over her purse. She has dark circles beneath her eyes. When she speaks, her voice is soft, as if she is choosing every word carefully. She says she has not slept more than two hours a night for weeks. She lies awake long after everyone has gone to bed, waiting for her body to settle, but instead she feels waves of tightness rolling through her stomach.
+
+She explains that since her father’s death, she has been holding the family together. Her mother relies on her for translation, paperwork, and emotional encouragement. Her siblings gravitate toward her room at night, seeking comfort. She says she feels honored to care for her family but also overwhelmed. She has not cried in front of them, because she fears it will make them feel even worse.
+
+Farah says she cannot rest because the house is full, and privacy is limited. She describes lying awake listening to relatives snore, cough, whisper in other rooms. When she finally begins to drift, she is startled awake by anxious thoughts that she cannot quite explain. She says it feels like her body is “running a race without permission.”
+
+At work, she keeps her head down and focuses on repetitive tasks. Coworkers ask how she is doing, and she answers politely, but she feels “hollow.” When you ask what she needs most, she hesitates, then says she wants the nights to feel less frightening. She wants her mind to slow down enough to breathe. She is open to ideas but not ready for anything that feels too emotionally demanding.
+
+Client Records:
+Primary Care Vitals: Blood pressure slightly elevated; sleep 1–2 hours; appetite decreased.
+Note From Mother: Farah works hard and does not sleep. Keeps everything inside. We are worried.`
+  },
+  { /* Riley */ title:"Riley: Navigating Gender, Safety, and Shutdowns at Home",
+    client_profile:"Age 16. They and them. White. Transgender nonbinary teen. Lives with mother and stepfather. Currently enrolled in high school. No documented mental health diagnoses, though school counselor notes emotional shutdowns.",
+    setting:"School counseling office. Privacy is moderate until class change noise begins. Time-limited session scheduled for 25 minutes.",
+    presenting_problem:"Shutdown episodes during conflict at home. They become silent, freeze, and sometimes retreat to their room for hours. Mother requested support after a recent argument triggered a shutdown that lasted most of an evening. Riley reports feeling overwhelmed, unsafe, and disconnected.",
+    relevant_history:"Came out as nonbinary last year. Mother is trying to be affirming but is unsure about language and boundaries. Stepfather avoids the topic. Household tense around clothing, curfews, school performance. One close friend and an online art community.",
+    goals_and_preferences:"Wants to feel safe expressing frustration without shutting down. Prefers private strategies usable during escalation. Avoids anything that forces emotions out. No family disclosure unless chosen.",
+    strengths_and_resources:"Creative, thoughtful, strong insight after the fact. One supportive peer. Access to school counseling. Strong online community.",
+    contextual_factors_and_barriers:"Inconsistent emotional support at home; identity misunderstandings; limited transportation; stepfather’s discomfort with LGBTQ topics; academic pressure; stress around safety.",
+    ebp_decision_point:"Support emotional regulation and safety during shutdown episodes while honoring privacy, autonomy, and gender identity.",
+    target_outcomes:"Reduced frequency or intensity of shutdowns; earlier trigger identification; improved sense of safety.",
+    risks_and_ethics:"Protect autonomy around identity; avoid involuntary family involvement; ensure no strategy increases conflict or harm; avoid assumptions about acceptance.",
+    equity_signal:"Trans and nonbinary teens often navigate homes and schools not structured around their safety or identity needs. Shutdowns can reflect chronic stress and invalidation.",
+    narrative:`Riley sits cross-legged in the counseling chair, sleeves pulled over their hands. Their voice is quiet but steady. They explain that when conflict happens at home, something inside “switches off.” They describe feeling heat rise in their face, then a cold sensation spreading through their arms, followed by silence. They say they can hear people talking, but it feels like they cannot move.
+
+Last night’s shutdown began after a small argument about homework. Their mother raised her voice slightly, and Riley felt a surge of panic. They describe it as “everything getting too loud, too close.” They retreated to their room, stared at the wall, and lost track of time. When their mother checked in hours later, Riley could not find words to explain what happened.
+
+They say their mother is trying, but the household feels complicated. Their stepfather does not address their gender at all. Riley says silence from him feels “heavier than yelling.” They feel safest online, where friends use their correct name and affirm their identity. At school, they keep their head down but enjoy art class.
+
+When asked what they want to be different, Riley thinks for a long time. They say they want a way to stay present during tense moments without going numb. They want to feel like they have tools before shutting down completely. They are open to ideas but want them to feel private, manageable, and not overly emotional.
+
+Client Records:
+Teacher Email: Capable but often appears withdrawn after weekends. Participates more in creative activities.
+Parent Message: I want to support Riley but do not always know how. When they shut down, they do not talk at all. I need guidance.`
+  },
+  { /* Mr Thompson */ title:"Mr. Thompson: Low Mood, Chronic Pain, and Days That Feel Too Quiet",
+    client_profile:"Age 72. He and him. Black. Retired bus mechanic. Lives alone in subsidized senior housing. Limited mobility due to osteoarthritis. Widower. Fixed monthly income.",
+    setting:"Federally Qualified Health Center primary care social work visit. Scheduled for 20 minutes. Limited privacy because curtains separate exam areas. Consulted after positive screen for low mood and fatigue.",
+    presenting_problem:"Worsening knee and back pain, low energy, and sadness. Most days spent sitting in recliner watching television or staring out the window. Came because his daughter insisted after noticing he was not himself.",
+    relevant_history:"Wife died last year after a long illness. He was her primary caregiver. After her death, he remained socially engaged for a few months but withdrew as mobility worsened. Used to enjoy weekly breakfasts with church friends but now declines invitations because walking long distances causes pain. Does not drive. Daughter lives two hours away and visits once a month.",
+    goals_and_preferences:"Wants to feel “a little lighter.” Wants to move with less pain and regain energy to enjoy small daily activities. Prefers independence. Skeptical of mood medications. Open to options that fit his age and knees.",
+    strengths_and_resources:"Self-reliant; strong relationship with daughter; church connections; resilient coping; compassionate.",
+    contextual_factors_and_barriers:"Mobility limits; transportation challenges; fixed income; grief; social isolation; fear of burdening others; prior dismissive provider experiences.",
+    ebp_decision_point:"Behavioral activation, community connections, pain management support, grief and mood approaches within constraints.",
+    target_outcomes:"Improved daily functioning; increased engagement in meaningful activities; reduced loneliness.",
+    risks_and_ethics:"Avoid ageism; respect autonomy; prevent increased fall risk; recognize grief context.",
+    equity_signal:"Race, aging, socioeconomic precarity, and mobility limitations shape access to support and likelihood of being overlooked.",
+    narrative:`Mr. Thompson settles slowly into the exam chair, gripping the armrest for balance. He jokes that the clinic chairs “were not made for old knees,” but the humor lands softly, almost like a memory of how he used to sound. He explains that the pain has been worse since winter started. On cold mornings, he wakes feeling stiff and exhausted before the day even begins.
+
+He says he spends most days in his recliner because moving around the apartment takes effort. He tries to distract himself with movies, but he often loses focus. Meals have become simpler too, usually canned soup or toast because standing in the kitchen hurts. When you ask about friends or social routines, he shrugs. Most people live across town, and the bus stop is too far to walk reliably. He says it feels embarrassing to cancel plans when his body “refuses to cooperate.”
+
+When asked about mood, he describes days that blur together. “I keep thinking about my wife,” he says quietly. “The house is too quiet without her.” He says he talks to her sometimes, just to hear his own voice. He adds that the loneliness sneaks up on him, especially at night. His daughter calls when she can, but he hates worrying her.
+
+He wants to feel useful again, even in small ways. He misses tinkering with tools or chatting with neighbors. He says he is not sure what would help but knows he cannot continue like this. He does not want to feel numb or dependent but is open to trying “something that gives me a little push forward.”
+
+Client Records:
+Primary Care Screening: PHQ-9 moderately elevated; Pain 7/10; Mobility: cane indoors, walker for longer distances.
+Daughter Message: Dad seems down. He says he is fine, but he is not himself. Please check on him.`
+  },
+  { /* Jae */ title:"Jae: Returning Home After Incarceration and Holding Too Much at Once",
+    client_profile:"Age 31. He and him. Korean American. Released from state prison six weeks ago after serving a two-year sentence. Lives temporarily with his older sister. On community supervision. Part-time warehouse job.",
+    setting:"Reentry services intake at a community-based nonprofit. Private office with a 30-minute appointment. Case manager requested a clinical consult because Jae appears tense and overwhelmed.",
+    presenting_problem:"Difficulty controlling worry, irritability, and emotional flooding during daily stress. Trouble sleeping and intense physical tension when criticized or startled. Wants to stay on track but feels exhausted and overstimulated. Fears any mistake could send him back.",
+    relevant_history:"During incarceration, kept to himself and focused on rule compliance. Witnessed frightening incidents; environment loud, unpredictable, and always on alert. Since release, overstimulated by noise, crowds, and open space. Two arguments with sister about house rules. Denies substance use. Supervision requires strict curfews, weekly check-ins, and consistent employment. Panics when tasks change suddenly. No local friends and limited family support beyond sister.",
+    goals_and_preferences:"Remain stably housed, keep job, avoid conflict, and handle criticism without overwhelm. Discreet strategies usable at work/home. Fears opening up too much due to documentation affecting supervision.",
+    strengths_and_resources:"Highly motivated. Strong work ethic. Insightful about triggers. Supports from reentry program. Caring sister. Desire to rebuild life.",
+    contextual_factors_and_barriers:"Strict supervision; fear of legal consequences; stigma; limited autonomy; financial strain; family tension; sensory overstimulation; hypervigilance shaped by incarceration.",
+    ebp_decision_point:"Grounding tools, stress management supports, systems navigation help, or skills that fit daily structure while honoring privacy.",
+    target_outcomes:"Reduced emotional flooding; improved functioning at work and home; increased confidence navigating supervision demands.",
+    risks_and_ethics:"Confidentiality limits; avoid pathologizing trauma responses; respect autonomy; careful documentation.",
+    equity_signal:"Incarceration, racialized surveillance, and collateral consequences create structural barriers to reentry.",
+    narrative:`Jae sits on the edge of the chair, posture rigid. He watches every movement in the room, as though measuring safety. When you greet him, he gives a polite nod but keeps his eyes lowered. He explains that since coming home, everything feels “too big.” The grocery store aisles, the early-morning buses, even the sky. He says he spent two years indoors with controlled routines, and now the world feels unpredictable.
+
+He describes waking at 4 a.m. from dreams he cannot fully remember. His chest feels tight, and his heart pounds. At work, he tries to follow instructions carefully, but when tasks shift suddenly or someone raises their voice, he freezes. He fears looking incompetent. He worries that if he loses the job, he will violate supervision requirements.
+
+At home, the tension is different. He is grateful to live with his sister, but her expectations feel strict. She wants him to relax, but noise from her children overwhelms him. When she asks him questions too quickly, he feels cornered. Last week, after a misunderstanding about chores, he shut down completely and spent hours sitting on the floor of his room, breathing through panic he did not know how to stop.
+
+He says he keeps thinking about mistakes, even small ones, and imagining terrible consequences. He tries to shake the thoughts off but cannot. He wants tools that do not draw attention, especially at work. He also wants to avoid anything that would lead to disclosures he fears might be misinterpreted by his supervision officer.
+
+He leans forward near the end of the session and says quietly, “I want to do this right. I want a life that feels like mine again.”
+
+Client Records:
+Supervision Compliance Log: Weeks 1-3 on time; note: appears tense.
+Warehouse Supervisor: Works hard; overwhelmed with sudden task changes; needs clear instructions.`
+  }
+];
+
+/* =============== HELPERS =============== */
+function $(id){return document.getElementById(id)}
+function escapeHTML(s=''){return s.replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]))}
+function normalizeDashes(s=''){return s.replace(/[\u2013\u2014]/g,'-')}
+function stripEmojis(s=''){return s.replace(/[\p{Extended_Pictographic}\uFE0F]/gu,'')}
+function paragraphsHTML(text=''){let t=text.replace(/\r\n/g,'\n'); t=normalizeDashes(t); t=stripEmojis(t); return t.split(/\n\s*\n/g).map(p=>`<p>${escapeHTML(p).replace(/\n/g,'<br>')}</p>`).join('')}
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1200)}
+function nowISO(){return new Date().toISOString()}
+function activeIsTyping(){const ae=document.activeElement; if(!ae) return false; const tag=ae.tagName.toLowerCase(); return tag==='textarea'||tag==='input'||ae.isContentEditable}
+function wordCount(s=''){return (s.trim().match(/\b[\w'-]+\b/g)||[]).length}
+
+/* =============== STATE =============== */
+let locked=false, currentCase=null, autosaveTimer=null, studiesCount=3;
+
+/* =============== INIT =============== */
+document.addEventListener('DOMContentLoaded',()=>{
+  $('courseTag').textContent=CONFIG.COURSE_TAG;
+  bind('btnRandom', onRandomize); bind('btnLock', onLockToggle); bind('btnNew', onNew);
+  bind('btnSave', onSave); bind('btnLoad', onLoad);
+  bind('btnCopyScenario', onCopyScenario); bind('btnCopyAll', onCopyAll);
+  bind('btnExport', onExport); bind('btnPrint', ()=>window.print());
+  bind('btnAddStudy', addStudy); bind('btnRemoveStudy', removeStudy);
+  ['f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>$(id).addEventListener('input',()=>{updateCounters(); scheduleAutosave();}));
+  ['picoP','picoI','picoC','picoO'].forEach(id=>$(id).addEventListener('input',()=>{updatePICO(); scheduleAutosave();}));
+  rebuildStudies(3);
+  document.addEventListener('keydown', e=>{
+    const modS=(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'; if(modS){e.preventDefault();onSave();return;}
+    if(activeIsTyping()) return;
+    if(e.altKey&&/r/i.test(e.key)){e.preventDefault();onRandomize();}
+    if(e.altKey&&/l/i.test(e.key)){e.preventDefault();onLockToggle();}
+    if(e.altKey&&/e/i.test(e.key)){e.preventDefault();onExport();}
+    if(e.altKey&&/p/i.test(e.key)){e.preventDefault();window.print();}
   });
-  const pages=Math.max(1,Math.ceil(FILTER.length/PER)); document.getElementById('pageMeta').textContent=`Page ${PAGE}/${pages}`;
-  document.getElementById('prev').disabled=PAGE<=1; document.getElementById('next').disabled=PAGE>=pages;
+});
+
+/* =============== DOM UTIL =============== */
+function bind(id,fn){const el=$(id); if(el) el.addEventListener('click',fn)}
+
+/* =============== RANDOMIZE / RENDER =============== */
+function onRandomize(){ if(!CASES||!CASES.length){toast('No cases available');return;} const idx=Math.floor(Math.random()*CASES.length); currentCase=CASES[idx]; renderCase(currentCase); toast('Case selected'); clearBuilder(); }
+function renderCase(c){
+  $('caseTitle').textContent=c?.title||'Untitled';
+  const grid=$('intakeGrid'); grid.innerHTML='';
+  const map={'Client Profile':c.client_profile,'Setting':c.setting,'Presenting Problem':c.presenting_problem,'Relevant History':c.relevant_history,'Goals and Preferences':c.goals_and_preferences,'Strengths and Resources':c.strengths_and_resources,'Contextual Factors and Barriers':c.contextual_factors_and_barriers,'EBP Decision Point':c.ebp_decision_point,'Target Outcomes':c.target_outcomes,'Risks and Ethics':c.risks_and_ethics,'Equity Signal':c.equity_signal};
+  for(const k in map){grid.insertAdjacentHTML('beforeend',`<div class="row"><div class="key">${escapeHTML(k)}</div><div class="val">${paragraphsHTML(map[k]||'')}</div></div>`)}
+  $('narrative').innerHTML=paragraphsHTML(c.narrative||'');
 }
-function showEmpty(){ document.getElementById('empty').style.display=''; document.getElementById('detail').style.display='none'; document.getElementById('detailHeading').textContent='Details' }
-function selectByIndex(ix){const id=(FILTER[ix]||{}).id; if(typeof id==='number') select(id)}
-function select(id){
-  ACTIVE=id; renderList(); const c=ALL.find(x=>x.id===id); if(!c) return showEmpty();
-  history.replaceState(null,'',`#case=${encodeURIComponent(c.slug)}`); fillDetail(c);
+
+/* =============== LOCK / AUTOSAVE =============== */
+function setLocked(v){locked=v; [...document.querySelectorAll('input[type="text"],textarea')].forEach(f=>f.disabled=!locked);
+  $('btnLock').textContent=locked?'Unlock':'Lock'; const chip=$('statusChip'); chip.textContent=locked?'Locked for writing':'Unlocked';
+  chip.classList.toggle('locked',locked); chip.classList.toggle('unlocked',!locked); if(locked){startAutosave()} else {stopAutosave()} }
+function onLockToggle(){ if(!currentCase){toast('Randomize a case first');return;} setLocked(!locked) }
+function startAutosave(){ stopAutosave(); autosaveTimer=setInterval(onSave,4000) }
+function stopAutosave(){ if(autosaveTimer){clearInterval(autosaveTimer); autosaveTimer=null} }
+function scheduleAutosave(){}
+
+/* =============== BUILDER =============== */
+function clearBuilder(){['picoP','picoI','picoC','picoO','f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>$(id).value=''); rebuildStudies(3); updatePICO(); updateCounters(); $('progressDone').textContent='0';}
+function updatePICO(){const P=$('picoP').value.trim(),I=$('picoI').value.trim(),C=$('picoC').value.trim(),O=$('picoO').value.trim(); const s=[P&&`For ${P}`,I&&`is ${I}`,C&&C!=='-'&&`compared to ${C}`,O&&`effective for ${O}?`].filter(Boolean).join(' '); $('picoPreview').textContent=s||'—';}
+function studyIds(){return [...document.querySelectorAll('[data-study]')].map(el=>el.id)}
+function rebuildStudies(n){studiesCount=Math.max(3,Math.min(5,n|0||3)); const list=$('studiesList'); list.innerHTML=''; for(let i=1;i<=studiesCount;i++){const id=`study_${i}`; list.insertAdjacentHTML('beforeend',`<div><label>Study ${i}</label><textarea id="${id}" data-study disabled></textarea><div class="counter" id="count_${id}">0 words</div></div>`)} studyIds().forEach(id=>$(id).addEventListener('input',()=>{updateCounters(); scheduleAutosave();}))}
+function addStudy(){ if(studiesCount>=5){toast('Max 5 studies');return;} rebuildStudies(studiesCount+1); updateCounters() }
+function removeStudy(){ if(studiesCount<=3){toast('Need at least 3 studies');return;} rebuildStudies(studiesCount-1); updateCounters() }
+function updateCounters(){['f_context','f_search','f_appraisal','f_application','f_assumptions'].forEach(id=>{$(`count_${id.split('f_')[1]}`).textContent=`${wordCount($(id).value)} words`}); studyIds().forEach(id=>{$(`count_${id}`).textContent=`${wordCount($(id).value)} words`}); const core=['f_context','f_search','f_appraisal','f_application']; const done=core.reduce((a,id)=>a+(wordCount($(id).value)>=100?1:0),0); $('progressDone').textContent=String(done);}
+
+/* =============== SAVE / LOAD =============== */
+function storageKey(){const title=(currentCase?.title||'UNTITLED').slice(0,50); return CONFIG.APPKEY_PREFIX+title}
+function collectData(){const fields={context:$('f_context').value,search:$('f_search').value,appraisal:$('f_appraisal').value,application:$('f_application').value,assumptions:$('f_assumptions').value,studies:studyIds().map(id=>$(id).value)}; const pico={P:$('picoP').value,I:$('picoI').value,C:$('picoC').value,O:$('picoO').value,preview:$('picoPreview').textContent}; return {caseTitle:currentCase?.title||'',fields,pico,timestamp:nowISO()}}
+function onSave(){ if(!currentCase){toast('Nothing to save');return;} try{localStorage.setItem(storageKey(),JSON.stringify(collectData()));toast('Saved')}catch(e){console.error(e);toast('Save failed')} }
+function onLoad(){ if(!currentCase){toast('Randomize a case first');return;} const raw=localStorage.getItem(storageKey()); if(!raw){toast('No saved draft');return;}
+  try{const d=JSON.parse(raw); $('f_context').value=d.fields?.context||''; $('f_search').value=d.fields?.search||''; $('f_appraisal').value=d.fields?.appraisal||''; $('f_application').value=d.fields?.application||''; $('f_assumptions').value=d.fields?.assumptions||'';
+    rebuildStudies(Math.max(3,Math.min(5,d.fields?.studies?.length||3))); (d.fields?.studies||[]).forEach((v,i)=>{const id=`study_${i+1}`; if($(id)) $(id).value=v});
+    $('picoP').value=d.pico?.P||''; $('picoI').value=d.pico?.I||''; $('picoC').value=d.pico?.C||''; $('picoO').value=d.pico?.O||''; updatePICO(); updateCounters(); toast('Loaded');
+  }catch(e){console.error(e);toast('Load failed')}}
+/* =============== COPY / EXPORT =============== */
+function plainScenarioText(){ if(!currentCase) return 'No case selected.'; const c=currentCase; const kv=[['Title',c.title],['Client Profile',c.client_profile],['Setting',c.setting],['Presenting Problem',c.presenting_problem],['Relevant History',c.relevant_history],['Goals and Preferences',c.goals_and_preferences],['Strengths and Resources',c.strengths_and_resources],['Contextual Factors and Barriers',c.contextual_factors_and_barriers],['EBP Decision Point',c.ebp_decision_point],['Target Outcomes',c.target_outcomes],['Risks and Ethics',c.risks_and_ethics],['Equity Signal',c.equity_signal],['Narrative',c.narrative]]; return kv.map(([k,v])=>`${k}:\n${normalizeDashes(stripEmojis(v||''))}`).join('\n\n')}
+function plainAllText(){const d=collectData(); const studies=(d.fields.studies||[]).map((s,i)=>`Study ${i+1}:\n${s}`).join('\n\n'); return `${plainScenarioText()}
+
+PICO:
+P: ${d.pico.P}
+I: ${d.pico.I}
+C: ${d.pico.C}
+O: ${d.pico.O}
+Question: ${d.pico.preview}
+
+Client & Practice Context:
+${d.fields.context}
+
+Search Strategy & Study Selection:
+${d.fields.search}
+
+${studies}
+
+Critical Appraisal:
+${d.fields.appraisal}
+
+Application & Delivery Plan:
+${d.fields.application}
+
+Assumptions:
+${d.fields.assumptions}
+
+Saved: ${d.timestamp}` }
+function onCopyScenario(){navigator.clipboard.writeText(plainScenarioText()).then(()=>toast('Scenario copied'))}
+function onCopyAll(){navigator.clipboard.writeText(plainAllText()).then(()=>toast('All copied'))}
+function onExport(){
+  if(!currentCase){toast('Randomize a case first');return;}
+  const d=collectData(), c=currentCase;
+  const gridHTML=`<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%">
+    ${Object.entries({'Client Profile':c.client_profile,'Setting':c.setting,'Presenting Problem':c.presenting_problem,'Relevant History':c.relevant_history,'Goals and Preferences':c.goals_and_preferences,'Strengths and Resources':c.strengths_and_resources,'Contextual Factors and Barriers':c.contextual_factors_and_barriers,'EBP Decision Point':c.ebp_decision_point,'Target Outcomes':c.target_outcomes,'Risks and Ethics':c.risks_and_ethics,'Equity Signal':c.equity_signal}).map(([k,v])=>`<tr><td style="width:230px;font-weight:bold;background:#f5f5f5">${escapeHTML(k)}</td><td>${paragraphsHTML(v||'')}</td></tr>`).join('')}
+  </table>`;
+  const studiesHTML=(d.fields.studies||[]).map((s,i)=>`<h3>Study ${i+1}</h3><p>${escapeHTML(s).replace(/\n/g,'<br>')}</p>`).join('');
+  const html=`<h1>${escapeHTML(c.title||'Untitled')}</h1>
+    <p><strong>${escapeHTML(CONFIG.COURSE_TAG)}</strong></p>
+    <h2>Intake Sheet</h2>${gridHTML}
+    <h2>Narrative</h2>${paragraphsHTML(c.narrative||'')}
+    <h2>PICO</h2>
+    <p><strong>P:</strong> ${escapeHTML(d.pico.P)}<br><strong>I:</strong> ${escapeHTML(d.pico.I)}<br><strong>C:</strong> ${escapeHTML(d.pico.C)}<br><strong>O:</strong> ${escapeHTML(d.pico.O)}<br><strong>Question:</strong> ${escapeHTML(d.pico.preview)}</p>
+    <h2>Client & Practice Context</h2><p>${escapeHTML(d.fields.context).replace(/\n/g,'<br>')}</p>
+    <h2>Search Strategy & Study Selection</h2><p>${escapeHTML(d.fields.search).replace(/\n/g,'<br>')}</p>
+    <h2>Study Summaries</h2>${studiesHTML}
+    <h2>Critical Appraisal (incl. equity/representation)</h2><p>${escapeHTML(d.fields.appraisal).replace(/\n/g,'<br>')}</p>
+    <h2>Application & Delivery Plan</h2><p>${escapeHTML(d.fields.application).replace(/\n/g,'<br>')}</p>
+    ${d.fields.assumptions?.trim()?`<h2>Assumptions</h2><p>${escapeHTML(d.fields.assumptions).replace(/\n/g,'<br>')}</p>`:''}
+    <p><em>Exported: ${escapeHTML(d.timestamp)}</em></p>`;
+  try{const blob=window.htmlDocx.asBlob(html); const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    const safe=(c.title||'EBP_Note').replace(/[^\w\-]+/g,'_').slice(0,80)+'.docx'; a.download=safe||CONFIG.DEFAULT_EXPORT_NAME; a.click(); URL.revokeObjectURL(a.href); toast('Exported .docx');
+  }catch(e){console.error(e);toast('Export failed')}
 }
-function fillDetail(c){
-  document.getElementById('empty').style.display='none'; document.getElementById('detail').style.display='';
-  document.getElementById('detailHeading').textContent=c.title||'Details';
-  const set=(id,val)=>document.getElementById(id).innerHTML=brize(val||'');
-  set('f_title',c.title); set('f_setting_snapshot',c.setting_snapshot); set('f_population',c.population); set('f_core_problems',c.core_problems);
-  set('f_stakeholders',c.stakeholders); set('f_equity_signals',c.equity_signals); set('f_constraints_resources',c.constraints_resources); set('f_role',c.role);
-  set('f_scenario_summary',c.scenario_summary);
-  const extras=c.extra||c.__extra__||{}; const names=Object.keys(extras).filter(k=>extras[k] && String(extras[k]).trim());
-  const wrap=document.getElementById('extraWrap'); const tgt=document.getElementById('extraFields');
-  if(names.length){ wrap.style.display=''; tgt.innerHTML=''; names.forEach(k=>{ const K=document.createElement('div'); K.textContent=k; K.style.color='#6b7280'; const V=document.createElement('div'); V.innerHTML=brize(Array.isArray(extras[k])?extras[k].join('\n'):extras[k]); tgt.appendChild(K); tgt.appendChild(V); }); }
-  else{ wrap.style.display='none' }
-}
-document.getElementById('btnClear').onclick=()=>{ document.getElementById('q').value=''; applyFilter() }
-document.getElementById('prev').onclick=()=>{ if(PAGE>1){PAGE--;renderList()} }
-document.getElementById('next').onclick=()=>{ const max=Math.ceil(FILTER.length/PER)||1; if(PAGE<max){PAGE++;renderList()} }
-document.getElementById('btnCopyLink').onclick=async()=>{ try{ await navigator.clipboard.writeText(location.href) }catch{} }
-document.getElementById('btnPrint').onclick=()=>window.print();
-document.getElementById('btnOpen').onclick=()=>{ const c=ALL.find(x=>x.id===ACTIVE); if(!c) return; try{ localStorage.setItem('PD_PRELOAD_TITLE', c.title||'') }catch{}; location.href='program-evaluation-generator.html' }
-document.getElementById('q').addEventListener('input', applyFilter);
-(async function(){ const data=await loadData(); ALL=data; applyFilter(); const m=location.hash.match(/case=([^&]+)/); if(m){ const slug=decodeURIComponent(m[1]); const ix=ALL.findIndex(c=>c.slug===slug); if(ix>=0){ PAGE=Math.floor(ix/PER)+1; renderList(); select(ALL[ix].id) } } })();
+function onNew(){clearBuilder(); toast('Cleared')}
 </script>
 </body>
 </html>
-
-<!-- OPTIONAL: tiny preload hook for /program-evaluation-generator.html (after CASES + renderCase exist) -->
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-  try{
-    const want = localStorage.getItem('PD_PRELOAD_TITLE');
-    if(want){
-      const m = (Array.isArray(window.CASES)?window.CASES:[]).find(c=>c.title===want);
-      if(m){ window.current=m; window.locked=false; (window.clearForm||(()=>{}))(); (window.renderCase||(()=>{}))(); }
-      localStorage.removeItem('PD_PRELOAD_TITLE');
-    }
-  }catch(_){}
-});
-</script>
